@@ -16,7 +16,7 @@
       width: 100%;
       height: 100%;
       background: white;
-      overflow: hidden;      /* KUNCI layar, tidak bisa scroll */
+      overflow: hidden;      /* layar dikunci, tidak bisa scroll */
       font-family: sans-serif;
     }
 
@@ -88,10 +88,50 @@
     .cek-result-body {
       font-size: 13px;
       color: #4b5563;
-      white-space: pre-wrap;
       flex: 1;
+      overflow-y: auto;      /* scroll di dalam box kalau konten panjang */
+      max-height: 100%;
     }
 
+    .cek-summary {
+      margin-bottom: 8px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .cek-summary-line {
+      margin: 2px 0;
+    }
+
+    .paket-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .paket-card {
+      border-radius: 8px;
+      border: 1px solid #e5e7eb;
+      background: #ffffff;
+      padding: 8px 10px;
+    }
+
+    .paket-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .paket-line {
+      font-size: 12px;
+      margin: 1px 0;
+    }
+
+    .paket-line span.label {
+      color: #6b7280;
+    }
+
+    /* Blok form input nomor (di bawah, dekat footer) */
     .cek-form {
       display: flex;
       gap: 8px;
@@ -344,6 +384,89 @@
       });
     });
 
+    // ========= PARSING HASIL KUOTA =========
+    function parseHasilString(hasilHtml) {
+      const text = hasilHtml
+        .replace(/<br\s*\/?>/gi, "\n")
+        .replace(/\r/g, "");
+      const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+
+      const header = {};
+      const pakets = [];
+      let current = null;
+
+      for (const line of lines) {
+        if (line.startsWith("MSISDN:")) {
+          header.msisdn = line.replace("MSISDN:", "").trim();
+        } else if (line.startsWith("Tipe Kartu:")) {
+          header.tipeKartu = line.replace("Tipe Kartu:", "").trim();
+        } else if (line.startsWith("Masa Aktif:")) {
+          header.masaAktif = line.replace("Masa Aktif:", "").trim();
+        } else if (line.startsWith("Masa Berakhir Tenggang:") || line.startsWith("Masa Berakhir Tenggang")) {
+          header.masaTenggang = line.split(":").slice(1).join(":").trim();
+        }
+
+        if (line.startsWith("🎁 Benefit:") || line.startsWith("Benefit:")) {
+          if (current) pakets.push(current);
+          current = { nama: line.split(":").slice(1).join(":").trim() };
+        } else if (current && (line.includes("Tipe Kuota:") || line.includes("Tipe Kuota"))) {
+          current.tipe = line.split(":").slice(1).join(":").trim();
+        } else if (current && line.includes("Sisa Kuota:")) {
+          current.sisa = line.split(":").slice(1).join(":").trim();
+        } else if (current && line.includes("Kuota:") && !line.includes("Sisa Kuota")) {
+          current.total = line.split(":").slice(1).join(":").trim();
+        }
+      }
+      if (current) pakets.push(current);
+
+      return { header, pakets };
+    }
+
+    function renderResultParsed(container, parsed, rawFallback) {
+      if ((!parsed.header.msisdn && !parsed.pakets.length) && rawFallback) {
+        container.textContent = rawFallback;
+        return;
+      }
+
+      let html = "";
+
+      if (parsed.header.msisdn || parsed.header.tipeKartu || parsed.header.masaAktif) {
+        html += '<div class="cek-summary">';
+        if (parsed.header.msisdn)
+          html += `<div class="cek-summary-line"><strong>No:</strong> ${parsed.header.msisdn}</div>`;
+        if (parsed.header.tipeKartu)
+          html += `<div class="cek-summary-line"><strong>Kartu:</strong> ${parsed.header.tipeKartu}</div>`;
+        if (parsed.header.masaAktif)
+          html += `<div class="cek-summary-line"><strong>Masa aktif:</strong> ${parsed.header.masaAktif}</div>`;
+        if (parsed.header.masaTenggang)
+          html += `<div class="cek-summary-line"><strong>Tenggang:</strong> ${parsed.header.masaTenggang}</div>`;
+        html += "</div>";
+      }
+
+      if (parsed.pakets.length) {
+        html += '<div class="paket-list">';
+        parsed.pakets.forEach(p => {
+          html += '<div class="paket-card">';
+          html += `<div class="paket-title">${p.nama || "Paket"}</div>`;
+          if (p.tipe)
+            html += `<div class="paket-line"><span class="label">Tipe:</span> ${p.tipe}</div>`;
+          if (p.total)
+            html += `<div class="paket-line"><span class="label">Kuota:</span> ${p.total}</div>`;
+          if (p.sisa)
+            html += `<div class="paket-line"><span class="label">Sisa:</span> ${p.sisa}</div>`;
+          html += "</div>";
+        });
+        html += "</div>";
+      }
+
+      if (!html && rawFallback) {
+        container.textContent = rawFallback;
+        return;
+      }
+
+      container.innerHTML = html;
+    }
+
     // ====== CEK KUOTA via Worker Proxy ======
     const cekForm = document.getElementById("cek-form");
     const cekNumberInput = document.getElementById("cek-number");
@@ -369,12 +492,23 @@
         }
 
         const text = await res.text();
+        let json;
         try {
-          const json = JSON.parse(text);
-          cekResultBody.textContent = JSON.stringify(json, null, 2);
+          json = JSON.parse(text);
         } catch {
           cekResultBody.textContent = text;
+          return;
         }
+
+        if (!json || !json.data || !json.data.hasil) {
+          cekResultBody.textContent = JSON.stringify(json, null, 2);
+          return;
+        }
+
+        const hasil = json.data.hasil;
+        const parsed = parseHasilString(hasil);
+        renderResultParsed(cekResultBody, parsed, hasil.replace(/<br\s*\/?>/gi, "\n"));
+
       } catch (err) {
         cekResultBody.textContent = "Terjadi kesalahan: " + err.message;
       }
