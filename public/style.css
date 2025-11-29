@@ -187,25 +187,18 @@ html, body {
   position: relative;
   padding: 12px 14px;
   border-radius: 14px;
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: linear-gradient(135deg, #eef2ff, #e0f2fe); /* warna lembut */
+  border: 1px solid #dbeafe;
 
-  /* shadow */
+  /* shadow lembut */
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.06),
     0 10px 20px rgba(0, 0, 0, 0.05);
 }
 
-/* Warna garis kiri */
+/* Hilangkan garis vertikal di kiri */
 .paket-card::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 4px;
-  background: #64748b;
-  border-radius: 4px;
+  content: none;
 }
 
 .paket-card.data::before { background: #2563eb; }
