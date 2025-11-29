@@ -263,21 +263,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const tabButtons = document.querySelectorAll(".tab-btn");
   const tabContents = document.querySelectorAll(".tab-content");
 
-  function selectTab(tabName) {
-    tabButtons.forEach((b) => b.classList.remove("active"));
-    tabContents.forEach((c) => c.classList.remove("active"));
-
-    const btn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
-    const content = document.getElementById("tab-" + tabName);
-
-    if (btn) btn.classList.add("active");
-    if (content) content.classList.add("active");
-  }
-
   tabButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
+      tabButtons.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
       const tab = btn.dataset.tab;
-      selectTab(tab);
+      tabContents.forEach((c) => c.classList.remove("active"));
+      const target = document.getElementById("tab-" + tab);
+      if (target) target.classList.add("active");
     });
   });
 
@@ -289,7 +283,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const regWa = document.getElementById("reg-wa");
   const regPassword = document.getElementById("reg-password");
   const regXl = document.getElementById("reg-xl");
-  const loginIdentifier = document.getElementById("login-identifier");
 
   if (regForm && regName && regWa && regPassword && regXl) {
     regForm.addEventListener("submit", async (e) => {
@@ -314,8 +307,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const data = await res.json();
 
-        // back-end kirim { ok: true, message: "...", data: {...} }
-        const success = data && (data.ok === true || data.status === true);
+        // ====== PERBAIKAN UTAMA DI SINI: pakai data.ok ======
+        const success = data.ok === true || data.status === true;
+
         if (!success) {
           alert(data.message || "Gagal mendaftar.");
           return;
@@ -323,11 +317,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         alert(data.message || "Daftar berhasil. Silakan masuk.");
 
-        // isi otomatis field login
-        if (loginIdentifier) loginIdentifier.value = whatsapp;
+        // === AUTO PINDAH KE TAB MASUK ===
+        const tabMasukBtn = document.querySelector('[data-tab="login"]');
+        if (tabMasukBtn) {
+          tabMasukBtn.click(); // toggle tab
+        }
 
-        // langsung pindah ke tab Masuk
-        selectTab("login");
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
       }
@@ -338,6 +333,7 @@ document.addEventListener("DOMContentLoaded", () => {
      FORM LOGIN
   ====================================================== */
   const loginForm = document.getElementById("login-form");
+  const loginIdentifier = document.getElementById("login-identifier");
   const loginPassword = document.getElementById("login-password");
 
   if (loginForm && loginIdentifier && loginPassword) {
@@ -361,13 +357,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const data = await res.json();
 
-        const success = data && (data.ok === true || data.status === true);
+        // login juga pakai ok/status
+        const success = data.ok === true || data.status === true;
+
         if (!success) {
           alert(data.message || "Gagal masuk.");
           return;
         }
 
         alert("Login berhasil sebagai " + (data.data?.name || identifier));
+
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
       }
