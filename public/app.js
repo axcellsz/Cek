@@ -286,16 +286,19 @@ document.addEventListener("DOMContentLoaded", () => {
      FORM DAFTAR AKUN BARU
   ====================================================== */
   const regForm = document.getElementById("register-form");
+  const regName = document.getElementById("reg-name");
+  const regWa = document.getElementById("reg-wa");
+  const regPassword = document.getElementById("reg-password");
+  const regXl = document.getElementById("reg-xl");
 
-  if (regForm) {
+  if (regForm && regName && regWa && regPassword && regXl) {
     regForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const fd = new FormData(regForm);
-      const name = (fd.get("name") || "").trim();
-      const whatsapp = (fd.get("whatsapp") || "").trim();
-      const password = (fd.get("password") || "").trim();
-      const xl = (fd.get("xl") || "").trim();
+      const name = regName.value.trim();
+      const whatsapp = regWa.value.trim();
+      const password = regPassword.value.trim();
+      const xl = regXl.value.trim();
 
       if (!name || !whatsapp || !password || !xl) {
         alert("Semua data daftar wajib diisi.");
@@ -331,27 +334,26 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* =====================================================
      FORM LOGIN
+     (TANPA VALIDASI FRONT-END PAKAI PESAN WAJIB DIISI)
   ====================================================== */
   const loginForm = document.getElementById("login-form");
+  const loginIdentifier = document.getElementById("login-identifier");
+  const loginPassword = document.getElementById("login-password");
 
-  if (loginForm) {
+  if (loginForm && loginIdentifier && loginPassword) {
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const fd = new FormData(loginForm);
-      const identifier = (fd.get("identifier") || "").trim();
-      const password = (fd.get("password") || "").trim();
+      const identifier = loginIdentifier.value.trim();
+      const password = loginPassword.value.trim();
 
-      if (!identifier || !password) {
-        alert("Nama / No WhatsApp dan password wajib diisi.");
-        return;
-      }
+      // Tidak ada lagi alert "Nama/No WhatsApp dan password wajib diisi." di sisi client
 
       try {
         const body = {
-          identifier,           // kalau backend pakai ini
-          whatsapp: identifier, // kalau backend pakai whatsapp
-          name: identifier,     // kalau backend pakai name
+          identifier,
+          whatsapp: identifier,
+          name: identifier,
           password,
         };
 
@@ -369,7 +371,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         alert("Login berhasil sebagai " + (data.data?.name || identifier));
-
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
       }
