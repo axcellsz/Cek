@@ -1,12 +1,27 @@
 document.addEventListener("DOMContentLoaded", () => {
   // ============================
+  // FORMAT NOMOR (Fix 628xx → 08xx)
+  // ============================
+  function formatMsisdn(num) {
+    if (!num) return "";
+    let s = String(num).trim();
+
+    if (s.startsWith("+628")) return "0" + s.slice(4);
+    if (s.startsWith("628")) return "0" + s.slice(3);
+    if (s.startsWith("08")) return s;
+    if (s.startsWith("8")) return "0" + s;
+
+    return s;
+  }
+
+  // ============================
   // NAVIGASI BOTTOM BAR
   // ============================
   const navButtons = document.querySelectorAll(".nav-btn");
   const screens = document.querySelectorAll(".screen");
 
   function showScreen(name) {
-    screens.forEach((s) => (s.style.display = "none"));
+    screens.forEach(s => s.style.display = "none");
 
     if (!name) {
       const def = document.getElementById("screen-default");
@@ -15,21 +30,17 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const target = document.getElementById("screen-" + name);
-    if (target) {
-      target.style.display = name === "cek" ? "block" : "flex";
-    }
+    if (target) target.style.display = name === "cek" ? "block" : "flex";
   }
 
   function setActiveNav(name) {
-    navButtons.forEach((btn) => btn.classList.remove("active"));
-    navButtons.forEach((btn) => {
-      if (btn.dataset.screen === name) {
-        btn.classList.add("active");
-      }
+    navButtons.forEach(btn => btn.classList.remove("active"));
+    navButtons.forEach(btn => {
+      if (btn.dataset.screen === name) btn.classList.add("active");
     });
   }
 
-  navButtons.forEach((btn) => {
+  navButtons.forEach(btn => {
     btn.addEventListener("click", () => {
       const name = btn.dataset.screen;
       showScreen(name);
@@ -37,23 +48,11 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Tampilkan screen awal
   showScreen(null);
 
   // ============================
-  // HELPER FORMAT STRING
+  // HELPER FORMAT KUOTA
   // ============================
-
-  // Format MSISDN: 628xxxx → 08xxxx
-  function formatMsisdn(num) {
-    if (!num) return "";
-    let s = String(num).trim();
-    if (s.startsWith("+628")) return "0" + s.slice(4);
-    if (s.startsWith("628")) return "0" + s.slice(3);
-    return s;
-  }
-
-  // Rapikan spasi antara angka dan huruf: 19GB -> 19 GB, 7.5GB -> 7.5 GB
   function normalizeAmount(str) {
     if (!str) return "";
     let s = String(str);
@@ -67,9 +66,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const isSisa = label.toLowerCase() === "sisa";
 
     const valueHtml = isSisa
-      ? `<span style="font-weight:600;color:#16a34a;">${normalizeAmount(
-          value
-        )}</span>`
+      ? `<span style="font-weight:600;color:#16a34a;">${normalizeAmount(value)}</span>`
       : `<span style="font-weight:600;">${normalizeAmount(value)}</span>`;
 
     return `
@@ -90,63 +87,55 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================
-  // PARSE HEADER DARI "hasil"
+  // PARSE HEADER (hasil html)
   // ============================
   function parseHeaderFromHasil(hasilHtml) {
     if (!hasilHtml) return {};
 
-    const text = hasilHtml
-      .replace(/<br\s*\/?>/gi, "\n")
-      .replace(/\r/g, "");
-
-    const lines = text
-      .split("\n")
-      .map((l) => l.trim())
-      .filter(Boolean);
+    const text = hasilHtml.replace(/<br\s*\/?>/gi, "\n").replace(/\r/g, "");
+    const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
 
     const header = {};
 
     for (const line of lines) {
-      if (line.startsWith("MSISDN:")) {
-        header.msisdn = line.replace("MSISDN:", "").trim();
-      } else if (line.startsWith("Tipe Kartu:")) {
+      if (line.startsWith("MSISDN:"))
+        header.msisdn = formatMsisdn(line.replace("MSISDN:", "").trim());
+
+      else if (line.startsWith("Tipe Kartu:"))
         header.tipeKartu = line.replace("Tipe Kartu:", "").trim();
-      } else if (line.startsWith("Masa Aktif:")) {
+
+      else if (line.startsWith("Masa Aktif:"))
         header.masaAktif = line.replace("Masa Aktif:", "").trim();
-      } else if (
-        line.startsWith("Masa Berakhir Tenggang:") ||
-        line.startsWith("Masa Berakhir Tenggang")
-      ) {
+
+      else if (line.startsWith("Masa Berakhir Tenggang"))
         header.masaTenggang = line.split(":").slice(1).join(":").trim();
-      }
     }
 
     return header;
   }
 
   // ============================
-  // PARSE PAKET DARI data_sp.quotas
+  // PARSE PAKET dari data_sp.quotas
   // ============================
   function parsePaketsFromQuotas(quotasValue) {
     const pakets = [];
 
     if (!Array.isArray(quotasValue)) return pakets;
 
-    // quotas.value adalah array 2D: [[{ packages, benefits }]]
-    quotasValue.forEach((group) => {
+    quotasValue.forEach(group => {
       if (!Array.isArray(group)) return;
 
-      group.forEach((item) => {
+      group.forEach(item => {
         const expDate = item?.packages?.expDate || null;
         const benefits = item?.benefits || [];
 
-        benefits.forEach((b) => {
+        benefits.forEach(b => {
           pakets.push({
             nama: b.bname || "Paket",
             tipe: b.type || "",
             total: b.quota || "",
             sisa: b.remaining || "",
-            masaAktif: expDate || "", // ISO 2025-12-04T23:59:59
+            masaAktif: expDate || ""
           });
         });
       });
@@ -159,13 +148,14 @@ document.addEventListener("DOMContentLoaded", () => {
   // GABUNG HEADER + PAKET
   // ============================
   function buildParsedResult(hasilHtml, quotasValue) {
-    const header = parseHeaderFromHasil(hasilHtml);
-    const pakets = parsePaketsFromQuotas(quotasValue);
-    return { header, pakets };
+    return {
+      header: parseHeaderFromHasil(hasilHtml),
+      pakets: parsePaketsFromQuotas(quotasValue)
+    };
   }
 
   // ============================
-  // RENDER HASIL KE DOM
+  // RENDER HASIL
   // ============================
   const cekResultBody = document.getElementById("cek-result-body");
 
@@ -173,72 +163,52 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!cekResultBody) return;
 
     let html = "";
-
-    const h = parsed.header || {};
-    const hasHeader =
-      h.msisdn || h.tipeKartu || h.masaAktif || h.masaTenggang;
+    const h = parsed.header;
+    const hasHeader = h.msisdn || h.tipeKartu || h.masaAktif || h.masaTenggang;
     const hasPakets = parsed.pakets && parsed.pakets.length > 0;
 
-    // ---------- SUMMARY NOMOR ----------
+    // ===== SUMMARY HEADER =====
     if (hasHeader) {
       html += `<div class="cek-summary">`;
 
       if (h.msisdn) {
-        html += `<div class="summary-main">${formatMsisdn(h.msisdn)}</div>`;
+        html += `<div class="summary-main">${h.msisdn}</div>`;
       }
 
       if (h.tipeKartu) {
-        html += `
-          <div class="cek-summary-line">
-            <span class="label">Kartu</span>
-            <span style="font-weight:600;">${h.tipeKartu}</span>
-          </div>`;
+        html += `<div class="cek-summary-line"><span class="label">Kartu</span><span style="font-weight:600;">${h.tipeKartu}</span></div>`;
       }
 
       if (h.masaAktif) {
-        html += `
-          <div class="cek-summary-line">
-            <span class="label">Masa aktif</span>
-            <span style="font-weight:600;">${h.masaAktif}</span>
-          </div>`;
+        html += `<div class="cek-summary-line"><span class="label">Masa aktif</span><span style="font-weight:600;">${h.masaAktif}</span></div>`;
       }
 
       if (h.masaTenggang) {
-        html += `
-          <div class="cek-summary-line">
-            <span class="label">Tenggang</span>
-            <span style="font-weight:600;">${h.masaTenggang}</span>
-          </div>`;
+        html += `<div class="cek-summary-line"><span class="label">Tenggang</span><span style="font-weight:600;">${h.masaTenggang}</span></div>`;
       }
 
       html += `</div>`;
     }
 
-    // ---------- TIDAK ADA KUOTA ----------
+    // ===== TIDAK ADA KUOTA =====
     if (!hasPakets) {
-      if (!hasHeader && fallbackText) {
-        cekResultBody.textContent = fallbackText;
-      } else {
-        html += `<div class="no-paket-msg">Anda tidak memiliki kuota aktif.</div>`;
-        cekResultBody.innerHTML = html;
-      }
+      html += `<div class="no-paket-msg">Anda tidak memiliki kuota aktif.</div>`;
+      cekResultBody.innerHTML = html;
       return;
     }
 
-    // ---------- DAFTAR PAKET ----------
+    // ===== LIST KUOTA =====
     html += `<div class="paket-list">`;
 
-    parsed.pakets.forEach((p) => {
-      const cls = typeToClass(p.tipe);
-      html += `<div class="paket-card ${cls}">`;
-      html += `<div class="paket-title">${p.nama || "Paket"}</div>`;
+    parsed.pakets.forEach(p => {
+      html += `<div class="paket-card">`;
+      html += `<div class="paket-title">${p.nama}</div>`;
       html += createLine("Tipe", p.tipe);
       html += createLine("Kuota", p.total);
       html += createLine("Sisa", p.sisa);
 
-      // masa aktif paket (dari expDate)
       if (p.masaAktif) {
-        let cleanDate = String(p.masaAktif).replace("T", " ");
+        let cleanDate = p.masaAktif.replace("T", " ");
         html += createLine("Masa aktif", cleanDate);
       }
 
@@ -251,36 +221,33 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================
-  // CEK KUOTA: LOGIKA FORM
+  // FORM CEK KUOTA
   // ============================
   const cekForm = document.getElementById("cek-form");
   const cekNumberInput = document.getElementById("cek-number");
 
   if (cekForm && cekNumberInput && cekResultBody) {
-    cekForm.addEventListener("submit", async (e) => {
+    cekForm.addEventListener("submit", async e => {
       e.preventDefault();
 
-      let nomor = (cekNumberInput.value || "").trim();
+      const nomor = cekNumberInput.value.trim();
       if (!nomor) {
-        cekResultBody.textContent =
-          "Nomor belum diisi. Silakan masukkan nomor terlebih dahulu.";
+        cekResultBody.textContent = "Nomor belum diisi.";
         return;
       }
 
       cekResultBody.textContent = "Memeriksa kuota...\nMohon tunggu.";
 
       try {
-        const res = await fetch(
-          "/api/cek-kuota?msisdn=" + encodeURIComponent(nomor)
-        );
+        const res = await fetch("/api/cek-kuota?msisdn=" + encodeURIComponent(nomor));
         if (!res.ok) {
-          cekResultBody.textContent =
-            "Gagal mengakses server. Status: " + res.status;
+          cekResultBody.textContent = "Gagal mengakses server. Status: " + res.status;
           return;
         }
 
         const text = await res.text();
         let json;
+
         try {
           json = JSON.parse(text);
         } catch {
@@ -292,27 +259,17 @@ document.addEventListener("DOMContentLoaded", () => {
         const quotasValue = json?.data?.data_sp?.quotas?.value;
 
         if (!hasilHtml && !quotasValue) {
-          cekResultBody.textContent =
-            "Respons tidak berisi data kuota yang dikenali.";
+          cekResultBody.textContent = "Tidak ada data kuota.";
           return;
         }
 
         const parsed = buildParsedResult(hasilHtml, quotasValue);
-        const fallbackText = hasilHtml
-          ? hasilHtml.replace(/<br\s*\/?>/gi, "\n")
-          : "";
-
-        // update input ke format 08xxxxx kalau msisdn tersedia
-        if (parsed.header && parsed.header.msisdn) {
-          cekNumberInput.value = formatMsisdn(parsed.header.msisdn);
-        } else {
-          cekNumberInput.value = formatMsisdn(nomor);
-        }
+        const fallbackText = hasilHtml ? hasilHtml.replace(/<br\s*\/?>/gi, "\n") : "";
 
         renderParsedResult(parsed, fallbackText);
+
       } catch (err) {
-        cekResultBody.textContent =
-          "Terjadi kesalahan saat menghubungi server: " + err.message;
+        cekResultBody.textContent = "Error: " + err.message;
       }
     });
   }
