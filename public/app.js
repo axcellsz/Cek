@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", () => {
   showScreen(null);
 
   // ============================
-  // HELPER UNTUK FORMAT STRING
+  // HELPER FORMAT STRING
   // ============================
 
   // Rapikan spasi antara angka dan huruf: 19GB -> 19 GB, 7.5GB -> 7.5 GB
@@ -81,9 +81,11 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ============================
-  // PARSE STRING "hasil" DARI API
+  // PARSE HEADER DARI "hasil"
   // ============================
-  function parseHasilString(hasilHtml) {
+  function parseHeaderFromHasil(hasilHtml) {
+    if (!hasilHtml) return {};
+
     const text = hasilHtml
       .replace(/<br\s*\/?>/gi, "\n")
       .replace(/\r/g, "");
@@ -94,11 +96,8 @@ document.addEventListener("DOMContentLoaded", () => {
       .filter(Boolean);
 
     const header = {};
-    const pakets = [];
-    let current = null;
 
     for (const line of lines) {
-      // ---------- HEADER (di bagian atas teks) ----------
       if (line.startsWith("MSISDN:")) {
         header.msisdn = line.replace("MSISDN:", "").trim();
       } else if (line.startsWith("Tipe Kartu:")) {
@@ -111,35 +110,48 @@ document.addEventListener("DOMContentLoaded", () => {
       ) {
         header.masaTenggang = line.split(":").slice(1).join(":").trim();
       }
-
-      // ---------- MULAI PAKET BARU ----------
-      if (line.startsWith("🎁 Benefit:") || line.startsWith("Benefit:")) {
-        if (current) pakets.push(current);
-        current = { nama: line.split(":").slice(1).join(":").trim() };
-        continue;
-      }
-
-      // ---------- DETAIL PAKET ----------
-      if (!current) continue;
-
-      const lower = line.toLowerCase();
-
-      if (lower.includes("tipe kuota")) {
-        current.tipe = line.split(":").slice(1).join(":").trim();
-      } else if (lower.includes("sisa kuota")) {
-        current.sisa = line.split(":").slice(1).join(":").trim();
-      } else if (
-        lower.includes("kuota") &&
-        !lower.includes("sisa kuota")
-      ) {
-        current.total = line.split(":").slice(1).join(":").trim();
-      }
-      // catatan: di hasil XL yang kamu kirim, masa aktif per paket
-      // tidak selalu jelas, jadi di sini belum dipetakan per paket.
     }
 
-    if (current) pakets.push(current);
+    return header;
+  }
 
+  // ============================
+  // PARSE PAKET DARI data_sp.quotas
+  // ============================
+  function parsePaketsFromQuotas(quotasValue) {
+    const pakets = [];
+
+    if (!Array.isArray(quotasValue)) return pakets;
+
+    // quotas.value adalah array 2D: [[{ packages, benefits }]]
+    quotasValue.forEach((group) => {
+      if (!Array.isArray(group)) return;
+
+      group.forEach((item) => {
+        const expDate = item?.packages?.expDate || null;
+        const benefits = item?.benefits || [];
+
+        benefits.forEach((b) => {
+          pakets.push({
+            nama: b.bname || "Paket",
+            tipe: b.type || "",
+            total: b.quota || "",
+            sisa: b.remaining || "",
+            masaAktif: expDate || "", // ISO 2025-12-04T23:59:59
+          });
+        });
+      });
+    });
+
+    return pakets;
+  }
+
+  // ============================
+  // GABUNG HEADER + PAKET
+  // ============================
+  function buildParsedResult(hasilHtml, quotasValue) {
+    const header = parseHeaderFromHasil(hasilHtml);
+    const pakets = parsePaketsFromQuotas(quotasValue);
     return { header, pakets };
   }
 
@@ -153,7 +165,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     let html = "";
 
-    const h = parsed.header;
+    const h = parsed.header || {};
     const hasHeader =
       h.msisdn || h.tipeKartu || h.masaAktif || h.masaTenggang;
     const hasPakets = parsed.pakets && parsed.pakets.length > 0;
@@ -193,13 +205,11 @@ document.addEventListener("DOMContentLoaded", () => {
       html += `</div>`;
     }
 
-    // ---------- KASUS TIDAK ADA PAKET / KUOTA ----------
+    // ---------- TIDAK ADA KUOTA ----------
     if (!hasPakets) {
       if (!hasHeader && fallbackText) {
-        // kalau sama sekali tak ter-parse, tampilkan teks mentah
         cekResultBody.textContent = fallbackText;
       } else {
-        // ada header tapi tidak ada kuota
         html += `<div class="no-paket-msg">Anda tidak memiliki kuota aktif.</div>`;
         cekResultBody.innerHTML = html;
       }
@@ -216,8 +226,13 @@ document.addEventListener("DOMContentLoaded", () => {
       html += createLine("Tipe", p.tipe);
       html += createLine("Kuota", p.total);
       html += createLine("Sisa", p.sisa);
-      // kalau nanti ada informasi masa aktif per paket, bisa ditambah di sini:
-      // html += createLine("Masa aktif", p.masaAktif);
+
+      // masa aktif paket (dari expDate)
+      if (p.masaAktif) {
+        let cleanDate = String(p.masaAktif).replace("T", " ");
+        html += createLine("Masa aktif", cleanDate);
+      }
+
       html += `</div>`;
     });
 
@@ -246,7 +261,9 @@ document.addEventListener("DOMContentLoaded", () => {
       cekResultBody.textContent = "Memeriksa kuota...\nMohon tunggu.";
 
       try {
-        const res = await fetch("/api/cek-kuota?msisdn=" + encodeURIComponent(nomor));
+        const res = await fetch(
+          "/api/cek-kuota?msisdn=" + encodeURIComponent(nomor)
+        );
         if (!res.ok) {
           cekResultBody.textContent =
             "Gagal mengakses server. Status: " + res.status;
@@ -258,20 +275,23 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
           json = JSON.parse(text);
         } catch {
-          // Kalau bukan JSON, tampilkan apa adanya
           cekResultBody.textContent = text;
           return;
         }
 
         const hasilHtml = json?.data?.hasil;
-        if (!hasilHtml) {
+        const quotasValue = json?.data?.data_sp?.quotas?.value;
+
+        if (!hasilHtml && !quotasValue) {
           cekResultBody.textContent =
             "Respons tidak berisi data kuota yang dikenali.";
           return;
         }
 
-        const parsed = parseHasilString(hasilHtml);
-        const fallbackText = hasilHtml.replace(/<br\s*\/?>/gi, "\n");
+        const parsed = buildParsedResult(hasilHtml, quotasValue);
+        const fallbackText = hasilHtml
+          ? hasilHtml.replace(/<br\s*\/?>/gi, "\n")
+          : "";
         renderParsedResult(parsed, fallbackText);
       } catch (err) {
         cekResultBody.textContent =
