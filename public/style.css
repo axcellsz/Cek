@@ -153,14 +153,19 @@ body {
 .cek-summary {
   padding: 12px 14px;
   border-radius: 16px;
-  background: #eef4ff;
-  border: 1px solid #dbe7ff;
+  background: linear-gradient(135deg, #111111, #1c1c1c);
+  border: 1px solid #2b2b2b;
 
-  /* shadow */
   box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.08),
-    0 12px 24px rgba(0, 0, 0, 0.06),
-    0 24px 48px rgba(0, 0, 0, 0.04);
+    0 4px 10px rgba(0,0,0,0.4),
+    0 8px 18px rgba(0,0,0,0.28);
+}
+
+.summary-main {
+  color: #ffffff !important;
+}
+.cek-summary-line span {
+  color: #d1d5db; /* abu terang */
 }
 
 /* Summary teks */
