@@ -32,21 +32,71 @@
     <!-- Profile -->
     <div id="screen-profile" class="screen">
       <div class="screen-card">
-        <div
-          style="
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            box-sizing: border-box;
-            text-align: center;
-          "
-        >
-          <div>
-            <div class="screen-title">Profile</div>
-            <div class="screen-desc">
-              Halaman profil pengguna. Nanti bisa diisi info akun VPN kamu.
-            </div>
+        <div class="profile-container">
+          <!-- TAB MENU -->
+          <div class="profile-tabs">
+            <button class="tab-btn active" data-tab="login">Masuk</button>
+            <button class="tab-btn" data-tab="register">Daftar</button>
+          </div>
+
+          <!-- FORM LOGIN -->
+          <div id="tab-login" class="tab-content active">
+            <div class="screen-title" style="margin-bottom:12px;">Masuk</div>
+
+            <form id="login-form" class="profile-form">
+              <label>Nama / No WhatsApp</label>
+              <input
+                type="text"
+                class="input-box"
+                placeholder="Masukkan nama atau No WhatsApp"
+              />
+
+              <label>Password</label>
+              <input
+                type="password"
+                class="input-box"
+                placeholder="Masukkan password"
+              />
+
+              <button type="submit" class="profile-btn">Masuk</button>
+            </form>
+          </div>
+
+          <!-- FORM DAFTAR -->
+          <div id="tab-register" class="tab-content">
+            <div class="screen-title" style="margin-bottom:12px;">Daftar Akun</div>
+
+            <form id="register-form" class="profile-form">
+              <label>Nama</label>
+              <input
+                type="text"
+                class="input-box"
+                placeholder="Masukkan nama lengkap"
+              />
+
+              <label>No WhatsApp</label>
+              <input
+                type="tel"
+                class="input-box"
+                placeholder="08xxxxxxxxxx"
+              />
+
+              <label>Password</label>
+              <input
+                type="password"
+                class="input-box"
+                placeholder="Masukkan password"
+              />
+
+              <label>No XL-mu</label>
+              <input
+                type="tel"
+                class="input-box"
+                placeholder="08xxxxxxxxxx"
+              />
+
+              <button type="submit" class="profile-btn">Daftar</button>
+            </form>
           </div>
         </div>
       </div>
@@ -107,7 +157,7 @@
           <div class="cek-result">
             <div class="cek-result-title">Info kuota</div>
             <div class="cek-result-body" id="cek-result-body">
-              
+              <!-- hasil cek kuota -->
             </div>
           </div>
 
