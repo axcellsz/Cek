@@ -348,3 +348,9 @@ body {
   font-size: 13px;
   color: #6b7280;
 }
+.no-paket-msg {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 600;
+}
