@@ -53,15 +53,20 @@ document.addEventListener("DOMContentLoaded", () => {
     return s.trim();
   }
 
-  // label & value tebal, "Sisa" hijau
-  function createLine(label, value, isSisa = false) {
+  function createLine(label, value) {
     if (!value) return "";
+    const isSisa = label.toLowerCase() === "sisa";
+
+    const valueHtml = isSisa
+      ? `<span style="font-weight:600;color:#16a34a;">${normalizeAmount(
+          value
+        )}</span>`
+      : `<span style="font-weight:600;">${normalizeAmount(value)}</span>`;
+
     return `
       <div class="paket-line">
-        <span class="label"><b>${label}:</b></span>
-        <span class="value-strong" style="font-weight:700; ${isSisa ? "color:#16a34a;" : ""}">
-          ${normalizeAmount(value)}
-        </span>
+        <span class="label">${label}:</span>
+        ${valueHtml}
       </div>
     `;
   }
@@ -82,6 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const text = hasilHtml
       .replace(/<br\s*\/?>/gi, "\n")
       .replace(/\r/g, "");
+
     const lines = text
       .split("\n")
       .map((l) => l.trim())
@@ -92,7 +98,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let current = null;
 
     for (const line of lines) {
-      // Header
+      // ---------- HEADER (di bagian atas teks) ----------
       if (line.startsWith("MSISDN:")) {
         header.msisdn = line.replace("MSISDN:", "").trim();
       } else if (line.startsWith("Tipe Kartu:")) {
@@ -106,25 +112,30 @@ document.addEventListener("DOMContentLoaded", () => {
         header.masaTenggang = line.split(":").slice(1).join(":").trim();
       }
 
-      // Paket baru
+      // ---------- MULAI PAKET BARU ----------
       if (line.startsWith("🎁 Benefit:") || line.startsWith("Benefit:")) {
         if (current) pakets.push(current);
         current = { nama: line.split(":").slice(1).join(":").trim() };
         continue;
       }
 
-      // Detail paket
+      // ---------- DETAIL PAKET ----------
       if (!current) continue;
 
-      if (line.toLowerCase().includes("tipe kuota")) {
+      const lower = line.toLowerCase();
+
+      if (lower.includes("tipe kuota")) {
         current.tipe = line.split(":").slice(1).join(":").trim();
-      } else if (line.toLowerCase().includes("sisa kuota")) {
+      } else if (lower.includes("sisa kuota")) {
         current.sisa = line.split(":").slice(1).join(":").trim();
       } else if (
-        line.toLowerCase().includes("kuota") &&
-        !line.toLowerCase().includes("sisa kuota")
+        lower.includes("kuota") &&
+        !lower.includes("sisa kuota")
       ) {
         current.total = line.split(":").slice(1).join(":").trim();
+      } else if (/aktif hingga/i.test(line)) {
+        // Masa aktif kuota per paket (misal: "Aktif Hingga: 2025-12-01 23:59:59")
+        current.masaAktif = line.split(":").slice(1).join(":").trim();
       }
     }
 
@@ -144,68 +155,75 @@ document.addEventListener("DOMContentLoaded", () => {
     let html = "";
 
     const h = parsed.header;
-    const hasHeader = h.msisdn || h.tipeKartu || h.masaAktif || h.masaTenggang;
+    const hasHeader =
+      h.msisdn || h.tipeKartu || h.masaAktif || h.masaTenggang;
     const hasPakets = parsed.pakets && parsed.pakets.length > 0;
 
-    // SUMMARY (kartu info nomor)
+    // ---------- SUMMARY NOMOR ----------
     if (hasHeader) {
       html += `<div class="cek-summary">`;
 
       if (h.msisdn) {
-        html += `<div class="summary-main"><b>${h.msisdn}</b></div>`;
+        html += `<div class="summary-main">${h.msisdn}</div>`;
       }
 
       if (h.tipeKartu) {
         html += `
           <div class="cek-summary-line">
-            <span class="label"><b>Kartu</b></span>
-            <span class="value-strong" style="font-weight:700">${h.tipeKartu}</span>
+            <span class="label">Kartu</span>
+            <span style="font-weight:600;">${h.tipeKartu}</span>
           </div>`;
       }
 
       if (h.masaAktif) {
         html += `
           <div class="cek-summary-line">
-            <span class="label"><b>Masa aktif</b></span>
-            <span class="value-strong" style="font-weight:700">${h.masaAktif}</span>
+            <span class="label">Masa aktif</span>
+            <span style="font-weight:600;">${h.masaAktif}</span>
           </div>`;
       }
 
       if (h.masaTenggang) {
         html += `
           <div class="cek-summary-line">
-            <span class="label"><b>Tenggang</b></span>
-            <span class="value-strong" style="font-weight:700">${h.masaTenggang}</span>
+            <span class="label">Tenggang</span>
+            <span style="font-weight:600;">${h.masaTenggang}</span>
           </div>`;
       }
 
       html += `</div>`;
     }
 
-    // DAFTAR PAKET
-    if (hasPakets) {
-      html += `<div class="paket-section-title">DAFTAR KUOTA</div>`;
-      html += `<div class="paket-list">`;
+    // ---------- KASUS TIDAK ADA PAKET / KUOTA ----------
+    if (!hasPakets) {
+      if (!hasHeader && fallbackText) {
+        // kalau sama sekali tak terparse, tampilkan teks mentah
+        cekResultBody.textContent = fallbackText;
+      } else {
+        // ada header tapi tak ada kuota
+        html += `<div class="no-paket-msg">Anda tidak memiliki kuota aktif.</div>`;
+        cekResultBody.innerHTML = html;
+      }
+      return;
+    }
 
-      parsed.pakets.forEach((p) => {
-        const cls = typeToClass(p.tipe);
-        html += `<div class="paket-card ${cls}">`;
-        html += `<div class="paket-title">${p.nama || "Paket"}</div>`;
-        html += createLine("Tipe", p.tipe);
-        html += createLine("Kuota", p.total);
-        html += createLine("Sisa", p.sisa, true); // hijau & bold
-        html += `</div>`;
-      });
+    // ---------- DAFTAR PAKET ----------
+    html += `<div class="paket-list">`;
 
+    parsed.pakets.forEach((p) => {
+      const cls = typeToClass(p.tipe);
+      html += `<div class="paket-card ${cls}">`;
+      html += `<div class="paket-title">${p.nama || "Paket"}</div>`;
+      html += createLine("Tipe", p.tipe);
+      html += createLine("Kuota", p.total);
+      html += createLine("Sisa", p.sisa);
+      html += createLine("Masa aktif", p.masaAktif);
       html += `</div>`;
-    }
+    });
 
-    if (!html) {
-      cekResultBody.textContent =
-        fallbackText || "Tidak ada data kuota yang bisa ditampilkan.";
-    } else {
-      cekResultBody.innerHTML = html;
-    }
+    html += `</div>`;
+
+    cekResultBody.innerHTML = html;
   }
 
   // ============================
@@ -228,9 +246,7 @@ document.addEventListener("DOMContentLoaded", () => {
       cekResultBody.textContent = "Memeriksa kuota...\nMohon tunggu.";
 
       try {
-        const res = await fetch(
-          "/api/cek-kuota?msisdn=" + encodeURIComponent(nomor)
-        );
+        const res = await fetch("/api/cek-kuota?msisdn=" + encodeURIComponent(nomor));
         if (!res.ok) {
           cekResultBody.textContent =
             "Gagal mengakses server. Status: " + res.status;
@@ -242,6 +258,7 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
           json = JSON.parse(text);
         } catch {
+          // Kalau bukan JSON, tampilkan apa adanya
           cekResultBody.textContent = text;
           return;
         }
