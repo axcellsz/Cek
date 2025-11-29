@@ -369,12 +369,15 @@ document.addEventListener("DOMContentLoaded", () => {
   ====================================================== */
 
   // Helper: sensor 4 digit terakhir
-  function maskLast4(num) {
-    if (!num) return "";
-    const s = String(num);
-    if (s.length <= 4) return "****";
-    return s.slice(0, -4) + "****";
-  }
+  // Helper: sensor 4 digit terakhir
+function maskLast4(num) {
+  if (!num) return "";
+  const s = String(num);
+  // kalau panjang <= 4, tampilkan apa adanya + ****
+  if (s.length <= 4) return s + "****";
+  // kalau lebih dari 4, buang 4 digit terakhir, ganti ****
+  return s.slice(0, -4) + "****";
+}
 
   const userListEl = document.getElementById("user-list");
   const reloadUsersBtn = document.getElementById("reload-users");
@@ -402,27 +405,27 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       userListEl.innerHTML = users
-        .map((u, idx) => {
-          const name = u.name || "-";
-          const wa = u.whatsapp || "";
-          const xl = u.xl || "";
+  .map((u, idx) => {
+    const name = u.name || "-";
+    const wa = u.whatsapp || "";
+    const xl = u.xl || "";
 
-          const waMasked = wa ? maskLast4(wa) : "-";
-          const xlMasked = xl ? maskLast4(xl) : "-";
+    const waMasked = wa ? maskLast4(wa) : "****";
+    const xlMasked = xl ? maskLast4(xl) : "****";
 
-          return `
-            <div class="user-item">
-              <div class="user-item-header">
-                <span>${idx + 1}. ${name}</span>
-                <span>${waMasked}</span>
-              </div>
-              <div class="user-item-body">
-                <div>No XL: ${xlMasked}</div>
-              </div>
-            </div>
-          `;
-        })
-        .join("");
+    return `
+      <div class="user-item">
+        <div class="user-item-header">
+          <span>${idx + 1}. ${name}</span>
+        </div>
+        <div class="user-item-body">
+          <div>No WhatsApp: ${waMasked}</div>
+          <div>No XL: ${xlMasked}</div>
+        </div>
+      </div>
+    `;
+  })
+  .join("");
     } catch (err) {
       userListEl.innerHTML =
         "<div class='user-item'>Error: " + err.message + "</div>";
