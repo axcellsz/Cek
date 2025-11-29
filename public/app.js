@@ -259,6 +259,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* =====================================================
      TAB MASUK / DAFTAR
+     (kita bikin helper supaya bisa dipanggil dari mana saja)
   ====================================================== */
   const tabButtons = document.querySelectorAll(".tab-btn");
   const tabContents = document.querySelectorAll(".tab-content");
@@ -274,6 +275,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const targetContent = document.getElementById("tab-" + tabName);
     if (targetContent) targetContent.classList.add("active");
   }
+
+  // inisialisasi: pastikan tab login aktif
+  setActiveTab("login");
 
   tabButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -321,12 +325,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         alert("Daftar berhasil. Silakan masuk.");
 
-        // Bersihkan form register
+        // bersihkan form register
         regForm.reset();
 
-        // === PAKSA PINDAH KE TAB MASUK (tanpa click) ===
+        // === PAKSA PINDAH KE TAB MASUK TANPA CLICK ===
         setActiveTab("login");
-
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
       }
@@ -353,25 +356,30 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       try {
-        // Backend kamu berhasil saat dipanggil dengan field "whatsapp"
+        // Biar cocok sama backend apa pun, kirim beberapa field sekaligus:
         const res = await fetch("/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
+            // kalau backend pakai whatsapp -> ini kepakai
             whatsapp: identifier,
-            password,
+            // kalau backend pakai identifier -> ini kepakai
+            identifier: identifier,
+            // bonus: kalau dia cek 'name'
+            name: identifier,
+            password: password,
           }),
         });
 
         const data = await res.json();
 
         if (!data.status) {
+          // pesan asli dari backend (misal: "Masukan no whatsapp")
           alert(data.message || "Gagal masuk.");
           return;
         }
 
         alert("Login berhasil sebagai " + data.data.name);
-
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
       }
