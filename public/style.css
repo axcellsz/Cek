@@ -459,3 +459,32 @@ body {
   transform: scale(0.96);
   background: #334155;
 }
+/* Tengah semua form + batasi lebar */
+.profile-form,
+.cek-form {
+  width: 100%;
+  max-width: 450px;      /* <=== BATAS LEBAR */
+  margin: 0 auto;        /* <=== BIAR TENGAH */
+}
+
+/* Semua input rapi */
+.input-box,
+.cek-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  background: #f8fafc;
+  font-size: 16px;
+}
+
+/* Tombol lebar tetap rapi */
+.profile-btn,
+.cek-button {
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto;
+  display: block;
+  border-radius: 16px;
+}
