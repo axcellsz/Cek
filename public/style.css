@@ -109,18 +109,34 @@ body {
 
 /* Hasil cek kuota card */
 .cek-result {
+.cek-result {
   flex: 1;
   background: #ffffff;
   border-radius: 18px;
   border: 1px solid #e2e8f0;
   overflow: hidden;
-  min-height: 0; /* penting supaya anaknya bisa scroll */
+  min-height: 0;
 
-  /* shadow keren */
+  /* jadikan flex container supaya body bisa full height dan scroll rapi */
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.08),
     0 12px 24px rgba(0, 0, 0, 0.06),
     0 24px 48px rgba(0, 0, 0, 0.04);
+}
+
+/* Scroll area */
+.cek-result-body {
+  flex: 1;
+  padding: 10px 12px 24px; /* padding bawah lebih besar biar tidak kepotong */
+  font-size: 14px;
+  color: #334155;
+  overflow-y: auto;
+  max-height: 100%;
+  box-sizing: border-box;
 }
 
 /* Title area */
