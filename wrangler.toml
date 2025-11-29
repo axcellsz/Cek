@@ -2,7 +2,7 @@ name = "cek_kuota_vpn"
 main = "worker.js"
 compatibility_date = "2024-01-01"
 
-account_id = "7431e1cb1076e540960f6796b8971a49"
+account_id = "2be8757c27accc0e32b2e7b191dab316"
 
 # KV kalau nanti mau dipakai
 kv_namespaces = [
