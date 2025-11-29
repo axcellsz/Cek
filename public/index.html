@@ -1,109 +1,51 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cek Kuota VPN</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f3f4f6;
-            margin: 0;
-            padding: 0;
-        }
-        header {
-            background: #2563eb;
-            padding: 20px;
-            color: white;
-            text-align: center;
-        }
-        .container {
-            max-width: 600px;
-            margin: 40px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        input {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 15px;
-            border-radius: 6px;
-            border: 1px solid #ddd;
-            font-size: 16px;
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background: #2563eb;
-            border: none;
-            border-radius: 6px;
-            color: white;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        button:hover {
-            background: #1e49c9;
-        }
-        #result {
-            margin-top: 20px;
-            padding: 15px;
-            background: #f1f5f9;
-            border-radius: 6px;
-            font-size: 15px;
-            display: none;
-        }
-    </style>
+  <meta charset="UTF-8">
+
+  <!-- Lock viewport agar ukuran layar mengikuti HP dan tidak bisa di-zoom -->
+  <meta name="viewport" 
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>Halaman Bersih</title>
+
+  <style>
+    /* Reset dan fullscreen */
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;  /* Tidak dapat di-scroll */
+      background: white; /* Layar bersih */
+      font-family: sans-serif;
+      touch-action: none; /* Mencegah zoom/gestur */
+    }
+
+    /* Container yang memenuhi layar */
+    #app {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    /* Contoh teks kecil (boleh dihapus) */
+    #info {
+      color: #777;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
 
-<header>
-    <h2>Cek Kuota VPN</h2>
-</header>
-
-<div class="container">
-    <h3>Masukkan Username VPN</h3>
-
-    <input type="text" id="username" placeholder="contoh: user123" />
-
-    <button onclick="cekKuota()">Cek Kuota</button>
-
-    <div id="result"></div>
-</div>
-
-<script>
-async function cekKuota() {
-    const user = document.getElementById("username").value.trim();
-    const result = document.getElementById("result");
-    
-    if (!user) {
-        result.style.display = "block";
-        result.innerHTML = "⚠️ Harap masukkan username.";
-        return;
-    }
-
-    result.style.display = "block";
-    result.innerHTML = "⏳ Memeriksa...";
-
-    try {
-        const response = await fetch(`/api/cek?user=${encodeURIComponent(user)}`);
-        const data = await response.json();
-
-        if (data.error) {
-            result.innerHTML = `❌ ${data.error}`;
-        } else {
-            result.innerHTML = `
-                <strong>Username:</strong> ${data.username}<br>
-                <strong>Kuota tersisa:</strong> ${data.kuota} GB<br>
-                <strong>Masa aktif:</strong> ${data.expired}
-            `;
-        }
-    } catch (err) {
-        result.innerHTML = "❌ Gagal menghubungi server.";
-    }
-}
-</script>
+  <!-- Area kosong yang bisa kamu isi nanti -->
+  <div id="app">
+    <div id="info">Halaman kosong siap digunakan</div>
+  </div>
 
 </body>
 </html>
