@@ -16,21 +16,31 @@
       width: 100%;
       height: 100%;
       background: white;
-      /* IZINKAN SCROLL (supaya bisa pull-to-refresh) */
-      overflow-y: auto;
+      overflow-y: auto; /* boleh scroll -> bisa pull-to-refresh */
       font-family: sans-serif;
     }
 
-    /* Area konten utama */
+    /* Area konten utama (di atas footer) */
     #app {
       width: 100%;
-      height: calc(100% - 70px); /* ruang untuk footer */
-      display: flex;
+      height: calc(100% - 70px); /* sisakan ruang untuk footer */
+      box-sizing: border-box;
+    }
+
+    .screen {
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      display: none;        /* default: tersembunyi */
+    }
+
+    /* Layar default (awal) */
+    #screen-default {
+      display: flex;        /* hanya ini yang tampil pertama kali */
       justify-content: center;
       align-items: center;
       text-align: center;
       padding: 16px;
-      box-sizing: border-box;
     }
 
     .screen-title {
@@ -42,6 +52,80 @@
     .screen-desc {
       font-size: 14px;
       color: #666;
+    }
+
+    /* LAYAR CEK KUOTA */
+    #screen-cek {
+      display: none; /* akan di-show lewat JS saat tab "Cek kuota" diklik */
+    }
+
+    .cek-container {
+      height: 100%;
+      padding: 16px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* Blok hasil cek kuota (di atas) */
+    .cek-result {
+      flex: 1; /* isi ruang ke atas */
+      border-radius: 10px;
+      border: 1px solid #e5e7eb;
+      padding: 12px;
+      box-sizing: border-box;
+      background: #f9fafb;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .cek-result-title {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #374151;
+    }
+
+    .cek-result-body {
+      font-size: 13px;
+      color: #4b5563;
+      flex: 1;
+    }
+
+    /* Blok form input nomor (di bawah, dekat footer) */
+    .cek-form {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .cek-input {
+      flex: 1;
+      padding: 10px 12px;
+      font-size: 14px;
+      border-radius: 999px;
+      border: 1px solid #d1d5db;
+      outline: none;
+    }
+
+    .cek-input:focus {
+      border-color: #3b82f6;
+    }
+
+    .cek-button {
+      padding: 10px 18px;
+      border-radius: 999px;
+      border: none;
+      font-size: 14px;
+      background: #111827;
+      color: white;
+      cursor: pointer;
+    }
+
+    .cek-button:active {
+      opacity: 0.8;
+      transform: scale(0.97);
     }
 
     /* FOOTER FIXED */
@@ -112,10 +196,74 @@
 
   <!-- KONTEN UTAMA -->
   <div id="app">
-    <div>
-      <div class="screen-title" id="screen-title"></div>
-      <div class="screen-desc" id="screen-desc">
-        Silakan pilih menu di bawah untuk memulai.
+    <!-- Screen default (awal: tidak ada tab yang dipilih) -->
+    <div id="screen-default" class="screen">
+      <div>
+        <div class="screen-title">Selamat datang</div>
+        <div class="screen-desc">
+          Silakan pilih menu di bawah untuk memulai.
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen Profile (belum diisi detail, bisa nanti) -->
+    <div id="screen-profile" class="screen">
+      <div style="display:flex;justify-content:center;align-items:center;height:100%;padding:16px;box-sizing:border-box;text-align:center;">
+        <div>
+          <div class="screen-title">Profile</div>
+          <div class="screen-desc">
+            Halaman profil pengguna. Nanti bisa diisi info akun VPN kamu.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen List User (placeholder) -->
+    <div id="screen-users" class="screen">
+      <div style="display:flex;justify-content:center;align-items:center;height:100%;padding:16px;box-sizing:border-box;text-align:center;">
+        <div>
+          <div class="screen-title">List user</div>
+          <div class="screen-desc">
+            Daftar user VPN akan ditampilkan di sini.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen Beli Kuota (placeholder) -->
+    <div id="screen-beli" class="screen">
+      <div style="display:flex;justify-content:center;align-items:center;height:100%;padding:16px;box-sizing:border-box;text-align:center;">
+        <div>
+          <div class="screen-title">Beli kuota</div>
+          <div class="screen-desc">
+            Pilihan paket dan pembelian kuota akan muncul di sini.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen Cek Kuota (FOKUS) -->
+    <div id="screen-cek" class="screen">
+      <div class="cek-container">
+        <!-- Form hasil cek (di atas) -->
+        <div class="cek-result">
+          <div class="cek-result-title">Hasil cek kuota</div>
+          <div class="cek-result-body" id="cek-result-body">
+            Belum ada data. Silakan masukkan nomor dan tekan tombol "Cek".
+          </div>
+        </div>
+
+        <!-- Form input nomor (di bawah, dekat footer) -->
+        <form class="cek-form" id="cek-form">
+          <input
+            type="tel"
+            class="cek-input"
+            id="cek-number"
+            placeholder="Masukkan nomor HP / ID user"
+            inputmode="numeric"
+          />
+          <button type="submit" class="cek-button">Cek</button>
+        </form>
       </div>
     </div>
   </div>
@@ -123,7 +271,7 @@
   <!-- FOOTER -->
   <div class="footer">
 
-    <!-- PROFILE (A) -->
+    <!-- PROFILE -->
     <a class="nav-btn" href="javascript:void(0)" data-screen="profile">
       <span class="nav-btn-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -134,7 +282,7 @@
       Profile
     </a>
 
-    <!-- LIST USER (B) -->
+    <!-- LIST USER -->
     <a class="nav-btn" href="javascript:void(0)" data-screen="users">
       <span class="nav-btn-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -149,7 +297,7 @@
       List user
     </a>
 
-    <!-- BELI KUOTA (A) -->
+    <!-- BELI KUOTA -->
     <a class="nav-btn" href="javascript:void(0)" data-screen="beli">
       <span class="nav-btn-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -162,7 +310,7 @@
       Beli kuota
     </a>
 
-    <!-- CEK KUOTA (B) -->
+    <!-- CEK KUOTA -->
     <a class="nav-btn" href="javascript:void(0)" data-screen="cek">
       <span class="nav-btn-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -176,39 +324,31 @@
   </div>
 
   <script>
-    // Data konten untuk tiap tab
-    const screens = {
-      profile: {
-        title: "Profile",
-        desc: "Halaman profil pengguna. Nanti bisa diisi nama, nomor, dan info akun VPN kamu."
-      },
-      users: {
-        title: "List user",
-        desc: "Daftar semua user VPN yang terdaftar. Bisa kamu pakai untuk memilih atau mengelola user."
-      },
-      beli: {
-        title: "Beli kuota",
-        desc: "Halaman untuk pembelian atau penambahan kuota VPN."
-      },
-      cek: {
-        title: "Cek kuota",
-        desc: "Halaman untuk melihat sisa kuota, masa aktif, dan detail pemakaian VPN."
-      }
-    };
-
     const navButtons = document.querySelectorAll(".nav-btn");
-    const screenTitle = document.getElementById("screen-title");
-    const screenDesc  = document.getElementById("screen-desc");
+    const screens = document.querySelectorAll(".screen");
 
-    function setActiveScreen(name) {
-      const data = screens[name];
-      if (!data) return;
+    function showScreen(name) {
+      // Sembunyikan semua screen
+      screens.forEach(s => s.style.display = "none");
 
-      // Update teks konten
-      screenTitle.textContent = data.title;
-      screenDesc.textContent  = data.desc;
+      if (!name) {
+        // kalau tidak ada nama -> tampilkan default
+        document.getElementById("screen-default").style.display = "flex";
+        return;
+      }
 
-      // Update state active footer
+      const target = document.getElementById("screen-" + name);
+      if (target) {
+        // kebanyakan screen pakai flex tengah
+        if (name === "cek") {
+          target.style.display = "block"; // cek pakai layout sendiri
+        } else {
+          target.style.display = "flex";
+        }
+      }
+    }
+
+    function setActiveNav(name) {
       navButtons.forEach(btn => btn.classList.remove("active"));
       navButtons.forEach(btn => {
         if (btn.dataset.screen === name) {
@@ -217,11 +357,31 @@
       });
     }
 
-    // Event click untuk tiap tombol footer
+    // Klik footer nav
     navButtons.forEach(btn => {
       btn.addEventListener("click", () => {
-        setActiveScreen(btn.dataset.screen);
+        const name = btn.dataset.screen;
+        showScreen(name);
+        setActiveNav(name);
       });
+    });
+
+    // ====== LOGIKA FORM CEK KUOTA (sementara dummy) ======
+    const cekForm = document.getElementById("cek-form");
+    const cekNumberInput = document.getElementById("cek-number");
+    const cekResultBody = document.getElementById("cek-result-body");
+
+    cekForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const nomor = (cekNumberInput.value || "").trim();
+
+      if (!nomor) {
+        cekResultBody.textContent = "Nomor belum diisi. Silakan masukkan nomor terlebih dahulu.";
+        return;
+      }
+
+      // Nanti bagian ini diganti call ke API Worker
+      cekResultBody.textContent = `Belum terhubung ke server cek kuota.\nNomor yang dimasukkan: ${nomor}`;
     });
   </script>
 
