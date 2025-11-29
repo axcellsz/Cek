@@ -1,27 +1,313 @@
-/* ===============================
-   WARNA NOMOR (JADI GOLD)
-=============================== */
-.summary-main {
-  color: #fbbf24 !important; /* gold premium */
-  font-weight: 700;
+/* =========================================
+   GLOBAL RESET & BASE
+========================================= */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #dbeafe 0%, #f1f5f9 40%, #f8fafc 100%);
+  overflow: hidden;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #0f172a;
 }
 
-/* ===============================
-   CARD RINGKASAN NOMOR (HITAM)
-=============================== */
-.cek-summary {
-  background: #000000 !important;   /* full black */
-  border: 1px solid #1f2937 !important;
-  color: #ffffff !important;        /* teks putih */
+/* Area konten utama */
+#app {
+  width: 100%;
+  height: calc(100% - 80px);
+  box-sizing: border-box;
+  padding: 12px 12px 0;
+}
 
-  /* shadow biar premium */
+/* Screen hidden default */
+.screen {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: none;
+}
+
+/* CARD GLOBAL */
+.screen-card {
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 18px 16px 12px;
+  box-sizing: border-box;
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    0 12px 24px rgba(0, 0, 0, 0.06),
+    0 24px 48px rgba(0, 0, 0, 0.04);
+}
+
+/* Default screen */
+#screen-default {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+#screen-default .screen-card-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.screen-title {
+  font-size: 22px;
+  margin-bottom: 4px;
+  font-weight: 700;
+  color: #020617;
+}
+
+.screen-desc {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* =====================================================
+   CEK KUOTA
+===================================================== */
+#screen-cek { display: none; }
+
+.cek-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.cek-header {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 12px;
+  color: #0f172a;
+}
+
+.cek-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 0;
+}
+
+/* HASIL CEK */
+.cek-result {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
+  overflow: hidden;
+  min-height: 0;
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    0 12px 24px rgba(0, 0, 0, 0.06),
+    0 24px 48px rgba(0, 0, 0, 0.04);
+}
+
+.cek-result-title {
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 12px;
+  background: linear-gradient(90deg, #e8f0ff, #dbeafe);
+  border-bottom: 1px solid #e2e8f0;
+}
+
+/* Scroll area */
+.cek-result-body {
+  flex: 1;
+  padding: 10px 12px 16px;
+  font-size: 14px;
+  color: #334155;
+  overflow-y: auto;
+  max-height: 100%;
+  box-sizing: border-box;
+}
+
+/* =====================================================
+   SUMMARY (CARD NOMOR HP)
+===================================================== */
+.cek-summary {
+  padding: 12px 14px;
+  border-radius: 16px;
+
+  /* 🔥 GANTI JADI HITAM */
+  background: #000000 !important;
+  border: 1px solid #1f2937 !important;
+
+  color: #ffffff !important;
+
   box-shadow:
     0 4px 12px rgba(0,0,0,0.4),
     0 8px 24px rgba(0,0,0,0.3);
 }
 
-/* Pastikan semua text di dalam summary putih */
-.cek-summary .cek-summary-line span,
-.cek-summary .label {
+/* NOMOR HP = GOLD */
+.summary-main {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fbbf24 !important; /* gold */
+  margin-bottom: 4px;
+}
+
+/* Ubah garis info menjadi putih */
+.cek-summary-line {
   color: #e5e7eb !important;
+}
+
+.cek-summary-line span {
+  color: #e5e7eb !important;
+}
+
+.label {
+  color: #e5e7eb !important;
+}
+
+/* =====================================================
+   PAKET KUOTA
+===================================================== */
+.paket-section-title { display: none; }
+
+.paket-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.paket-card {
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #eef2ff, #e0f2fe);
+  border: 1px solid #dbeafe;
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.06),
+    0 10px 20px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2px;
+}
+
+.paket-card::before { content: none !important; }
+
+.paket-title {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.paket-line {
+  font-size: 13px;
+  margin: 1px 0;
+  line-height: 1.35;
+  color: #334155;
+}
+
+/* =====================================================
+   FORM CEK
+===================================================== */
+.cek-form {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.cek-input {
+  flex: 1;
+  padding: 12px 14px;
+  font-size: 14px;
+  border-radius: 999px;
+  border: 1px solid #d8dee7;
+  background: #f8fafc;
+  outline: none;
+}
+
+.cek-input:focus {
+  border-color: #2563eb;
+  background: #ffffff;
+}
+
+.cek-button {
+  padding: 12px 18px;
+  min-width: 70px;
+  font-size: 14px;
+  border-radius: 999px;
+  border: none;
+  background: #0f172a;
+  color: white;
+  cursor: pointer;
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.18),
+    0 2px 6px rgba(0, 0, 0, 0.12);
+  transition: background 0.15s, color 0.15s, transform 0.1s;
+}
+
+.cek-button:active {
+  background: #334155;
+  transform: scale(0.96);
+}
+
+.cek-button:focus { outline: none; }
+
+/* =====================================================
+   FOOTER
+===================================================== */
+.footer {
+  position: fixed;
+  bottom: 0;
+  height: 70px;
+  width: 100%;
+  background: #ffffff;
+  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.nav-btn {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  color: #475569;
+  text-decoration: none;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.nav-btn-icon { display: block; margin-bottom: 2px; }
+
+.nav-btn-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: #475569;
+}
+
+.nav-btn.active {
+  color: #0f172a;
+}
+
+.nav-btn.active svg {
+  stroke: #0f172a;
+}
+
+.nav-btn.active::after {
+  content: "";
+  display: block;
+  height: 2px;
+  width: 30px;
+  background: #0f172a;
+  margin: 3px auto 0;
+  border-radius: 999px;
+}
+
+.no-paket-msg {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 600;
 }
