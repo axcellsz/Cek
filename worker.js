@@ -2,42 +2,29 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    // ==========================
-    // Helper response JSON + CORS
-    // ==========================
-    const json = (data, status = 200) =>
-      new Response(JSON.stringify(data), {
-        status,
-        headers: {
-          "content-type": "application/json;charset=utf-8",
-          "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Content-Type",
-          "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
-        },
-      });
-
-    // ==========================
-    // Handle OPTIONS (preflight)
-    // ==========================
+    // ============================
+    // CORS preflight
+    // ============================
     if (request.method === "OPTIONS") {
       return new Response(null, {
         status: 204,
         headers: {
           "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Content-Type",
           "Access-Control-Allow-Methods": "GET,POST,OPTIONS",
+          "Access-Control-Allow-Headers": "Content-Type",
         },
       });
     }
 
-    // ==========================
-    // API: Cek Kuota
-    // ==========================
+    // ============================
+    // API: CEK KUOTA
+    // GET /api/cek-kuota?msisdn=...
+    // ============================
     if (url.pathname === "/api/cek-kuota") {
       const msisdn = url.searchParams.get("msisdn");
 
       if (!msisdn) {
-        return json(
+        return jsonResponse(
           { ok: false, message: "Parameter msisdn wajib diisi" },
           400
         );
@@ -70,7 +57,7 @@ export default {
           },
         });
       } catch (err) {
-        return json(
+        return jsonResponse(
           {
             ok: false,
             message: "Gagal menghubungi API upstream",
@@ -81,16 +68,18 @@ export default {
       }
     }
 
-    // ==========================
-    // API: Auth Register
-    // ==========================
+    // ============================
+    // API: REGISTER
+    // POST /api/auth/register
+    // body: { name, whatsapp, password, xl }
+    // ============================
     if (url.pathname === "/api/auth/register" && request.method === "POST") {
       let body;
       try {
         body = await request.json();
-      } catch {
-        return json(
-          { status: false, message: "Body harus JSON." },
+      } catch (e) {
+        return jsonResponse(
+          { status: false, message: "Body harus JSON" },
           400
         );
       }
@@ -101,76 +90,65 @@ export default {
       const xl = (body.xl || "").trim();
 
       if (!name || !whatsapp || !password || !xl) {
-        return json(
+        return jsonResponse(
           { status: false, message: "Semua data daftar wajib diisi." },
           400
         );
       }
 
-      if (!env.USER_VPN) {
-        return json(
-          {
-            status: false,
-            message:
-              "Binding KV USER_VPN tidak ditemukan. Cek pengaturan Worker.",
-          },
-          500
+      // key di KV
+      const keyByWa = "wa:" + whatsapp;
+      const keyByName = "name:" + name.toLowerCase();
+
+      // cek sudah ada
+      const existingWa = await env.USER_VPN.get(keyByWa);
+      if (existingWa) {
+        return jsonResponse(
+          { status: false, message: "No WhatsApp sudah terdaftar." },
+          400
         );
       }
 
-      // Normalisasi WA agar konsisten
-      const normWa = normalizePhone(whatsapp);
-      const keyWa = `wa:${normWa}`;
-      const keyName = `name:${name.toLowerCase()}`;
-
-      // Cek duplikat by WA
-      const existingByWa = await env.USER_VPN.get(keyWa);
-      if (existingByWa) {
-        return json(
-          { status: false, message: "Nomor WhatsApp sudah terdaftar." },
-          409
-        );
-      }
-
-      // Opsional: cek duplikat by name
-      const existingByName = await env.USER_VPN.get(keyName);
-      if (existingByName) {
-        return json(
-          { status: false, message: "Nama sudah terdaftar, gunakan nama lain." },
-          409
+      const existingName = await env.USER_VPN.get(keyByName);
+      if (existingName) {
+        return jsonResponse(
+          { status: false, message: "Nama sudah terdaftar." },
+          400
         );
       }
 
       const userData = {
         name,
-        whatsapp: normWa,
-        password, // NOTE: untuk demo saja; produksi sebaiknya di-hash
+        whatsapp,
+        password, // kalau mau aman nanti bisa di-hash
         xl,
         createdAt: new Date().toISOString(),
       };
 
-      const value = JSON.stringify(userData);
+      // simpan di 2 key: berdasarkan WA dan berdasarkan nama
+      await env.USER_VPN.put(keyByWa, JSON.stringify(userData));
+      await env.USER_VPN.put(keyByName, JSON.stringify(userData));
 
-      await env.USER_VPN.put(keyWa, value);
-      await env.USER_VPN.put(keyName, value);
-
-      return json({
+      return jsonResponse({
         status: true,
-        message: "Pendaftaran berhasil.",
-        data: userData,
+        message: "Register berhasil",
+        data: { name, whatsapp, xl },
       });
     }
 
-    // ==========================
-    // API: Auth Login
-    // ==========================
+    // ============================
+    // API: LOGIN
+    // POST /api/auth/login
+    // body: { identifier, password }
+    // identifier = nama ATAU no WhatsApp
+    // ============================
     if (url.pathname === "/api/auth/login" && request.method === "POST") {
       let body;
       try {
         body = await request.json();
-      } catch {
-        return json(
-          { status: false, message: "Body harus JSON." },
+      } catch (e) {
+        return jsonResponse(
+          { status: false, message: "Body harus JSON" },
           400
         );
       }
@@ -179,7 +157,7 @@ export default {
       const password = (body.password || "").trim();
 
       if (!identifier || !password) {
-        return json(
+        return jsonResponse(
           {
             status: false,
             message: "Nama / No WhatsApp dan password wajib diisi.",
@@ -188,55 +166,35 @@ export default {
         );
       }
 
-      if (!env.USER_VPN) {
-        return json(
-          {
-            status: false,
-            message:
-              "Binding KV USER_VPN tidak ditemukan. Cek pengaturan Worker.",
-          },
-          500
-        );
+      let userJson = null;
+
+      // kalau diawali 08 → dianggap WA
+      if (identifier.startsWith("08")) {
+        userJson = await env.USER_VPN.get("wa:" + identifier);
+      } else {
+        // dianggap nama
+        userJson = await env.USER_VPN.get("name:" + identifier.toLowerCase());
       }
 
-      // Coba cari sebagai WA dulu
-      const normWa = normalizePhone(identifier);
-      const keyWa = `wa:${normWa}`;
-      let raw = await env.USER_VPN.get(keyWa);
-
-      // Kalau tidak ketemu, coba sebagai nama
-      if (!raw) {
-        const keyName = `name:${identifier.toLowerCase()}`;
-        raw = await env.USER_VPN.get(keyName);
-      }
-
-      if (!raw) {
-        return json(
+      if (!userJson) {
+        return jsonResponse(
           { status: false, message: "Akun tidak ditemukan." },
           404
         );
       }
 
-      let user;
-      try {
-        user = JSON.parse(raw);
-      } catch {
-        return json(
-          { status: false, message: "Data akun rusak di server." },
-          500
-        );
-      }
+      const user = JSON.parse(userJson);
 
       if (user.password !== password) {
-        return json(
+        return jsonResponse(
           { status: false, message: "Password salah." },
           401
         );
       }
 
-      return json({
+      return jsonResponse({
         status: true,
-        message: "Login berhasil.",
+        message: "Login berhasil",
         data: {
           name: user.name,
           whatsapp: user.whatsapp,
@@ -245,9 +203,9 @@ export default {
       });
     }
 
-    // ==========================
-    // Static assets (HTML, CSS, JS)
-    // ==========================
+    // ============================
+    // Static file dari ASSETS
+    // ============================
     try {
       return await env.ASSETS.fetch(request);
     } catch (e) {
@@ -258,16 +216,13 @@ export default {
   },
 };
 
-/**
- * Normalisasi nomor HP:
- *  - "+628123" -> "08123"
- *  - "628123"  -> "08123"
- *  - "08123"   -> "08123"
- */
-function normalizePhone(num) {
-  if (!num) return "";
-  let s = String(num).trim();
-  if (s.startsWith("+62")) return "0" + s.slice(3);
-  if (s.startsWith("62")) return "0" + s.slice(2);
-  return s;
+// helper untuk response JSON + CORS
+function jsonResponse(obj, status = 200) {
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: {
+      "content-type": "application/json;charset=utf-8",
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
 }
