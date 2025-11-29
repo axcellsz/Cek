@@ -135,7 +135,7 @@ body {
 /* Scroll area */
 .cek-result-body {
   flex: 1;
-  padding: 10px 12px;
+  padding: 10px 12px 16px; /* + padding bawah biar kartu terakhir nggak nempel */
   font-size: 14px;
   color: #334155;
   overflow-y: auto;   /* di sini scroll daftar kuota */
@@ -180,6 +180,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  margin-top: 8px;   /* jarak antara summary & kartu pertama */
 }
 
 /* Card Paket – tanpa garis biru kiri, warna lembut */
@@ -194,6 +195,8 @@ body {
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.06),
     0 10px 20px rgba(0, 0, 0, 0.05);
+
+  margin-bottom: 2px; /* jarak tipis antar kartu */
 }
 
 /* Hilangkan garis vertikal di kiri (override semua) */
