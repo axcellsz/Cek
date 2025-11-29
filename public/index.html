@@ -16,14 +16,15 @@
       width: 100%;
       height: 100%;
       background: white;
-      overflow: hidden;
+      /* IZINKAN SCROLL (supaya bisa pull-to-refresh) */
+      overflow-y: auto;
       font-family: sans-serif;
     }
 
     /* Area konten utama */
     #app {
       width: 100%;
-      height: calc(100% - 70px);
+      height: calc(100% - 70px); /* ruang untuk footer */
       display: flex;
       justify-content: center;
       align-items: center;
@@ -109,19 +110,21 @@
 </head>
 <body>
 
+  <!-- KONTEN UTAMA -->
   <div id="app">
     <div>
-      <div class="screen-title" id="screen-title">Profile</div>
+      <div class="screen-title" id="screen-title"></div>
       <div class="screen-desc" id="screen-desc">
-        Halaman profil pengguna. Nanti bisa diisi nama, nomor, dan info akun VPN kamu.
+        Silakan pilih menu di bawah untuk memulai.
       </div>
     </div>
   </div>
 
+  <!-- FOOTER -->
   <div class="footer">
 
     <!-- PROFILE (A) -->
-    <a class="nav-btn active" href="javascript:void(0)" data-screen="profile">
+    <a class="nav-btn" href="javascript:void(0)" data-screen="profile">
       <span class="nav-btn-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="7" r="4" />
@@ -214,6 +217,7 @@
       });
     }
 
+    // Event click untuk tiap tombol footer
     navButtons.forEach(btn => {
       btn.addEventListener("click", () => {
         setActiveScreen(btn.dataset.screen);
