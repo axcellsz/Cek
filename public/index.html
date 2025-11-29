@@ -6,7 +6,7 @@
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <title>Aplikasi</title>
+  <title>Cek Kuota VPN</title>
 
   <style>
     /* Reset + fullscreen */
@@ -20,14 +20,27 @@
       font-family: sans-serif;
     }
 
-    /* Area konten utama */
+    /* Area konten utama (di atas footer) */
     #app {
       width: 100%;
-      height: calc(100% - 70px);
+      height: calc(100% - 70px); /* sisakan ruang untuk footer */
       display: flex;
       justify-content: center;
       align-items: center;
       text-align: center;
+      padding: 16px;
+      box-sizing: border-box;
+    }
+
+    .screen-title {
+      font-size: 20px;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .screen-desc {
+      font-size: 14px;
+      color: #666;
     }
 
     /* FOOTER FIXED */
@@ -38,7 +51,7 @@
       height: 70px;
       background: #ffffff;
 
-      /* SHADOW DI GARIS ATAS */
+      /* shadow halus di atas footer */
       box-shadow: 0 -2px 6px rgba(0, 0, 0, 0.12);
 
       display: flex;
@@ -50,14 +63,16 @@
     .nav-btn {
       flex: 1;
       text-align: center;
-      color: #444;
+      color: #666;
       text-decoration: none;
       font-size: 12px;
 
-      /* Hilangkan highlight biru saat ditekan */
+      /* hilangkan highlight biru di Android */
       -webkit-tap-highlight-color: rgba(0,0,0,0);
-      outline: none;
       border: none;
+      outline: none;
+
+      transition: color 0.15s ease, transform 0.15s ease, opacity 0.1s ease;
     }
 
     .nav-btn:focus {
@@ -68,40 +83,115 @@
       font-size: 22px;
       display: block;
       margin-bottom: 3px;
-      pointer-events: none; /* icon tidak memicu highlight */
+      pointer-events: none; /* klik tetap ke tombolnya, bukan ke icon */
+    }
+
+    /* State AKTIF */
+    .nav-btn.active {
+      color: #007aff;          /* biru ala iOS */
+      font-weight: 600;
+    }
+
+    .nav-btn.active .nav-btn-icon {
+      transform: translateY(-1px);
+    }
+
+    /* Efek saat ditekan */
+    .nav-btn:active {
+      opacity: 0.6;
     }
   </style>
 </head>
 <body>
 
+  <!-- KONTEN UTAMA -->
   <div id="app">
-    <!-- Konten utama kosong -->
+    <div>
+      <div class="screen-title" id="screen-title">Akrab</div>
+      <div class="screen-desc" id="screen-desc">
+        Paket Akrab. Di sini nanti kamu bisa menampilkan info kuota, detail paket, dll.
+      </div>
+    </div>
   </div>
 
   <!-- FOOTER -->
   <div class="footer">
 
-    <a class="nav-btn" href="#">
+    <a class="nav-btn active" href="javascript:void(0)" data-screen="akrab">
       <span class="nav-btn-icon">🍏</span>
       Akrab
     </a>
 
-    <a class="nav-btn" href="#">
+    <a class="nav-btn" href="javascript:void(0)" data-screen="oprex">
       <span class="nav-btn-icon">🍋‍🟩</span>
       Oprex
     </a>
 
-    <a class="nav-btn" href="#">
+    <a class="nav-btn" href="javascript:void(0)" data-screen="inject">
       <span class="nav-btn-icon">🥭</span>
       Inject
     </a>
 
-    <a class="nav-btn" href="#">
+    <a class="nav-btn" href="javascript:void(0)" data-screen="reguler">
       <span class="nav-btn-icon">🍓</span>
       Reguler
     </a>
 
   </div>
+
+  <script>
+    // DATA layar untuk tiap tombol
+    const screens = {
+      akrab: {
+        title: "Akrab",
+        desc: "Halaman paket Akrab. Nanti bisa kamu isi dengan info paket keluarga, sharing kuota, dll."
+      },
+      oprex: {
+        title: "Oprex",
+        desc: "Halaman Oprex. Di sini bisa tampilkan kuota malam, opok, atau jenis paket eksperimen lainnya."
+      },
+      inject: {
+        title: "Inject",
+        desc: "Halaman Inject. Bisa kamu pakai untuk pengaturan inject, host, bug, atau konfigurasi lain."
+      },
+      reguler: {
+        title: "Reguler",
+        desc: "Halaman Reguler. Tempat menampilkan kuota utama, masa aktif, dan info standar lainnya."
+      }
+    };
+
+    const navButtons = document.querySelectorAll(".nav-btn");
+    const screenTitle = document.getElementById("screen-title");
+    const screenDesc  = document.getElementById("screen-desc");
+
+    // Fungsi ganti layar + update state aktif
+    function setActiveScreen(name) {
+      // update teks di tengah
+      const data = screens[name];
+      if (data) {
+        screenTitle.textContent = data.title;
+        screenDesc.textContent  = data.desc;
+      }
+
+      // hapus class active di semua tombol
+      navButtons.forEach(btn => btn.classList.remove("active"));
+
+      // tambahkan class active di tombol yg dipilih
+      navButtons.forEach(btn => {
+        if (btn.dataset.screen === name) {
+          btn.classList.add("active");
+        }
+      });
+    }
+
+    // Pasang event click untuk tiap tombol footer
+    navButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const screenName = btn.dataset.screen;
+        setActiveScreen(screenName);
+      });
+    });
+  </script>
 
 </body>
 </html>
