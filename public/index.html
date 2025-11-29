@@ -71,34 +71,39 @@
       transition: transform 0.1s ease, opacity 0.1s ease;
     }
 
-    /* Icon */
+    /* Icon wrapper */
     .nav-btn-icon {
-      font-size: 22px;
       display: block;
       margin-bottom: 3px;
       pointer-events: none;
     }
 
-    /* TOMBOL ACTIVE — tetap warna sama, tidak biru */
-    .nav-btn.active {
-      color: #444;          /* warna tetap */
+    .nav-btn-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke: #444;
     }
 
-    /* (OPSIONAL) garis kecil di bawah tombol aktif */
+    /* Tombol aktif: warna teks tetap sama */
+    .nav-btn.active {
+      color: #444;
+    }
+
+    /* Garis kecil di bawah tombol aktif */
     .nav-btn.active::after {
       content: "";
       display: block;
       margin: 3px auto 0 auto;
       width: 28px;
       height: 2px;
-      background: #ccc;     /* garis tipis abu */
+      background: #ccc;
       border-radius: 2px;
     }
 
-    /* Saat ditekan: efek shadow kecil */
+    /* Efek ditekan */
     .nav-btn:active {
       opacity: 0.7;
-      transform: scale(0.93);  /* sedikit mengecil agar terasa "di-tekan" */
+      transform: scale(0.93);
     }
   </style>
 </head>
@@ -106,54 +111,85 @@
 
   <div id="app">
     <div>
-      <div class="screen-title" id="screen-title">Akrab</div>
+      <div class="screen-title" id="screen-title">Profile</div>
       <div class="screen-desc" id="screen-desc">
-        Paket Akrab. Di sini nanti kamu bisa menampilkan info kuota, detail paket, dll.
+        Halaman profil pengguna. Nanti bisa diisi nama, nomor, dan info akun VPN kamu.
       </div>
     </div>
   </div>
 
   <div class="footer">
 
-    <a class="nav-btn active" href="javascript:void(0)" data-screen="akrab">
-      <span class="nav-btn-icon">🍏</span>
-      Akrab
+    <!-- PROFILE (A) -->
+    <a class="nav-btn active" href="javascript:void(0)" data-screen="profile">
+      <span class="nav-btn-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="7" r="4" />
+          <path d="M5.5 21c1-4 4-6 6.5-6s5.5 2 6.5 6" />
+        </svg>
+      </span>
+      Profile
     </a>
 
-    <a class="nav-btn" href="javascript:void(0)" data-screen="oprex">
-      <span class="nav-btn-icon">🍋‍🟩</span>
-      Oprex
+    <!-- LIST USER (B) -->
+    <a class="nav-btn" href="javascript:void(0)" data-screen="users">
+      <span class="nav-btn-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 6h12" />
+          <path d="M4 12h12" />
+          <path d="M4 18h12" />
+          <circle cx="19" cy="6" r="2" />
+          <circle cx="19" cy="12" r="2" />
+          <circle cx="19" cy="18" r="2" />
+        </svg>
+      </span>
+      List user
     </a>
 
-    <a class="nav-btn" href="javascript:void(0)" data-screen="inject">
-      <span class="nav-btn-icon">🥭</span>
-      Inject
+    <!-- BELI KUOTA (A) -->
+    <a class="nav-btn" href="javascript:void(0)" data-screen="beli">
+      <span class="nav-btn-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1" />
+          <circle cx="20" cy="21" r="1" />
+          <path d="M1 1h4l2.7 13c.2 1 1 2 2 2h9" />
+          <path d="M6 5h15l-1.5 8h-13" />
+        </svg>
+      </span>
+      Beli kuota
     </a>
 
-    <a class="nav-btn" href="javascript:void(0)" data-screen="reguler">
-      <span class="nav-btn-icon">🍓</span>
-      Reguler
+    <!-- CEK KUOTA (B) -->
+    <a class="nav-btn" href="javascript:void(0)" data-screen="cek">
+      <span class="nav-btn-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 17l6-6 4 4 8-10" />
+          <path d="M3 21h18" />
+        </svg>
+      </span>
+      Cek kuota
     </a>
 
   </div>
 
   <script>
+    // Data konten untuk tiap tab
     const screens = {
-      akrab: {
-        title: "Akrab",
-        desc: "Halaman paket Akrab."
+      profile: {
+        title: "Profile",
+        desc: "Halaman profil pengguna. Nanti bisa diisi nama, nomor, dan info akun VPN kamu."
       },
-      oprex: {
-        title: "Oprex",
-        desc: "Halaman Oprex."
+      users: {
+        title: "List user",
+        desc: "Daftar semua user VPN yang terdaftar. Bisa kamu pakai untuk memilih atau mengelola user."
       },
-      inject: {
-        title: "Inject",
-        desc: "Halaman Inject."
+      beli: {
+        title: "Beli kuota",
+        desc: "Halaman untuk pembelian atau penambahan kuota VPN."
       },
-      reguler: {
-        title: "Reguler",
-        desc: "Halaman Reguler."
+      cek: {
+        title: "Cek kuota",
+        desc: "Halaman untuk melihat sisa kuota, masa aktif, dan detail pemakaian VPN."
       }
     };
 
@@ -163,17 +199,25 @@
 
     function setActiveScreen(name) {
       const data = screens[name];
+      if (!data) return;
+
+      // Update teks konten
       screenTitle.textContent = data.title;
       screenDesc.textContent  = data.desc;
 
+      // Update state active footer
       navButtons.forEach(btn => btn.classList.remove("active"));
       navButtons.forEach(btn => {
-        if (btn.dataset.screen === name) btn.classList.add("active");
+        if (btn.dataset.screen === name) {
+          btn.classList.add("active");
+        }
       });
     }
 
     navButtons.forEach(btn => {
-      btn.addEventListener("click", () => setActiveScreen(btn.dataset.screen));
+      btn.addEventListener("click", () => {
+        setActiveScreen(btn.dataset.screen);
+      });
     });
   </script>
 
