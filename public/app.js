@@ -289,6 +289,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const regWa = document.getElementById("reg-wa");
   const regPassword = document.getElementById("reg-password");
   const regXl = document.getElementById("reg-xl");
+  const loginIdentifier = document.getElementById("login-identifier");
 
   if (regForm && regName && regWa && regPassword && regXl) {
     regForm.addEventListener("submit", async (e) => {
@@ -313,16 +314,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const data = await res.json();
 
-        if (!data.status) {
+        // back-end kirim { ok: true, message: "...", data: {...} }
+        const success = data && (data.ok === true || data.status === true);
+        if (!success) {
           alert(data.message || "Gagal mendaftar.");
           return;
         }
 
-        alert("Daftar berhasil. Silakan masuk.");
+        alert(data.message || "Daftar berhasil. Silakan masuk.");
 
-        // PASTI PINDAH TAB KE MASUK
+        // isi otomatis field login
+        if (loginIdentifier) loginIdentifier.value = whatsapp;
+
+        // langsung pindah ke tab Masuk
         selectTab("login");
-
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
       }
@@ -333,7 +338,6 @@ document.addEventListener("DOMContentLoaded", () => {
      FORM LOGIN
   ====================================================== */
   const loginForm = document.getElementById("login-form");
-  const loginIdentifier = document.getElementById("login-identifier");
   const loginPassword = document.getElementById("login-password");
 
   if (loginForm && loginIdentifier && loginPassword) {
@@ -352,22 +356,18 @@ document.addEventListener("DOMContentLoaded", () => {
         const res = await fetch("/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          // === BACKEND KEMUNGKINAN EXPECT 'whatsapp' ===
-          body: JSON.stringify({
-            whatsapp: identifier,
-            password,
-          }),
+          body: JSON.stringify({ identifier, password }),
         });
 
         const data = await res.json();
 
-        if (!data.status) {
+        const success = data && (data.ok === true || data.status === true);
+        if (!success) {
           alert(data.message || "Gagal masuk.");
           return;
         }
 
-        alert("Login berhasil sebagai " + data.data.name);
-
+        alert("Login berhasil sebagai " + (data.data?.name || identifier));
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
       }
