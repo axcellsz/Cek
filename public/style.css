@@ -153,7 +153,7 @@ body {
 .cek-summary {
   padding: 12px 14px;
   border-radius: 16px;
-  background: #000000;
+  background: #eef4ff;
   border: 1px solid #dbe7ff;
 
   /* shadow */
@@ -167,7 +167,7 @@ body {
 .summary-main {
   font-size: 16px;
   font-weight: 700;
-  color: #16a34a;
+  color: #000000;
   margin-bottom: 4px;
 }
 
