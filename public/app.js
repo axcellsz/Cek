@@ -53,12 +53,15 @@ document.addEventListener("DOMContentLoaded", () => {
     return s.trim();
   }
 
-  function createLine(label, value) {
+  // label & value tebal, "Sisa" hijau
+  function createLine(label, value, isSisa = false) {
     if (!value) return "";
     return `
       <div class="paket-line">
-        <span class="label">${label}:</span>
-        <span class="value-strong">${normalizeAmount(value)}</span>
+        <span class="label"><b>${label}:</b></span>
+        <span class="value-strong" style="font-weight:700; ${isSisa ? "color:#16a34a;" : ""}">
+          ${normalizeAmount(value)}
+        </span>
       </div>
     `;
   }
@@ -149,30 +152,30 @@ document.addEventListener("DOMContentLoaded", () => {
       html += `<div class="cek-summary">`;
 
       if (h.msisdn) {
-        html += `<div class="summary-main">${h.msisdn}</div>`;
+        html += `<div class="summary-main"><b>${h.msisdn}</b></div>`;
       }
 
       if (h.tipeKartu) {
         html += `
           <div class="cek-summary-line">
-            <span class="label">Kartu</span>
-            <span class="value-strong">${h.tipeKartu}</span>
+            <span class="label"><b>Kartu</b></span>
+            <span class="value-strong" style="font-weight:700">${h.tipeKartu}</span>
           </div>`;
       }
 
       if (h.masaAktif) {
         html += `
           <div class="cek-summary-line">
-            <span class="label">Masa aktif</span>
-            ${h.masaAktif}
+            <span class="label"><b>Masa aktif</b></span>
+            <span class="value-strong" style="font-weight:700">${h.masaAktif}</span>
           </div>`;
       }
 
       if (h.masaTenggang) {
         html += `
           <div class="cek-summary-line">
-            <span class="label">Tenggang</span>
-            ${h.masaTenggang}
+            <span class="label"><b>Tenggang</b></span>
+            <span class="value-strong" style="font-weight:700">${h.masaTenggang}</span>
           </div>`;
       }
 
@@ -190,7 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
         html += `<div class="paket-title">${p.nama || "Paket"}</div>`;
         html += createLine("Tipe", p.tipe);
         html += createLine("Kuota", p.total);
-        html += createLine("Sisa", p.sisa);
+        html += createLine("Sisa", p.sisa, true); // hijau & bold
         html += `</div>`;
       });
 
@@ -198,8 +201,8 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     if (!html) {
-      // kalau parsing gagal, tampilkan fallback
-      cekResultBody.textContent = fallbackText || "Tidak ada data kuota yang bisa ditampilkan.";
+      cekResultBody.textContent =
+        fallbackText || "Tidak ada data kuota yang bisa ditampilkan.";
     } else {
       cekResultBody.innerHTML = html;
     }
@@ -217,14 +220,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const nomor = (cekNumberInput.value || "").trim();
       if (!nomor) {
-        cekResultBody.textContent = "Nomor belum diisi. Silakan masukkan nomor terlebih dahulu.";
+        cekResultBody.textContent =
+          "Nomor belum diisi. Silakan masukkan nomor terlebih dahulu.";
         return;
       }
 
       cekResultBody.textContent = "Memeriksa kuota...\nMohon tunggu.";
 
       try {
-        const res = await fetch("/api/cek-kuota?msisdn=" + encodeURIComponent(nomor));
+        const res = await fetch(
+          "/api/cek-kuota?msisdn=" + encodeURIComponent(nomor)
+        );
         if (!res.ok) {
           cekResultBody.textContent =
             "Gagal mengakses server. Status: " + res.status;
@@ -242,7 +248,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const hasilHtml = json?.data?.hasil;
         if (!hasilHtml) {
-          cekResultBody.textContent = "Respons tidak berisi data kuota yang dikenali.";
+          cekResultBody.textContent =
+            "Respons tidak berisi data kuota yang dikenali.";
           return;
         }
 
