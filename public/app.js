@@ -259,30 +259,25 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* =====================================================
      TAB MASUK / DAFTAR
-     (kita bikin helper supaya bisa dipanggil dari mana saja)
   ====================================================== */
   const tabButtons = document.querySelectorAll(".tab-btn");
   const tabContents = document.querySelectorAll(".tab-content");
 
-  function setActiveTab(tabName) {
-    // tombol
+  function selectTab(tabName) {
     tabButtons.forEach((b) => b.classList.remove("active"));
-    const btn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
-    if (btn) btn.classList.add("active");
-
-    // konten
     tabContents.forEach((c) => c.classList.remove("active"));
-    const targetContent = document.getElementById("tab-" + tabName);
-    if (targetContent) targetContent.classList.add("active");
-  }
 
-  // inisialisasi: pastikan tab login aktif
-  setActiveTab("login");
+    const btn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+    const content = document.getElementById("tab-" + tabName);
+
+    if (btn) btn.classList.add("active");
+    if (content) content.classList.add("active");
+  }
 
   tabButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       const tab = btn.dataset.tab;
-      setActiveTab(tab);
+      selectTab(tab);
     });
   });
 
@@ -325,11 +320,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         alert("Daftar berhasil. Silakan masuk.");
 
-        // bersihkan form register
-        regForm.reset();
+        // PASTI PINDAH TAB KE MASUK
+        selectTab("login");
 
-        // === PAKSA PINDAH KE TAB MASUK TANPA CLICK ===
-        setActiveTab("login");
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
       }
@@ -356,30 +349,25 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       try {
-        // Biar cocok sama backend apa pun, kirim beberapa field sekaligus:
         const res = await fetch("/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          // === BACKEND KEMUNGKINAN EXPECT 'whatsapp' ===
           body: JSON.stringify({
-            // kalau backend pakai whatsapp -> ini kepakai
             whatsapp: identifier,
-            // kalau backend pakai identifier -> ini kepakai
-            identifier: identifier,
-            // bonus: kalau dia cek 'name'
-            name: identifier,
-            password: password,
+            password,
           }),
         });
 
         const data = await res.json();
 
         if (!data.status) {
-          // pesan asli dari backend (misal: "Masukan no whatsapp")
           alert(data.message || "Gagal masuk.");
           return;
         }
 
         alert("Login berhasil sebagai " + data.data.name);
+
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
       }
