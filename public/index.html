@@ -16,14 +16,14 @@
       width: 100%;
       height: 100%;
       background: white;
-      overflow-y: auto;
+      overflow: hidden;      /* KUNCI layar, tidak bisa scroll */
       font-family: sans-serif;
     }
 
-    /* Area konten utama */
+    /* Area konten utama (di atas footer) */
     #app {
       width: 100%;
-      height: calc(100% - 70px);
+      height: calc(100% - 70px); /* sisakan ruang untuk footer */
       box-sizing: border-box;
     }
 
@@ -34,6 +34,7 @@
       display: none;
     }
 
+    /* Screen default: teks di tengah */
     #screen-default {
       display: flex;
       justify-content: center;
@@ -53,7 +54,7 @@
       color: #666;
     }
 
-    /* CEK KUOTA SCREEN */
+    /* ------------ CEK KUOTA SCREEN ------------ */
     #screen-cek {
       display: none;
     }
@@ -81,6 +82,7 @@
       font-size: 14px;
       font-weight: 600;
       margin-bottom: 6px;
+      color: #374151;
     }
 
     .cek-result-body {
@@ -102,15 +104,20 @@
       font-size: 14px;
       border-radius: 999px;
       border: 1px solid #d1d5db;
+      outline: none;
+    }
+
+    .cek-input:focus {
+      border-color: #3b82f6;
     }
 
     .cek-button {
       padding: 10px 18px;
       border-radius: 999px;
       border: none;
+      font-size: 14px;
       background: #111827;
       color: white;
-      font-size: 14px;
       cursor: pointer;
     }
 
@@ -119,7 +126,7 @@
       transform: scale(0.97);
     }
 
-    /* FOOTER */
+    /* ------------ FOOTER ------------ */
     .footer {
       position: fixed;
       bottom: 0;
@@ -139,13 +146,22 @@
       font-size: 12px;
       text-decoration: none;
       -webkit-tap-highlight-color: transparent;
+      transition: transform 0.1s ease, opacity 0.1s ease;
+    }
+
+    .nav-btn-icon {
+      display: block;
+      margin-bottom: 3px;
     }
 
     .nav-btn-icon svg {
       width: 24px;
       height: 24px;
       stroke: #444;
-      margin-bottom: 3px;
+    }
+
+    .nav-btn.active {
+      color: #444;
     }
 
     .nav-btn.active::after {
@@ -169,7 +185,7 @@
   <!-- KONTEN UTAMA -->
   <div id="app">
 
-    <!-- Default Screen -->
+    <!-- Default screen -->
     <div id="screen-default" class="screen">
       <div>
         <div class="screen-title">Selamat datang</div>
@@ -179,30 +195,36 @@
 
     <!-- Profile -->
     <div id="screen-profile" class="screen">
-      <div style="display:flex;justify-content:center;align-items:center;height:100%;padding:16px;">
+      <div style="display:flex;justify-content:center;align-items:center;height:100%;padding:16px;box-sizing:border-box;text-align:center;">
         <div>
           <div class="screen-title">Profile</div>
-          <div class="screen-desc">Halaman profil pengguna.</div>
+          <div class="screen-desc">
+            Halaman profil pengguna. Nanti bisa diisi info akun VPN kamu.
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- List User -->
+    <!-- List user -->
     <div id="screen-users" class="screen">
-      <div style="display:flex;justify-content:center;align-items:center;height:100%;padding:16px;">
+      <div style="display:flex;justify-content:center;align-items:center;height:100%;padding:16px;box-sizing:border-box;text-align:center;">
         <div>
           <div class="screen-title">List user</div>
-          <div class="screen-desc">Daftar user VPN akan ditampilkan di sini.</div>
+          <div class="screen-desc">
+            Daftar user VPN akan ditampilkan di sini.
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Beli Kuota -->
+    <!-- Beli kuota -->
     <div id="screen-beli" class="screen">
-      <div style="display:flex;justify-content:center;align-items:center;height:100%;padding:16px;">
+      <div style="display:flex;justify-content:center;align-items:center;height:100%;padding:16px;box-sizing:border-box;text-align:center;">
         <div>
           <div class="screen-title">Beli kuota</div>
-          <div class="screen-desc">Pilihan paket kuota akan muncul di sini.</div>
+          <div class="screen-desc">
+            Pilihan paket dan pembelian kuota akan muncul di sini.
+          </div>
         </div>
       </div>
     </div>
@@ -219,7 +241,13 @@
         </div>
 
         <form class="cek-form" id="cek-form">
-          <input type="tel" id="cek-number" class="cek-input" placeholder="Masukkan nomor HP" />
+          <input
+            type="tel"
+            id="cek-number"
+            class="cek-input"
+            placeholder="Masukkan nomor HP"
+            inputmode="numeric"
+          />
           <button type="submit" class="cek-button">Cek</button>
         </form>
 
@@ -231,109 +259,130 @@
   <!-- FOOTER -->
   <div class="footer">
 
+    <!-- PROFILE -->
     <a class="nav-btn" href="javascript:void(0)" data-screen="profile">
       <span class="nav-btn-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="12" cy="7" r="4"></circle><path d="M5.5 21c1-4 4-6 6.5-6s5.5 2 6.5 6"></path></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="7" r="4" />
+          <path d="M5.5 21c1-4 4-6 6.5-6s5.5 2 6.5 6" />
+        </svg>
       </span>
       Profile
     </a>
 
+    <!-- LIST USER -->
     <a class="nav-btn" href="javascript:void(0)" data-screen="users">
       <span class="nav-btn-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 6h12"></path><path d="M4 12h12"></path><path d="M4 18h12"></path><circle cx="19" cy="6" r="2"></circle><circle cx="19" cy="12" r="2"></circle><circle cx="19" cy="18" r="2"></circle></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 6h12" />
+          <path d="M4 12h12" />
+          <path d="M4 18h12" />
+          <circle cx="19" cy="6" r="2" />
+          <circle cx="19" cy="12" r="2" />
+          <circle cx="19" cy="18" r="2" />
+        </svg>
       </span>
       List user
     </a>
 
+    <!-- BELI KUOTA -->
     <a class="nav-btn" href="javascript:void(0)" data-screen="beli">
       <span class="nav-btn-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.7 13c.2 1 1 2 2 2h9"></path><path d="M6 5h15l-1.5 8h-13"></path></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1" />
+          <circle cx="20" cy="21" r="1" />
+          <path d="M1 1h4l2.7 13c.2 1 1 2 2 2h9" />
+          <path d="M6 5h15l-1.5 8h-13" />
+        </svg>
       </span>
       Beli kuota
     </a>
 
+    <!-- CEK KUOTA -->
     <a class="nav-btn" href="javascript:void(0)" data-screen="cek">
       <span class="nav-btn-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 17l6-6 4 4 8-10"></path><path d="M3 21h18"></path></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 17l6-6 4 4 8-10" />
+          <path d="M3 21h18" />
+        </svg>
       </span>
       Cek kuota
     </a>
 
   </div>
 
-<script>
-  const navButtons = document.querySelectorAll(".nav-btn");
-  const screens = document.querySelectorAll(".screen");
+  <script>
+    const navButtons = document.querySelectorAll(".nav-btn");
+    const screens = document.querySelectorAll(".screen");
 
-  function showScreen(name) {
-    screens.forEach(s => s.style.display = "none");
-    if (!name) {
-      document.getElementById("screen-default").style.display = "flex";
-      return;
-    }
-    const target = document.getElementById("screen-" + name);
-    if (target) {
-      target.style.display = (name === "cek") ? "block" : "flex";
-    }
-  }
+    function showScreen(name) {
+      screens.forEach(s => s.style.display = "none");
 
-  function setActiveNav(name) {
-    navButtons.forEach(btn => btn.classList.remove("active"));
-    navButtons.forEach(btn => {
-      if (btn.dataset.screen === name) btn.classList.add("active");
-    });
-  }
-
-  navButtons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      const name = btn.dataset.screen;
-      showScreen(name);
-      setActiveNav(name);
-    });
-  });
-
-  // ===== CEK KUOTA PAKAI WORKER PROXY =====
-  const cekForm = document.getElementById("cek-form");
-  const cekNumberInput = document.getElementById("cek-number");
-  const cekResultBody = document.getElementById("cek-result-body");
-
-  cekForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-
-    const nomor = cekNumberInput.value.trim();
-
-    if (!nomor) {
-      cekResultBody.textContent = "Nomor belum diisi.";
-      return;
-    }
-
-    cekResultBody.textContent = "Memeriksa kuota...\nMohon tunggu.";
-
-    try {
-      const res = await fetch(`/api/cek-kuota?msisdn=${encodeURIComponent(nomor)}`);
-
-      if (!res.ok) {
-        cekResultBody.textContent = "Gagal. Status: " + res.status;
+      if (!name) {
+        document.getElementById("screen-default").style.display = "flex";
         return;
       }
 
-      const text = await res.text();
+      const target = document.getElementById("screen-" + name);
+      if (target) {
+        target.style.display = (name === "cek") ? "block" : "flex";
+      }
+    }
 
-      try {
-        const json = JSON.parse(text);
-        cekResultBody.textContent = JSON.stringify(json, null, 2);
-      } catch {
-        cekResultBody.textContent = text;
+    function setActiveNav(name) {
+      navButtons.forEach(btn => btn.classList.remove("active"));
+      navButtons.forEach(btn => {
+        if (btn.dataset.screen === name) btn.classList.add("active");
+      });
+    }
+
+    navButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const name = btn.dataset.screen;
+        showScreen(name);
+        setActiveNav(name);
+      });
+    });
+
+    // ====== CEK KUOTA via Worker Proxy ======
+    const cekForm = document.getElementById("cek-form");
+    const cekNumberInput = document.getElementById("cek-number");
+    const cekResultBody = document.getElementById("cek-result-body");
+
+    cekForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const nomor = (cekNumberInput.value || "").trim();
+      if (!nomor) {
+        cekResultBody.textContent = "Nomor belum diisi.";
+        return;
       }
 
-    } catch (err) {
-      cekResultBody.textContent = "Error: " + err.message;
-    }
-  });
+      cekResultBody.textContent = "Memeriksa kuota...\nMohon tunggu.";
 
-  // Tampilkan default screen saat awal
-  showScreen(null);
-</script>
+      try {
+        const res = await fetch(`/api/cek-kuota?msisdn=${encodeURIComponent(nomor)}`);
+
+        if (!res.ok) {
+          cekResultBody.textContent = "Gagal mengakses server. Status: " + res.status;
+          return;
+        }
+
+        const text = await res.text();
+        try {
+          const json = JSON.parse(text);
+          cekResultBody.textContent = JSON.stringify(json, null, 2);
+        } catch {
+          cekResultBody.textContent = text;
+        }
+      } catch (err) {
+        cekResultBody.textContent = "Terjadi kesalahan: " + err.message;
+      }
+    });
+
+    // Tampilkan screen default saat awal
+    showScreen(null);
+  </script>
 
 </body>
 </html>
