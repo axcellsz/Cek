@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
 
-  <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  />
 
   <title>Aplikasi</title>
 
   <style>
     /* Reset + fullscreen */
-    html, body {
+    html,
+    body {
       margin: 0;
       padding: 0;
       width: 100%;
@@ -40,10 +43,10 @@
     .screen-card {
       width: 100%;
       height: 100%;
-      background: rgba(255, 255, 255, 0.96);
+      background: rgba(255, 255, 255, 0.97);
       border-radius: 20px;
       box-shadow:
-        0 12px 30px rgba(15, 23, 42, 0.10),
+        0 12px 30px rgba(15, 23, 42, 0.1),
         0 0 0 1px rgba(148, 163, 184, 0.15);
       padding: 18px 16px 12px;
       box-sizing: border-box;
@@ -329,10 +332,8 @@
   </style>
 </head>
 <body>
-
   <!-- KONTEN UTAMA -->
   <div id="app">
-
     <!-- Default screen -->
     <div id="screen-default" class="screen">
       <div class="screen-card">
@@ -346,7 +347,16 @@
     <!-- Profile -->
     <div id="screen-profile" class="screen">
       <div class="screen-card">
-        <div style="display:flex;justify-content:center;align-items:center;height:100%;box-sizing:border-box;text-align:center;">
+        <div
+          style="
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            box-sizing: border-box;
+            text-align: center;
+          "
+        >
           <div>
             <div class="screen-title">Profile</div>
             <div class="screen-desc">
@@ -360,7 +370,16 @@
     <!-- List user -->
     <div id="screen-users" class="screen">
       <div class="screen-card">
-        <div style="display:flex;justify-content:center;align-items:center;height:100%;box-sizing:border-box;text-align:center;">
+        <div
+          style="
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            box-sizing: border-box;
+            text-align: center;
+          "
+        >
           <div>
             <div class="screen-title">List user</div>
             <div class="screen-desc">
@@ -374,7 +393,16 @@
     <!-- Beli kuota -->
     <div id="screen-beli" class="screen">
       <div class="screen-card">
-        <div style="display:flex;justify-content:center;align-items:center;height:100%;box-sizing:border-box;text-align:center;">
+        <div
+          style="
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            box-sizing: border-box;
+            text-align: center;
+          "
+        >
           <div>
             <div class="screen-title">Beli kuota</div>
             <div class="screen-desc">
@@ -388,7 +416,6 @@
     <!-- CEK KUOTA -->
     <div id="screen-cek" class="screen">
       <div class="screen-card cek-card">
-
         <div class="cek-header">Cek kuota</div>
 
         <div class="cek-container">
@@ -410,19 +437,22 @@
             <button type="submit" class="cek-button">Cek</button>
           </form>
         </div>
-
       </div>
     </div>
-
   </div>
 
   <!-- FOOTER -->
   <div class="footer">
-
     <!-- PROFILE -->
     <a class="nav-btn" href="javascript:void(0)" data-screen="profile">
       <span class="nav-btn-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <circle cx="12" cy="7" r="4" />
           <path d="M5.5 21c1-4 4-6 6.5-6s5.5 2 6.5 6" />
         </svg>
@@ -433,7 +463,13 @@
     <!-- LIST USER -->
     <a class="nav-btn" href="javascript:void(0)" data-screen="users">
       <span class="nav-btn-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <path d="M4 6h12" />
           <path d="M4 12h12" />
           <path d="M4 18h12" />
@@ -448,7 +484,13 @@
     <!-- BELI KUOTA -->
     <a class="nav-btn" href="javascript:void(0)" data-screen="beli">
       <span class="nav-btn-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <circle cx="9" cy="21" r="1" />
           <circle cx="20" cy="21" r="1" />
           <path d="M1 1h4l2.7 13c.2 1 1 2 2 2h9" />
@@ -461,22 +503,30 @@
     <!-- CEK KUOTA -->
     <a class="nav-btn" href="javascript:void(0)" data-screen="cek">
       <span class="nav-btn-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
           <path d="M3 17l6-6 4 4 8-10" />
           <path d="M3 21h18" />
         </svg>
       </span>
       Cek kuota
     </a>
-
   </div>
 
   <script>
+    // ======= NAVIGASI BOTTOM BAR =======
     const navButtons = document.querySelectorAll(".nav-btn");
     const screens = document.querySelectorAll(".screen");
 
     function showScreen(name) {
-      screens.forEach(s => s.style.display = "none");
+      screens.forEach((s) => {
+        s.style.display = "none";
+      });
 
       if (!name) {
         const def = document.getElementById("screen-default");
@@ -486,31 +536,39 @@
 
       const target = document.getElementById("screen-" + name);
       if (target) {
-        target.style.display = (name === "cek") ? "block" : "flex";
+        target.style.display = name === "cek" ? "block" : "flex";
       }
     }
 
     function setActiveNav(name) {
-      navButtons.forEach(btn => btn.classList.remove("active"));
-      navButtons.forEach(btn => {
-        if (btn.dataset.screen === name) btn.classList.add("active");
+      navButtons.forEach((btn) => btn.classList.remove("active"));
+      navButtons.forEach((btn) => {
+        if (btn.dataset.screen === name) {
+          btn.classList.add("active");
+        }
       });
     }
 
-    navButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const name = btn.dataset.screen;
+    navButtons.forEach((btn) => {
+      btn.addEventListener("click", function () {
+        const name = this.dataset.screen;
         showScreen(name);
         setActiveNav(name);
       });
     });
 
-    // ========= PARSING HASIL KUOTA =========
+    // Tampilkan screen default saat awal
+    showScreen(null);
+
+    // ======= PARSING HASIL KUOTA =======
     function parseHasilString(hasilHtml) {
       const text = hasilHtml
         .replace(/<br\s*\/?>/gi, "\n")
         .replace(/\r/g, "");
-      const lines = text.split("\n").map(l => l.trim()).filter(Boolean);
+      const lines = text
+        .split("\n")
+        .map((l) => l.trim())
+        .filter(Boolean);
 
       const header = {};
       const pakets = [];
@@ -523,7 +581,10 @@
           header.tipeKartu = line.replace("Tipe Kartu:", "").trim();
         } else if (line.startsWith("Masa Aktif:")) {
           header.masaAktif = line.replace("Masa Aktif:", "").trim();
-        } else if (line.startsWith("Masa Berakhir Tenggang:") || line.startsWith("Masa Berakhir Tenggang")) {
+        } else if (
+          line.startsWith("Masa Berakhir Tenggang:") ||
+          line.startsWith("Masa Berakhir Tenggang")
+        ) {
           header.masaTenggang = line.split(":").slice(1).join(":").trim();
         }
 
@@ -538,12 +599,14 @@
           current.total = line.split(":").slice(1).join(":").trim();
         }
       }
+
       if (current) pakets.push(current);
 
       return { header, pakets };
     }
 
-    function typeToClass(tipe = "") {
+    function typeToClass(tipe) {
+      if (!tipe) return "";
       const t = tipe.toLowerCase();
       if (t.includes("voice") || t.includes("nelp") || t.includes("telp")) return "voice";
       if (t.includes("sms")) return "sms";
@@ -552,7 +615,7 @@
     }
 
     function renderResultParsed(container, parsed, rawFallback) {
-      if ((!parsed.header.msisdn && !parsed.pakets.length) && rawFallback) {
+      if (!parsed.header.msisdn && !parsed.pakets.length && rawFallback) {
         container.textContent = rawFallback;
         return;
       }
@@ -562,14 +625,27 @@
       // SUMMARY
       if (parsed.header.msisdn || parsed.header.tipeKartu || parsed.header.masaAktif) {
         html += '<div class="cek-summary">';
-        if (parsed.header.msisdn)
-          html += `<div class="summary-main">${parsed.header.msisdn}</div>`;
-        if (parsed.header.tipeKartu)
-          html += `<div class="cek-summary-line"><span class="label">Kartu</span><strong>${parsed.header.tipeKartu}</strong></div>`;
-        if (parsed.header.masaAktif)
-          html += `<div class="cek-summary-line"><span class="label">Masa aktif</span>${parsed.header.masaAktif}</div>`;
-        if (parsed.header.masaTenggang)
-          html += `<div class="cek-summary-line"><span class="label">Tenggang</span>${parsed.header.masaTenggang}</div>`;
+        if (parsed.header.msisdn) {
+          html += '<div class="summary-main">' + parsed.header.msisdn + "</div>";
+        }
+        if (parsed.header.tipeKartu) {
+          html +=
+            '<div class="cek-summary-line"><span class="label">Kartu</span><strong>' +
+            parsed.header.tipeKartu +
+            "</strong></div>";
+        }
+        if (parsed.header.masaAktif) {
+          html +=
+            '<div class="cek-summary-line"><span class="label">Masa aktif</span>' +
+            parsed.header.masaAktif +
+            "</div>";
+        }
+        if (parsed.header.masaTenggang) {
+          html +=
+            '<div class="cek-summary-line"><span class="label">Tenggang</span>' +
+            parsed.header.masaTenggang +
+            "</div>";
+        }
         html += "</div>";
       }
 
@@ -577,17 +653,29 @@
       if (parsed.pakets.length) {
         html += '<div class="paket-section-title">Daftar kuota</div>';
         html += '<div class="paket-list">';
-        parsed.pakets.forEach(p => {
+        parsed.pakets.forEach(function (p) {
           const cls = typeToClass(p.tipe);
-          html += `<div class="paket-card ${cls}">`;
-          html += `<div class="paket-title">${p.nama || "Paket"}</div>`;
-          if (p.tipe)
-            html += `<div class="paket-line"><span class="label">Tipe</span>${p.tipe}</div>`;
-          if (p.total)
-            html += `<div class="paket-line"><span class="label">Kuota</span><span class="value-strong">${p.total}</span></div>`;
-          if (p.sisa)
-            html += `<div class="paket-line"><span class="label">Sisa</span><span class="value-strong">${p.sisa}</span></div>`;
-          html += "</div>`;
+          html += '<div class="paket-card ' + cls + '">';
+          html += '<div class="paket-title">' + (p.nama || "Paket") + "</div>";
+          if (p.tipe) {
+            html +=
+              '<div class="paket-line"><span class="label">Tipe</span>' +
+              p.tipe +
+              "</div>";
+          }
+          if (p.total) {
+            html +=
+              '<div class="paket-line"><span class="label">Kuota</span><span class="value-strong">' +
+              p.total +
+              "</span></div>";
+          }
+          if (p.sisa) {
+            html +=
+              '<div class="paket-line"><span class="label">Sisa</span><span class="value-strong">' +
+              p.sisa +
+              "</span></div>";
+          }
+          html += "</div>";
         });
         html += "</div>";
       }
@@ -605,7 +693,7 @@
     const cekNumberInput = document.getElementById("cek-number");
     const cekResultBody = document.getElementById("cek-result-body");
 
-    cekForm.addEventListener("submit", async (e) => {
+    cekForm.addEventListener("submit", async function (e) {
       e.preventDefault();
 
       const nomor = (cekNumberInput.value || "").trim();
@@ -617,10 +705,11 @@
       cekResultBody.textContent = "Memeriksa kuota...\nMohon tunggu.";
 
       try {
-        const res = await fetch(`/api/cek-kuota?msisdn=${encodeURIComponent(nomor)}`);
+        const res = await fetch("/api/cek-kuota?msisdn=" + encodeURIComponent(nomor));
 
         if (!res.ok) {
-          cekResultBody.textContent = "Gagal mengakses server. Status: " + res.status;
+          cekResultBody.textContent =
+            "Gagal mengakses server. Status: " + res.status;
           return;
         }
 
@@ -628,7 +717,7 @@
         let json;
         try {
           json = JSON.parse(text);
-        } catch {
+        } catch (err) {
           cekResultBody.textContent = text;
           return;
         }
@@ -640,16 +729,12 @@
 
         const hasil = json.data.hasil;
         const parsed = parseHasilString(hasil);
-        renderResultParsed(cekResultBody, parsed, hasil.replace(/<br\s*\/?>/gi, "\n"));
-
+        const fallbackText = hasil.replace(/<br\s*\/?>/gi, "\n");
+        renderResultParsed(cekResultBody, parsed, fallbackText);
       } catch (err) {
         cekResultBody.textContent = "Terjadi kesalahan: " + err.message;
       }
     });
-
-    // Tampilkan screen default saat awal
-    showScreen(null);
   </script>
-
 </body>
 </html>
