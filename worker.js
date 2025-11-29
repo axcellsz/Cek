@@ -25,9 +25,18 @@ export default {
     // ==========================================
     // 1. REGISTER USER
     // ==========================================
-    if (pathname === "/api/auth/register" && request.method === "POST") {
+    if (pathname === "/api/auth/register") {
+      if (request.method !== "POST") {
+        return json(
+          { status: false, message: "Gunakan method POST untuk register." },
+          405,
+        );
+      }
+
       const body = await readJSON(request);
-      if (!body) return json({ status: false, message: "Invalid JSON" }, 400);
+      if (!body) {
+        return json({ status: false, message: "Body harus JSON." }, 400);
+      }
 
       const { name, whatsapp, password, xl } = body;
 
@@ -40,10 +49,13 @@ export default {
 
       const key = `user:${whatsapp}`;
 
-      // cek apakah user sudah ada
+      // cek apakah sudah terdaftar
       const exist = await env.USER_VPN.get(key);
       if (exist) {
-        return json({ status: false, message: "Nomor WhatsApp sudah terdaftar." }, 400);
+        return json(
+          { status: false, message: "Nomor WhatsApp sudah terdaftar." },
+          400,
+        );
       }
 
       const data = {
@@ -54,12 +66,11 @@ export default {
         created_at: Date.now(),
       };
 
-      // simpan ke KV
       await env.USER_VPN.put(key, JSON.stringify(data));
 
       return json({
         status: true,
-        message: "Register berhasil",
+        message: "Register berhasil.",
         data,
       });
     }
@@ -67,28 +78,44 @@ export default {
     // ==========================================
     // 2. LOGIN USER
     // ==========================================
-    if (pathname === "/api/auth/login" && request.method === "POST") {
+    if (pathname === "/api/auth/login") {
+      if (request.method !== "POST") {
+        return json(
+          { status: false, message: "Gunakan method POST untuk login." },
+          405,
+        );
+      }
+
       const body = await readJSON(request);
-      if (!body) return json({ status: false, message: "Invalid JSON" }, 400);
+      if (!body) {
+        return json({ status: false, message: "Body harus JSON." }, 400);
+      }
 
       const { username, password } = body;
-      if (!username || !password)
-        return json({ status: false, message: "Semua field wajib diisi." }, 400);
+
+      if (!username || !password) {
+        return json(
+          { status: false, message: "Semua field login wajib diisi." },
+          400,
+        );
+      }
 
       const key = `user:${username}`;
       const raw = await env.USER_VPN.get(key);
 
-      if (!raw)
+      if (!raw) {
         return json({ status: false, message: "Akun tidak ditemukan." }, 404);
+      }
 
       const user = JSON.parse(raw);
 
-      if (user.password !== password)
+      if (user.password !== password) {
         return json({ status: false, message: "Password salah." }, 403);
+      }
 
       return json({
         status: true,
-        message: "Login berhasil",
+        message: "Login berhasil.",
         data: user,
       });
     }
@@ -100,7 +127,10 @@ export default {
       const msisdn = url.searchParams.get("msisdn");
 
       if (!msisdn) {
-        return json({ ok: false, message: "Parameter msisdn wajib diisi" }, 400);
+        return json(
+          { ok: false, message: "Parameter msisdn wajib diisi" },
+          400,
+        );
       }
 
       const upstreamUrl =
@@ -119,6 +149,7 @@ export default {
         });
 
         const bodyText = await upstreamRes.text();
+
         return new Response(bodyText, {
           status: upstreamRes.status,
           headers: {
@@ -147,7 +178,8 @@ export default {
       return await env.ASSETS.fetch(request);
     } catch (e) {
       const fallbackUrl = new URL("/", request.url);
-      return await env.ASSETS.fetch(new Request(fallbackUrl, request));
+      const fallbackReq = new Request(fallbackUrl.toString(), request);
+      return await env.ASSETS.fetch(fallbackReq);
     }
   },
 };
