@@ -133,23 +133,18 @@ body {
   font-size: 14px;
   font-weight: 700;
   padding: 10px 12px;
-
-  /* UBAH MENJADI HITAM */
   background: #000000 !important;
-
-  /* teks putih biar jelas */
   color: #ffffff !important;
-
   border-bottom: 1px solid #1e293b;
 }
 
 /* Scroll area */
 .cek-result-body {
   flex: 1;
-  padding: 10px 12px 24px; /* padding bawah agak besar biar kartu terakhir tidak kepotong */
+  padding: 10px 12px 24px;
   font-size: 14px;
   color: #334155;
-  overflow-y: auto;   /* di sini scroll daftar kuota */
+  overflow-y: auto;
   max-height: 100%;
   box-sizing: border-box;
 }
@@ -160,8 +155,6 @@ body {
   border-radius: 16px;
   background: #eef4ff;
   border: 1px solid #dbe7ff;
-
-  /* shadow */
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.08),
     0 12px 24px rgba(0, 0, 0, 0.06),
@@ -172,11 +165,11 @@ body {
 .summary-main {
   display: inline-block;
   padding: 6px 14px;
-  background: #000000;       /* hitam */
+  background: #000000;
   border-radius: 999px;
   font-size: 16px;
   font-weight: 700;
-  color: #fbbf24 !important; /* gold terang */
+  color: #fbbf24 !important;
   margin-bottom: 8px;
 }
 
@@ -195,26 +188,23 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 8px;   /* jarak antara summary & kartu pertama */
+  margin-top: 8px;
 }
 
-/* Card Paket – tanpa garis biru kiri, warna lembut */
+/* Card Paket */
 .paket-card {
   position: relative;
   padding: 12px 14px;
   border-radius: 14px;
   background: linear-gradient(135deg, #eef2ff, #e0f2fe);
   border: 1px solid #dbeafe;
-
-  /* shadow lembut */
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.06),
     0 10px 20px rgba(0, 0, 0, 0.05);
-
-  margin-bottom: 2px; /* jarak tipis antar kartu */
+  margin-bottom: 2px;
 }
 
-/* Hilangkan garis vertikal di kiri (override semua) */
+/* Hilangkan garis vertikal di kiri */
 .paket-card::before,
 .paket-card.data::before,
 .paket-card.voice::before,
@@ -222,14 +212,12 @@ body {
   content: none !important;
 }
 
-/* Info Title */
 .paket-title {
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 4px;
 }
 
-/* Detail Teks */
 .paket-line {
   font-size: 13px;
   margin: 1px 0;
@@ -256,13 +244,11 @@ body {
   outline: none;
 }
 
-/* Fokus */
 .cek-input:focus {
   border-color: #2563eb;
   background: #ffffff;
 }
 
-/* Tombol cek */
 .cek-button {
   padding: 12px 18px;
   min-width: 70px;
@@ -272,24 +258,18 @@ body {
   background: #0f172a;
   color: white;
   cursor: pointer;
-
   -webkit-tap-highlight-color: transparent;
-
-  /* shadow */
   box-shadow:
     0 4px 10px rgba(0, 0, 0, 0.18),
     0 2px 6px rgba(0, 0, 0, 0.12);
-
   transition: background 0.15s, color 0.15s, transform 0.1s;
 }
 
-/* Saat ditekan */
 .cek-button:active {
   background: #334155;
   transform: scale(0.96);
 }
 
-/* HILANGKAN BAYANGAN BIRU */
 .cek-button:focus {
   outline: none;
 }
@@ -303,15 +283,12 @@ body {
   height: 70px;
   width: 100%;
   background: #ffffff;
-
   box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.08);
-
   display: flex;
   justify-content: space-around;
   align-items: center;
 }
 
-/* Tombol footer */
 .nav-btn {
   flex: 1;
   text-align: center;
@@ -322,7 +299,6 @@ body {
   transition: opacity 0.15s, transform 0.1s;
 }
 
-/* Icon */
 .nav-btn-icon {
   display: block;
   margin-bottom: 2px;
@@ -334,7 +310,6 @@ body {
   stroke: #475569;
 }
 
-/* Aktif */
 .nav-btn.active {
   color: #0f172a;
 }
@@ -353,30 +328,27 @@ body {
   border-radius: 999px;
 }
 
-/* Tekan */
 .nav-btn:active {
   transform: scale(0.92);
   opacity: 0.7;
 }
 
-/* Pesan tidak ada paket */
 .no-paket-msg {
   margin-top: 10px;
   font-size: 13px;
   color: #64748b;
   font-weight: 600;
 }
+
 /* ============================
    PROFILE FORM (LOGIN & REGISTER)
 ============================ */
-
 .profile-container {
   padding: 10px 4px;
   height: 100%;
   overflow-y: auto;
 }
 
-/* TAB BUTTON */
 .profile-tabs {
   display: flex;
   gap: 10px;
@@ -401,7 +373,6 @@ body {
   color: white;
 }
 
-/* CONTENT AREA */
 .tab-content {
   display: none;
 }
@@ -410,7 +381,6 @@ body {
   display: block;
 }
 
-/* FORM STYLE */
 .profile-form {
   display: flex;
   flex-direction: column;
@@ -441,7 +411,6 @@ body {
   background: white;
 }
 
-/* BUTTON */
 .profile-btn {
   margin-top: 6px;
   padding: 12px;
@@ -459,12 +428,13 @@ body {
   transform: scale(0.96);
   background: #334155;
 }
+
 /* Tengah semua form + batasi lebar */
 .profile-form,
 .cek-form {
   width: 100%;
-  max-width: 450px;      /* <=== BATAS LEBAR */
-  margin: 0 auto;        /* <=== BIAR TENGAH */
+  max-width: 450px;
+  margin: 0 auto;
 }
 
 /* Semua input rapi */
