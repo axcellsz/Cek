@@ -13,6 +13,14 @@ document.addEventListener("DOMContentLoaded", () => {
     return s;
   }
 
+  /* Helper sensor 4 digit terakhir */
+  function maskLast4(num) {
+    if (!num) return "";
+    const s = String(num);
+    if (s.length <= 4) return s + "****";
+    return s.slice(0, -4) + "****";
+  }
+
   /* =====================================================
      NAVIGASI BOTTOM BAR
   ====================================================== */
@@ -46,10 +54,15 @@ document.addEventListener("DOMContentLoaded", () => {
       const name = btn.dataset.screen;
       showScreen(name);
       setActiveNav(name);
+
+      // kalau buka tab "users", auto load
+      if (name === "users") {
+        loadUsers();
+      }
     });
   });
 
-  // screen awal → langsung ke profile
+  // screen awal: profile
   showScreen("profile");
   setActiveNav("profile");
 
@@ -69,9 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const isSisa = label.toLowerCase() === "sisa";
 
     const valueHtml = isSisa
-      ? `<span style="font-weight:600;color:#16a34a;">${normalizeAmount(
-          value
-        )}</span>`
+      ? `<span style="font-weight:600;color:#16a34a;">${normalizeAmount(value)}</span>`
       : `<span style="font-weight:600;">${normalizeAmount(value)}</span>`;
 
     return `
@@ -259,22 +270,34 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     TAB MASUK / DAFTAR
+     LOGIN / REGISTER SWITCH (tombol di bawah form)
   ====================================================== */
-  const tabButtons = document.querySelectorAll(".tab-btn");
-  const tabContents = document.querySelectorAll(".tab-content");
+  const tabLogin = document.getElementById("tab-login");
+  const tabRegister = document.getElementById("tab-register");
+  const switchToRegister = document.getElementById("switch-to-register");
+  const switchToLogin = document.getElementById("switch-to-login");
 
-  tabButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      tabButtons.forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
+  function showLoginTab() {
+    if (tabLogin && tabRegister) {
+      tabLogin.classList.add("active");
+      tabRegister.classList.remove("active");
+    }
+  }
 
-      const tab = btn.dataset.tab;
-      tabContents.forEach((c) => c.classList.remove("active"));
-      const target = document.getElementById("tab-" + tab);
-      if (target) target.classList.add("active");
-    });
-  });
+  function showRegisterTab() {
+    if (tabLogin && tabRegister) {
+      tabRegister.classList.add("active");
+      tabLogin.classList.remove("active");
+    }
+  }
+
+  if (switchToRegister) {
+    switchToRegister.addEventListener("click", showRegisterTab);
+  }
+
+  if (switchToLogin) {
+    switchToLogin.addEventListener("click", showLoginTab);
+  }
 
   /* =====================================================
      FORM DAFTAR AKUN BARU
@@ -314,10 +337,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         alert("Daftar berhasil. Silakan masuk.");
-
-        // AUTO PINDAH KE TAB MASUK
-        const tabMasukBtn = document.querySelector('[data-tab="login"]');
-        if (tabMasukBtn) tabMasukBtn.click();
+        // langsung pindah ke tab login
+        showLoginTab();
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
       }
@@ -367,18 +388,6 @@ document.addEventListener("DOMContentLoaded", () => {
   /* =====================================================
      LIST USER
   ====================================================== */
-
-  // Helper: sensor 4 digit terakhir
-  // Helper: sensor 4 digit terakhir
-function maskLast4(num) {
-  if (!num) return "";
-  const s = String(num);
-  // kalau panjang <= 4, tampilkan apa adanya + ****
-  if (s.length <= 4) return s + "****";
-  // kalau lebih dari 4, buang 4 digit terakhir, ganti ****
-  return s.slice(0, -4) + "****";
-}
-
   const userListEl = document.getElementById("user-list");
   const reloadUsersBtn = document.getElementById("reload-users");
 
@@ -405,27 +414,27 @@ function maskLast4(num) {
       }
 
       userListEl.innerHTML = users
-  .map((u, idx) => {
-    const name = u.name || "-";
-    const wa = u.whatsapp || "";
-    const xl = u.xl || "";
+        .map((u, idx) => {
+          const name = u.name || "-";
+          const wa = u.whatsapp || "";
+          const xl = u.xl || "";
 
-    const waMasked = wa ? maskLast4(wa) : "****";
-    const xlMasked = xl ? maskLast4(xl) : "****";
+          const waMasked = wa ? maskLast4(wa) : "****";
+          const xlMasked = xl ? maskLast4(xl) : "****";
 
-    return `
-      <div class="user-item">
-        <div class="user-item-header">
-          <span>${idx + 1}. ${name}</span>
-        </div>
-        <div class="user-item-body">
-          <div>No WhatsApp: ${waMasked}</div>
-          <div>No XL: ${xlMasked}</div>
-        </div>
-      </div>
-    `;
-  })
-  .join("");
+          return `
+            <div class="user-item">
+              <div class="user-item-header">
+                <span>${idx + 1}. ${name}</span>
+              </div>
+              <div class="user-item-body">
+                <div>No WhatsApp: ${waMasked}</div>
+                <div>No XL: ${xlMasked}</div>
+              </div>
+            </div>
+          `;
+        })
+        .join("");
     } catch (err) {
       userListEl.innerHTML =
         "<div class='user-item'>Error: " + err.message + "</div>";
@@ -435,13 +444,4 @@ function maskLast4(num) {
   if (reloadUsersBtn && userListEl) {
     reloadUsersBtn.addEventListener("click", loadUsers);
   }
-
-  // otomatis muat saat buka tab "List user" dari footer
-  navButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      if (btn.dataset.screen === "users") {
-        loadUsers();
-      }
-    });
-  });
 });
