@@ -44,6 +44,15 @@ document.addEventListener("DOMContentLoaded", () => {
   // HELPER FORMAT STRING
   // ============================
 
+  // Format MSISDN: 628xxxx → 08xxxx
+  function formatMsisdn(num) {
+    if (!num) return "";
+    let s = String(num).trim();
+    if (s.startsWith("+628")) return "0" + s.slice(4);
+    if (s.startsWith("628")) return "0" + s.slice(3);
+    return s;
+  }
+
   // Rapikan spasi antara angka dan huruf: 19GB -> 19 GB, 7.5GB -> 7.5 GB
   function normalizeAmount(str) {
     if (!str) return "";
@@ -175,7 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
       html += `<div class="cek-summary">`;
 
       if (h.msisdn) {
-        html += `<div class="summary-main">${h.msisdn}</div>`;
+        html += `<div class="summary-main">${formatMsisdn(h.msisdn)}</div>`;
       }
 
       if (h.tipeKartu) {
@@ -251,7 +260,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cekForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const nomor = (cekNumberInput.value || "").trim();
+      let nomor = (cekNumberInput.value || "").trim();
       if (!nomor) {
         cekResultBody.textContent =
           "Nomor belum diisi. Silakan masukkan nomor terlebih dahulu.";
@@ -292,6 +301,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const fallbackText = hasilHtml
           ? hasilHtml.replace(/<br\s*\/?>/gi, "\n")
           : "";
+
+        // update input ke format 08xxxxx kalau msisdn tersedia
+        if (parsed.header && parsed.header.msisdn) {
+          cekNumberInput.value = formatMsisdn(parsed.header.msisdn);
+        } else {
+          cekNumberInput.value = formatMsisdn(nomor);
+        }
+
         renderParsedResult(parsed, fallbackText);
       } catch (err) {
         cekResultBody.textContent =
