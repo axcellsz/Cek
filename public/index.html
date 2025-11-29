@@ -110,27 +110,25 @@
 
     <!-- List user -->
     <div id="screen-users" class="screen">
+    <!-- List user -->
+    <div id="screen-users" class="screen">
       <div class="screen-card">
-        <div
-          style="
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            box-sizing: border-box;
-            text-align: center;
-          "
-        >
-          <div>
-            <div class="screen-title">List user</div>
-            <div class="screen-desc">
-              Daftar user VPN akan ditampilkan di sini.
-            </div>
+        <div class="user-list-container">
+          <div class="screen-title">List user</div>
+          <div class="screen-desc">
+            Daftar user VPN yang terdaftar di sistem.
+          </div>
+
+          <button id="user-list-refresh" class="profile-btn user-refresh-btn">
+            Refresh
+          </button>
+
+          <div id="user-list-body" class="user-list-body">
+            <!-- daftar user akan dirender oleh JS -->
           </div>
         </div>
       </div>
     </div>
-
     <!-- Beli kuota -->
     <div id="screen-beli" class="screen">
       <div class="screen-card">
