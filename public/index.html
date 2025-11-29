@@ -3,48 +3,91 @@
 <head>
   <meta charset="UTF-8">
 
-  <!-- Lock viewport agar ukuran layar mengikuti HP dan tidak bisa di-zoom -->
-  <meta name="viewport" 
+  <meta name="viewport"
         content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-  <title>Halaman Bersih</title>
+  <title>Aplikasi</title>
 
   <style>
-    /* Reset dan fullscreen */
+    /* Reset + fullscreen */
     html, body {
       margin: 0;
       padding: 0;
       width: 100%;
       height: 100%;
-      overflow: hidden;  /* Tidak dapat di-scroll */
-      background: white; /* Layar bersih */
+      background: white;
+      overflow: hidden;
       font-family: sans-serif;
-      touch-action: none; /* Mencegah zoom/gestur */
     }
 
-    /* Container yang memenuhi layar */
+    /* Area konten utama */
     #app {
       width: 100%;
-      height: 100%;
+      height: calc(100% - 70px); /* sisakan ruang untuk footer */
       display: flex;
-      flex-direction: column;
       justify-content: center;
       align-items: center;
       text-align: center;
     }
 
-    /* Contoh teks kecil (boleh dihapus) */
-    #info {
-      color: #777;
-      font-size: 14px;
+    /* FOOTER FIXED */
+    .footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      height: 70px;
+      background: #ffffff;
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    /* Tombol footer */
+    .nav-btn {
+      flex: 1;
+      text-align: center;
+      color: #444;
+      text-decoration: none;
+      font-size: 12px;
+    }
+
+    .nav-btn-icon {
+      font-size: 22px;
+      display: block;
+      margin-bottom: 3px;
     }
   </style>
 </head>
 <body>
 
-  <!-- Area kosong yang bisa kamu isi nanti -->
   <div id="app">
-    <div id="info">Halaman kosong siap digunakan</div>
+    <!-- Konten utama kosong -->
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+
+    <a class="nav-btn" href="#">
+      <span class="nav-btn-icon">🍏</span>
+      Akrab
+    </a>
+
+    <a class="nav-btn" href="#">
+      <span class="nav-btn-icon">🍋‍🟩</span>
+      Oprex
+    </a>
+
+    <a class="nav-btn" href="#">
+      <span class="nav-btn-icon">🥭</span>
+      Inject
+    </a>
+
+    <a class="nav-btn" href="#">
+      <span class="nav-btn-icon">🍓</span>
+      Reguler
+    </a>
+
   </div>
 
 </body>
