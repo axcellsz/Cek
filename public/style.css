@@ -366,3 +366,96 @@ body {
   color: #64748b;
   font-weight: 600;
 }
+/* ============================
+   PROFILE FORM (LOGIN & REGISTER)
+============================ */
+
+.profile-container {
+  padding: 10px 4px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* TAB BUTTON */
+.profile-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px 0;
+  background: #e2e8f0;
+  color: #334155;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.tab-btn.active {
+  background: #0f172a;
+  color: white;
+}
+
+/* CONTENT AREA */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* FORM STYLE */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+}
+
+.profile-form label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  margin-left: 4px;
+}
+
+.input-box {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  font-size: 14px;
+  outline: none;
+  transition: 0.2s;
+}
+
+.input-box:focus {
+  border-color: #2563eb;
+  background: white;
+}
+
+/* BUTTON */
+.profile-btn {
+  margin-top: 6px;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: #0f172a;
+  color: white;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.profile-btn:active {
+  transform: scale(0.96);
+  background: #334155;
+}
