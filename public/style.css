@@ -1,137 +1,336 @@
-/* ================================
-   FOOTER + SHADOW
-=================================*/
-.footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    height: 70px;
-
-    background: #ffffff;
-    border-top: 1px solid #e5e7eb;
-
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-
-    box-shadow: 0 -4px 12px rgba(0,0,0,0.10); /* shadow di atas footer */
-    z-index: 50;
+/* Reset + fullscreen */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #e0f2fe 0%, #f9fafb 40%, #f3f4f6 100%);
+  overflow: hidden;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #0f172a;
 }
 
-/* Tombol footer */
-.nav-btn {
-    flex: 1;
-    text-align: center;
-    color: #444;
-    text-decoration: none;
-    font-size: 12px;
-
-    -webkit-tap-highlight-color: transparent;
-    outline: none;
-
-    transition: transform 0.15s ease, opacity 0.15s ease;
+/* Area konten utama (di atas footer) */
+#app {
+  width: 100%;
+  height: calc(100% - 80px); /* sisakan sedikit jarak di atas footer */
+  box-sizing: border-box;
+  padding: 12px 12px 0;
 }
 
-.nav-btn:active {
-    transform: scale(0.93);
-    opacity: 0.7;
+.screen {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: none;
 }
 
-.nav-btn-icon svg {
-    width: 24px;
-    height: 24px;
-    stroke: #444;
+/* Card container umum untuk semua screen */
+.screen-card {
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 20px;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.1),
+    0 0 0 1px rgba(148, 163, 184, 0.15);
+  padding: 18px 16px 12px;
+  box-sizing: border-box;
 }
 
-/* Aktif */
-.nav-btn.active::after {
-    content: "";
-    display: block;
-    width: 32px;
-    height: 2px;
-    margin: 4px auto 0 auto;
-    background: #9ca3af;
-    border-radius: 2px;
+/* Screen default: teks di tengah */
+#screen-default {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
 }
 
-
-/* ================================
-   FORM UTAMA (CONTAINER) + SHADOW
-=================================*/
-
-.screen-box {
-    background: white;
-    width: 92%;
-    margin: 16px auto;
-    padding: 20px 18px;
-    border-radius: 18px;
-
-    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.12); /* shadow form besar */
+#screen-default .screen-card-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 6px;
 }
 
+.screen-title {
+  font-size: 22px;
+  margin-bottom: 4px;
+  font-weight: 700;
+  color: #020617;
+}
+
+.screen-desc {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+/* ------------ CEK KUOTA SCREEN ------------ */
+#screen-cek {
+  display: none;
+}
+
+.cek-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.cek-header {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 10px;
+  color: #020617;
+}
+
+.cek-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-sizing: border-box;
+  min-height: 0;
+}
+
+/* FORM UTAMA / HASIL CEK – kasih shadow */
 .cek-result {
-    background: #fff;
-    border-radius: 14px;
-    padding: 16px;
-    border: 1px solid #e5e7eb;
+  flex: 1;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  padding: 0;
+  background: #ffffff; /* putih biar keliatan card */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08); /* shadow lembut */
+  /* shadow lembut untuk form utama */
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
 }
 
+.cek-result-title {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 8px 12px 6px;
+  background: linear-gradient(90deg, #eff6ff, #e0f2fe);
+  border-bottom: 1px solid #e5e7eb;
+}
 
-/* ================================
-   INPUT CEK KUOTA
-=================================*/
+.cek-result-body {
+  font-size: 13px;
+  color: #4b5563;
+  flex: 1;
+  overflow-y: auto;
+  max-height: 100%;
+  padding: 8px 10px 10px;
+  box-sizing: border-box;
+}
+
+/* SUMMARY NOMOR */
+.cek-summary {
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #dbeafe, #e0f2fe);
+  border: 1px solid #bfdbfe;
+}
+
+.summary-main {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1d4ed8;
+  margin-bottom: 3px;
+}
+
+.cek-summary-line {
+  font-size: 12px;
+  margin: 1px 0;
+  color: #1f2937;
+}
+
+.cek-summary-line span.label {
+  color: #6b7280;
+  margin-right: 4px;
+}
+
+/* DAFTAR PAKET */
+.paket-section-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+  margin: 0 0 4px;
+}
+
+.paket-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.paket-card {
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  padding: 6px 9px;
+  position: relative;
+  overflow: hidden;
+}
+
+.paket-card::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #9ca3af; /* default */
+}
+
+/* warna garis kiri per tipe */
+.paket-card.data::before {
+  background: #2563eb;
+}
+
+.paket-card.voice::before {
+  background: #16a34a;
+}
+
+.paket-card.sms::before {
+  background: #f97316;
+}
+
+.paket-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 2px;
+  color: #111827;
+}
+
+.paket-line {
+  font-size: 11.5px;
+  margin: 1px 0;
+}
+
+.paket-line span.label {
+  color: #6b7280;
+  margin-right: 4px;
+}
+
+.paket-line span.value-strong {
+  font-weight: 600;
+}
+
+/* Blok form input nomor (di bawah, dekat footer) */
+.cek-form {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 2px;
+}
 
 .cek-input {
-    flex: 1;
-    padding: 12px 16px;
-    font-size: 14px;
-
-    background: #fff;
-    border-radius: 999px;
-    border: 1px solid #d1d5db;
-
-    outline: none;
-    -webkit-tap-highlight-color: transparent;
+  flex: 1;
+  padding: 8px 11px;
+  font-size: 13px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  outline: none;
+  background: #f9fafb;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .cek-input:focus {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.25); /* efek fokus elegan */
+  border-color: #3b82f6;
+  background: #ffffff;
 }
 
-
-/* ================================
-   TOMBOL CEK — SHADOW, PUTIH SAAT DITEKAN
-=================================*/
-
+/* TOMBOL CEK – shadow, putih saat ditekan, tanpa highlight biru */
 .cek-button {
-    padding: 12px 24px;
-    border-radius: 999px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  font-size: 13px;
+  background: #020617;
+  color: white;
+  cursor: pointer;
+  min-width: 64px;
 
-    border: none;
-    cursor: pointer;
-    background: #111827;
-    color: white;
-    font-size: 14px;
-
-    outline: none;
-    -webkit-tap-highlight-color: transparent;
-
-    box-shadow: 0 4px 10px rgba(0,0,0,0.25); /* shaddow */
-    transition: background 0.15s ease, color 0.15s ease, transform 0.12s ease;
+  /* tambahan */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
 }
 
-/* Saat ditekan: berubah putih, TIDAK ada tap highlight */
 .cek-button:active {
-    background: white;
-    color: #111827;
-    transform: scale(0.95);
+  background: #ffffff;   /* jadi putih saat ditekan */
+  color: #020617;        /* teks gelap */
+  transform: scale(0.96);
 }
 
-/* Hilangkan outline biru Android/iPhone */
 .cek-button:focus {
-    outline: none;
-    box-shadow: none;
+  outline: none;
+}
+
+/* ------------ FOOTER ------------ */
+.footer {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 70px;
+  background: #ffffff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  /* shadow di atas footer */
+  box-shadow: 0 -4px 10px rgba(15, 23, 42, 0.12);
+}
+
+.nav-btn {
+  flex: 1;
+  text-align: center;
+  color: #4b5563;
+  font-size: 12px;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 0.1s ease, opacity 0.1s ease;
+}
+
+.nav-btn-icon {
+  display: block;
+  margin-bottom: 3px;
+}
+
+.nav-btn-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: #4b5563;
+}
+
+.nav-btn.active {
+  color: #111827;
+}
+
+.nav-btn.active .nav-btn-icon svg {
+  stroke: #111827;
+}
+
+.nav-btn.active::after {
+  content: "";
+  display: block;
+  width: 28px;
+  height: 2px;
+  background: #111827;
+  margin: 3px auto 0;
+  border-radius: 999px;
+}
+
+.nav-btn:active {
+  opacity: 0.7;
+  transform: scale(0.93);
 }
