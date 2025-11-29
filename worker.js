@@ -1,18 +1,27 @@
-import { getAssetFromKV } from '@cloudflare/kv-asset-handler';
-
 export default {
   async fetch(request, env, ctx) {
-    try {
-      return await getAssetFromKV(
-        { request, waitUntil: p => ctx.waitUntil(p) },
+    const url = new URL(request.url);
+
+    // --- Contoh API route (opsional) ---
+    if (url.pathname.startsWith("/api/hello")) {
+      return new Response(
+        JSON.stringify({ message: "Hello from cek_kuota_vpn" }),
         {
-          ASSET_NAMESPACE: env.__STATIC_CONTENT,
-          ASSET_MANIFEST: __STATIC_CONTENT_MANIFEST,
-        }
+          status: 200,
+          headers: { "content-type": "application/json" },
+        },
       );
+    }
+
+    // --- Static file dari folder public ---
+    try {
+      // Coba layani file persis sesuai path
+      return await env.ASSETS.fetch(request);
     } catch (e) {
-      // kalau file tidak ketemu, bisa lanjut ke logic API kamu
-      return new Response("Not found", { status: 404 });
+      // Kalau 404 (misalnya SPA), fallback ke / (index.html)
+      const fallbackUrl = new URL("/", request.url);
+      const fallbackRequest = new Request(fallbackUrl.toString(), request);
+      return await env.ASSETS.fetch(fallbackRequest);
     }
   },
 };
