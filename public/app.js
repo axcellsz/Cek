@@ -6,10 +6,15 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!num) return "";
     let s = String(num).trim();
 
-    if (s.startsWith("+62")) return "0" + s.slice(4);
-    if (s.startsWith("62")) return "0" + s.slice(3);
+    // +62877xxxx → 0877xxxx
+    if (s.startsWith("+62")) return "0" + s.slice(3);
+    // 62877xxxx → 0877xxxx
+    if (s.startsWith("62")) return "0" + s.slice(2);
+    // 08xxxxx → sudah benar
     if (s.startsWith("0")) return s;
-    
+    // 8xxxxx → tambahkan 0 di depan
+    if (s.startsWith("8")) return "0" + s;
+
     return s;
   }
 
@@ -99,13 +104,10 @@ document.addEventListener("DOMContentLoaded", () => {
     for (const line of lines) {
       if (line.startsWith("MSISDN:"))
         header.msisdn = formatMsisdn(line.replace("MSISDN:", "").trim());
-
       else if (line.startsWith("Tipe Kartu:"))
         header.tipeKartu = line.replace("Tipe Kartu:", "").trim();
-
       else if (line.startsWith("Masa Aktif:"))
         header.masaAktif = line.replace("Masa Aktif:", "").trim();
-
       else if (line.startsWith("Masa Berakhir Tenggang"))
         header.masaTenggang = line.split(":").slice(1).join(":").trim();
     }
