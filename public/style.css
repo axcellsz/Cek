@@ -1,7 +1,8 @@
 /* =========================================
    GLOBAL RESET & BASE
 ========================================= */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -113,6 +114,7 @@ html, body {
   border-radius: 18px;
   border: 1px solid #e2e8f0;
   overflow: hidden;
+  min-height: 0; /* penting supaya anaknya bisa scroll */
 
   /* shadow keren */
   box-shadow:
@@ -136,7 +138,9 @@ html, body {
   padding: 10px 12px;
   font-size: 14px;
   color: #334155;
-  overflow-y: auto;
+  overflow-y: auto;   /* di sini scroll daftar kuota */
+  max-height: 100%;
+  box-sizing: border-box;
 }
 
 /* Ringkasan Nomor */
@@ -166,13 +170,9 @@ html, body {
   margin: 2px 0;
 }
 
-/* Section Daftar Kuota */
+/* Section Daftar Kuota – DISABLE TEKSNYA */
 .paket-section-title {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-  color: #94a3b8;
-  margin-top: 4px;
+  display: none;
 }
 
 /* List Paket */
@@ -182,12 +182,12 @@ html, body {
   gap: 10px;
 }
 
-/* Card Paket */
+/* Card Paket – tanpa garis biru kiri, warna lembut */
 .paket-card {
   position: relative;
   padding: 12px 14px;
   border-radius: 14px;
-  background: linear-gradient(135deg, #eef2ff, #e0f2fe); /* warna lembut */
+  background: linear-gradient(135deg, #eef2ff, #e0f2fe);
   border: 1px solid #dbeafe;
 
   /* shadow lembut */
@@ -196,14 +196,13 @@ html, body {
     0 10px 20px rgba(0, 0, 0, 0.05);
 }
 
-/* Hilangkan garis vertikal di kiri */
-.paket-card::before {
-  content: none;
+/* Hilangkan garis vertikal di kiri (override semua) */
+.paket-card::before,
+.paket-card.data::before,
+.paket-card.voice::before,
+.paket-card.sms::before {
+  content: none !important;
 }
-
-.paket-card.data::before { background: #2563eb; }
-.paket-card.voice::before { background: #16a34a; }
-.paket-card.sms::before { background: #f97316; }
 
 /* Info Title */
 .paket-title {
