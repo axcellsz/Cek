@@ -109,34 +109,23 @@ body {
 
 /* Hasil cek kuota card */
 .cek-result {
-.cek-result {
   flex: 1;
   background: #ffffff;
   border-radius: 18px;
   border: 1px solid #e2e8f0;
   overflow: hidden;
-  min-height: 0;
+  min-height: 0; /* penting supaya anaknya bisa scroll */
 
-  /* jadikan flex container supaya body bisa full height dan scroll rapi */
+  /* supaya body bisa full height & scroll rapi */
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
 
+  /* shadow keren */
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.08),
     0 12px 24px rgba(0, 0, 0, 0.06),
     0 24px 48px rgba(0, 0, 0, 0.04);
-}
-
-/* Scroll area */
-.cek-result-body {
-  flex: 1;
-  padding: 10px 12px 24px; /* padding bawah lebih besar biar tidak kepotong */
-  font-size: 14px;
-  color: #334155;
-  overflow-y: auto;
-  max-height: 100%;
-  box-sizing: border-box;
 }
 
 /* Title area */
@@ -157,7 +146,7 @@ body {
 /* Scroll area */
 .cek-result-body {
   flex: 1;
-  padding: 10px 12px 16px; /* + padding bawah biar kartu terakhir nggak nempel */
+  padding: 10px 12px 24px; /* padding bawah agak besar biar kartu terakhir tidak kepotong */
   font-size: 14px;
   color: #334155;
   overflow-y: auto;   /* di sini scroll daftar kuota */
@@ -179,7 +168,7 @@ body {
     0 24px 48px rgba(0, 0, 0, 0.04);
 }
 
-/* Summary teks */
+/* Summary teks – nomor dalam pill hitam + gold */
 .summary-main {
   display: inline-block;
   padding: 6px 14px;
@@ -369,11 +358,8 @@ body {
   transform: scale(0.92);
   opacity: 0.7;
 }
-.no-paket-msg {
-  margin-top: 12px;
-  font-size: 13px;
-  color: #6b7280;
-}
+
+/* Pesan tidak ada paket */
 .no-paket-msg {
   margin-top: 10px;
   font-size: 13px;
