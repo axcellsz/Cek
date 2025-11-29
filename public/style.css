@@ -1,465 +1,53 @@
-/* =========================================
-   GLOBAL RESET & BASE
-========================================= */
-html,
-body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(180deg, #dbeafe 0%, #f1f5f9 40%, #f8fafc 100%);
-  overflow: hidden;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  color: #0f172a;
-}
-
-/* Area konten utama */
-#app {
-  width: 100%;
-  height: calc(100% - 80px); /* sisakan ruang footer */
-  box-sizing: border-box;
-  padding: 12px 12px 0;
-}
-
-/* Screen hidden default */
-.screen {
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
-  display: none;
-}
-
-/* =====================================================
-   CARD STYLE UMUM (dipakai oleh semua screen)
-===================================================== */
-.screen-card {
-  width: 100%;
-  height: 100%;
-  background: #ffffff;
-  border-radius: 20px;
-  padding: 18px 16px 12px;
-  box-sizing: border-box;
-
-  /* Shadow premium */
-  box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.08),
-    0 12px 24px rgba(0, 0, 0, 0.06),
-    0 24px 48px rgba(0, 0, 0, 0.04);
-}
-
-/* Default Screen */
-#screen-default {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
-
-#screen-default .screen-card-inner {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.screen-title {
-  font-size: 22px;
-  margin-bottom: 4px;
-  font-weight: 700;
-  color: #020617;
-}
-
-.screen-desc {
-  font-size: 14px;
-  color: #6b7280;
-}
-
-/* =====================================================
-   CEK KUOTA SCREEN
-===================================================== */
-#screen-cek {
-  display: none;
-}
-
-.cek-card {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-
-/* Header Judul */
-.cek-header {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 12px;
-  color: #0f172a;
-}
-
-/* Container utama */
-.cek-container {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  min-height: 0;
-}
-
-/* Hasil cek kuota card */
-.cek-result {
-  flex: 1;
-  background: #ffffff;
-  border-radius: 18px;
-  border: 1px solid #e2e8f0;
-  overflow: hidden;
-  min-height: 0;
-
-  display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
-
-  /* shadow keren */
-  box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.08),
-    0 12px 24px rgba(0, 0, 0, 0.06),
-    0 24px 48px rgba(0, 0, 0, 0.04);
-}
-
-/* Title area */
-.cek-result-title {
-  font-size: 14px;
-  font-weight: 700;
-  padding: 10px 12px;
-
-  background: #000000;
-  color: #ffffff;
-
-  border-bottom: 1px solid #1e293b;
-}
-
-/* Scroll area */
-.cek-result-body {
-  flex: 1;
-  padding: 10px 12px 24px;
-  font-size: 14px;
-  color: #334155;
-  overflow-y: auto;
-  max-height: 100%;
-  box-sizing: border-box;
-}
-
-/* Ringkasan Nomor */
-.cek-summary {
-  padding: 12px 14px;
-  border-radius: 16px;
-  background: #eef4ff;
-  border: 1px solid #dbe7ff;
-
-  /* shadow */
-  box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.08),
-    0 12px 24px rgba(0, 0, 0, 0.06),
-    0 24px 48px rgba(0, 0, 0, 0.04);
-}
-
-/* Summary teks – nomor dalam pill hitam + gold */
-.summary-main {
-  display: inline-block;
-  padding: 6px 14px;
-  background: #000000;
-  border-radius: 999px;
-  font-size: 16px;
-  font-weight: 700;
-  color: #fbbf24;
-  margin-bottom: 8px;
-}
-
-.cek-summary-line {
-  font-size: 13px;
-  margin: 2px 0;
-}
-
-/* Section Daftar Kuota – DISABLE TEKSNYA */
-.paket-section-title {
-  display: none;
-}
-
-/* List Paket */
-.paket-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 8px;
-}
-
-/* Card Paket – tanpa garis biru kiri, warna lembut */
-.paket-card {
-  position: relative;
-  padding: 12px 14px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #eef2ff, #e0f2fe);
-  border: 1px solid #dbeafe;
-
-  /* shadow lembut */
-  box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.06),
-    0 10px 20px rgba(0, 0, 0, 0.05);
-
-  margin-bottom: 2px;
-}
-
-/* Hilangkan garis vertikal di kiri (override semua) */
-.paket-card::before,
-.paket-card.data::before,
-.paket-card.voice::before,
-.paket-card.sms::before {
-  content: none !important;
-}
-
-/* Info Title */
-.paket-title {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-/* Detail Teks */
-.paket-line {
-  font-size: 13px;
-  margin: 1px 0;
-  line-height: 1.35;
-  color: #334155;
-}
-
-/* =====================================================
-   FORM INPUT (Dekat Footer)
-===================================================== */
-.cek-form {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  width: 100%;
-  max-width: 450px;
-  margin: 0 auto;
-}
-
-.cek-input {
-  flex: 1;
-  padding: 12px 14px;
-  font-size: 14px;
-  border-radius: 999px;
-  border: 1px solid #d8dee7;
-  background: #f8fafc;
-  outline: none;
-}
-
-.cek-input:focus {
-  border-color: #2563eb;
-  background: #ffffff;
-}
-
-/* Tombol cek */
-.cek-button {
-  padding: 12px 18px;
-  min-width: 70px;
-  font-size: 14px;
-  border-radius: 999px;
-  border: none;
-  background: #0f172a;
-  color: white;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-
-  box-shadow:
-    0 4px 10px rgba(0, 0, 0, 0.18),
-    0 2px 6px rgba(0, 0, 0, 0.12);
-
-  transition: background 0.15s, color 0.15s, transform 0.1s;
-}
-
-.cek-button:active {
-  background: #334155;
-  transform: scale(0.96);
-}
-
-.cek-button:focus {
-  outline: none;
-}
-
-/* =====================================================
-   FOOTER (Navbar)
-===================================================== */
-.footer {
-  position: fixed;
-  bottom: 0;
-  height: 70px;
-  width: 100%;
-  background: #ffffff;
-
-  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.08);
-
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-}
-
-/* Tombol footer */
-.nav-btn {
-  flex: 1;
-  text-align: center;
-  font-size: 12px;
-  color: #475569;
-  text-decoration: none;
-  -webkit-tap-highlight-color: transparent;
-  transition: opacity 0.15s, transform 0.1s;
-}
-
-/* Icon */
-.nav-btn-icon {
-  display: block;
-  margin-bottom: 2px;
-}
-
-.nav-btn-icon svg {
-  width: 24px;
-  height: 24px;
-  stroke: #475569;
-}
-
-/* Aktif */
-.nav-btn.active {
-  color: #0f172a;
-}
-
-.nav-btn.active svg {
-  stroke: #0f172a;
-}
-
-.nav-btn.active::after {
-  content: "";
-  display: block;
-  height: 2px;
-  width: 30px;
-  background: #0f172a;
-  margin: 3px auto 0;
-  border-radius: 999px;
-}
-
-/* Tekan */
-.nav-btn:active {
-  transform: scale(0.92);
-  opacity: 0.7;
-}
-
-/* Pesan tidak ada paket */
-.no-paket-msg {
-  margin-top: 10px;
-  font-size: 13px;
-  color: #64748b;
-  font-weight: 600;
-}
-
 /* ============================
-   PROFILE FORM (LOGIN & REGISTER)
+   LIST USER
 ============================ */
 
-.profile-container {
-  padding: 10px 4px;
-  height: 100%;
-  overflow-y: auto;
-}
-
-/* TAB BUTTON */
-.profile-tabs {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 18px;
-}
-
-.tab-btn {
-  flex: 1;
-  padding: 10px 0;
-  background: #e2e8f0;
-  color: #334155;
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.tab-btn.active {
-  background: #0f172a;
-  color: white;
-}
-
-/* CONTENT AREA */
-.tab-content {
-  display: none;
-}
-
-.tab-content.active {
-  display: block;
-}
-
-/* FORM STYLE */
-.profile-form {
+.user-list-container {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  text-align: left;
-  width: 100%;
-  max-width: 450px;
-  margin: 0 auto;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 4px 4px 8px;
+  gap: 12px;
 }
 
-.profile-form label {
-  font-size: 14px;
+.user-reload-btn {
+  margin-top: 4px;
+  margin-bottom: 4px;
+}
+
+.user-list {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.user-item {
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 13px;
+}
+
+.user-item-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
   font-weight: 600;
   color: #0f172a;
-  margin-left: 4px;
 }
 
-.input-box {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid #cbd5e1;
-  background: #f8fafc;
-  font-size: 14px;
-  outline: none;
-  transition: 0.2s;
-  box-sizing: border-box;
+.user-item-body {
+  font-size: 12px;
+  color: #475569;
 }
 
-.input-box:focus {
-  border-color: #2563eb;
-  background: white;
-}
-
-/* BUTTON */
-.profile-btn {
-  margin-top: 6px;
-  padding: 12px;
-  border: none;
-  border-radius: 12px;
-  background: #0f172a;
-  color: white;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
-  width: 100%;
-  max-width: 450px;
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-}
-
-.profile-btn:active {
-  transform: scale(0.96);
-  background: #334155;
+.user-item-small {
+  font-size: 11px;
+  color: #64748b;
+  margin-top: 2px;
 }
