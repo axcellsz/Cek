@@ -21,8 +21,13 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install Wrangler v3 (SAMA seperti cobra)
-        run: npm install -g wrangler@3
+      - name: Install Wrangler v3 (pakai lokal, bukan global)
+        run: |
+          npm init -y
+          npm install wrangler@3
+
+      - name: Cek versi Wrangler (harus 3.x)
+        run: npx wrangler@3 --version
 
       - name: Deploy Worker
-        run: wrangler deploy
+        run: npx wrangler@3 deploy
