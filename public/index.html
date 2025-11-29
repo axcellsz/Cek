@@ -110,8 +110,6 @@
 
     <!-- List user -->
     <div id="screen-users" class="screen">
-    <!-- List user -->
-    <div id="screen-users" class="screen">
       <div class="screen-card">
         <div class="user-list-container">
           <div class="screen-title">List user</div>
@@ -119,16 +117,17 @@
             Daftar user VPN yang terdaftar di sistem.
           </div>
 
-          <button id="user-list-refresh" class="profile-btn user-refresh-btn">
-            Refresh
+          <button id="user-list-refresh" class="user-list-refresh-btn">
+            Muat ulang
           </button>
 
           <div id="user-list-body" class="user-list-body">
-            <!-- daftar user akan dirender oleh JS -->
+            <!-- daftar user dari API -->
           </div>
         </div>
       </div>
     </div>
+
     <!-- Beli kuota -->
     <div id="screen-beli" class="screen">
       <div class="screen-card">
@@ -183,7 +182,7 @@
   <!-- FOOTER -->
   <div class="footer">
     <!-- PROFILE -->
-    <a class="nav-btn" href="javascript:void(0)" data-screen="profile">
+    <a class="nav-btn active" href="javascript:void(0)" data-screen="profile">
       <span class="nav-btn-icon">
         <svg
           viewBox="0 0 24 24"
