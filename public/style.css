@@ -518,3 +518,23 @@ body {
   color: #64748b;
   margin-top: 2px;
 }
+/* Tombol pindah login/daftar di bawah form */
+.form-switch-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
+.secondary-btn {
+  background: transparent;
+  border: none;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 6px 0;
+}
+
+.secondary-btn:active {
+  opacity: 0.7;
+   }
