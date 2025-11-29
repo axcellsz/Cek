@@ -1,4 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
+  /* =====================================================
+     FORMAT NOMOR
+  ====================================================== */
   function formatMsisdn(num) {
     if (!num) return "";
     let s = String(num).trim();
@@ -8,6 +11,9 @@ document.addEventListener("DOMContentLoaded", () => {
     return s;
   }
 
+  /* =====================================================
+     NAVIGASI BOTTOM BAR
+  ====================================================== */
   const navButtons = document.querySelectorAll(".nav-btn");
   const screens = document.querySelectorAll(".screen");
 
@@ -37,8 +43,12 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // screen awal
   showScreen(null);
 
+  /* =====================================================
+     HELPER KUOTA
+  ====================================================== */
   function normalizeAmount(str) {
     if (!str) return "";
     return String(str)
@@ -71,6 +81,9 @@ document.addEventListener("DOMContentLoaded", () => {
     return "";
   }
 
+  /* =====================================================
+     PARSE HEADER
+  ====================================================== */
   function parseHeaderFromHasil(hasilHtml) {
     if (!hasilHtml) return {};
     const lines = hasilHtml
@@ -93,6 +106,9 @@ document.addEventListener("DOMContentLoaded", () => {
     return header;
   }
 
+  /* =====================================================
+     PARSE PAKET
+  ====================================================== */
   function parsePaketsFromQuotas(quotasValue) {
     const pakets = [];
     if (!Array.isArray(quotasValue)) return pakets;
@@ -122,6 +138,9 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
+  /* =====================================================
+     RENDER CEK KUOTA
+  ====================================================== */
   const cekResultBody = document.getElementById("cek-result-body");
 
   function renderParsedResult(parsed, fallbackText) {
@@ -168,6 +187,9 @@ document.addEventListener("DOMContentLoaded", () => {
     cekResultBody.innerHTML = html;
   }
 
+  /* =====================================================
+     CEK KUOTA FORM
+  ====================================================== */
   const cekForm = document.getElementById("cek-form");
   const cekNumberInput = document.getElementById("cek-number");
 
@@ -203,6 +225,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /* =====================================================
+     TAB MASUK / DAFTAR
+  ====================================================== */
   const tabButtons = document.querySelectorAll(".tab-btn");
   const tabContents = document.querySelectorAll(".tab-content");
 
@@ -217,6 +242,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  /* =====================================================
+     FORM DAFTAR
+  ====================================================== */
   const regForm = document.getElementById("register-form");
   const regName = document.getElementById("reg-name");
   const regWa = document.getElementById("reg-wa");
@@ -252,6 +280,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         alert(data.message || "Daftar berhasil. Silakan masuk.");
+
+        // pindah ke tab login
         const tabMasukBtn = document.querySelector('[data-tab="login"]');
         if (tabMasukBtn) tabMasukBtn.click();
       } catch (err) {
@@ -260,22 +290,25 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* === LOGIN (versi field komplit) === */
-  const loginForm2 = document.getElementById("login-form");
-  const loginIdentifier2 = document.getElementById("login-identifier");
-  const loginPassword2 = document.getElementById("login-password");
+  /* =====================================================
+     FORM LOGIN
+  ====================================================== */
+  const loginForm = document.getElementById("login-form");
+  const loginIdentifier = document.getElementById("login-identifier");
+  const loginPassword = document.getElementById("login-password");
 
-  if (loginForm2 && loginIdentifier2 && loginPassword2) {
-    loginForm2.addEventListener("submit", async (e) => {
+  if (loginForm && loginIdentifier && loginPassword) {
+    loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const identifier = loginIdentifier2.value.trim();
-      const password = loginPassword2.value.trim();
+      const identifier = loginIdentifier.value.trim();
+      const password = loginPassword.value.trim();
 
-      if (!identifier || !password) {
-        alert("Nama / No WhatsApp dan password wajib diisi.");
-        return;
-      }
+      // (boleh aktifkan kalau mau cek kosong di front-end)
+      // if (!identifier || !password) {
+      //   alert("Input kosong di browser. Isi Nama/No WA dan password.");
+      //   return;
+      // }
 
       try {
         const res = await fetch("/api/auth/login", {
@@ -293,7 +326,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const success = data.ok === true || data.status === true;
 
         if (!success) {
-          alert(data.message || "Gagal masuk.");
+          alert(data.message || "Gagal masuk (server).");
           return;
         }
 
