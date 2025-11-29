@@ -1,4 +1,4 @@
-name: Deploy Worker cek_kuota_vpn
+name: Deploy Cloudflare Worker
 
 on:
   push:
@@ -21,13 +21,8 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install Wrangler v3 (lokal, bukan global)
-        run: |
-          npm init -y
-          npm install wrangler@3
+      - name: Install Wrangler v4
+        run: npm install --save-dev wrangler@4
 
-      - name: Cek versi Wrangler
-        run: npx wrangler --version
-
-      - name: Deploy Worker pakai v3
+      - name: Deploy with Wrangler
         run: npx wrangler deploy
