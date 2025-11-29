@@ -48,6 +48,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const userListRefreshBtn = document.getElementById("user-list-refresh");
 
   async function loadUserList() {
+    // Kalau HTML-nya belum ada, jangan apa-apa
     if (!userListBody) return;
 
     userListBody.textContent = "Memuat data user...";
@@ -67,27 +68,35 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      const html = users
-        .map(
-          (u) => `
-        <div class="user-card">
-          <div class="user-main">${u.name || "(tanpa nama)"}</div>
-          <div class="user-line">
-            <span class="label">WhatsApp:</span> ${u.whatsapp || "-"}
-          </div>
-          <div class="user-line">
-            <span class="label">No XL:</span> ${u.xl || "-"}
-          </div>
-          ${
-            u.createdAt
-              ? `<div class="user-line"><span class="label">Daftar:</span> ${
-                  u.createdAt.split("T")[0]
-                }</div>`
-              : ""
-          }
-        </div>`
-        )
-        .join("");
+      let html = "";
+      users.forEach((u) => {
+        const name = u.name || "(tanpa nama)";
+        const wa = u.whatsapp || "-";
+        const xl = u.xl || "-";
+        let createdLine = "";
+
+        if (u.createdAt) {
+          const tgl = String(u.createdAt).split("T")[0];
+          createdLine =
+            '<div class="user-line"><span class="label">Daftar:</span> ' +
+            tgl +
+            "</div>";
+        }
+
+        html +=
+          '<div class="user-card">' +
+          '<div class="user-main">' +
+          name +
+          "</div>" +
+          '<div class="user-line"><span class="label">WhatsApp:</span> ' +
+          wa +
+          "</div>" +
+          '<div class="user-line"><span class="label">No XL:</span> ' +
+          xl +
+          "</div>" +
+          createdLine +
+          "</div>";
+      });
 
       userListBody.innerHTML = html;
     } catch (err) {
@@ -101,14 +110,14 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // klik nav bottom
+  // Klik nav footer
   navButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       const name = btn.dataset.screen;
       showScreen(name);
       setActiveNav(name);
 
-      // kalau buka layar List user, otomatis load
+      // Kalau buka screen List user → load
       if (name === "users") {
         loadUserList();
       }
@@ -134,16 +143,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const isSisa = label.toLowerCase() === "sisa";
 
     const valueHtml = isSisa
-      ? `<span style="font-weight:600;color:#16a34a;">${normalizeAmount(
-          value
-        )}</span>`
-      : `<span style="font-weight:600;">${normalizeAmount(value)}</span>`;
+      ? '<span style="font-weight:600;color:#16a34a;">' +
+        normalizeAmount(value) +
+        "</span>"
+      : '<span style="font-weight:600;">' +
+        normalizeAmount(value) +
+        "</span>";
 
-    return `
-      <div class="paket-line">
-        <span class="label">${label}:</span>
-        ${valueHtml}
-      </div>`;
+    return (
+      '<div class="paket-line">' +
+      '<span class="label">' +
+      label +
+      ":</span> " +
+      valueHtml +
+      "</div>"
+    );
   }
 
   function typeToClass(tipe) {
@@ -195,8 +209,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!Array.isArray(group)) return;
 
       group.forEach((item) => {
-        const expDate = item?.packages?.expDate || "";
-        const benefits = item?.benefits || [];
+        const expDate = (item && item.packages && item.packages.expDate) || "";
+        const benefits = item && item.benefits ? item.benefits : [];
 
         benefits.forEach((b) => {
           pakets.push({
@@ -235,46 +249,56 @@ document.addEventListener("DOMContentLoaded", () => {
     const hasPakets = parsed.pakets.length > 0;
 
     if (hasHeader) {
-      html += `<div class="cek-summary">`;
+      html += '<div class="cek-summary">';
 
       if (h.msisdn) {
-        html += `<div class="summary-main">${h.msisdn}</div>`;
+        html += '<div class="summary-main">' + h.msisdn + "</div>";
       }
 
       if (h.tipeKartu) {
-        html += `<div class="cek-summary-line"><span class="label">Kartu:</span> ${h.tipeKartu}</div>`;
+        html +=
+          '<div class="cek-summary-line"><span class="label">Kartu:</span> ' +
+          h.tipeKartu +
+          "</div>";
       }
 
       if (h.masaAktif) {
-        html += `<div class="cek-summary-line"><span class="label">Masa aktif:</span> ${h.masaAktif}</div>`;
+        html +=
+          '<div class="cek-summary-line"><span class="label">Masa aktif:</span> ' +
+          h.masaAktif +
+          "</div>";
       }
 
       if (h.masaTenggang) {
-        html += `<div class="cek-summary-line"><span class="label">Tenggang:</span> ${h.masaTenggang}</div>`;
+        html +=
+          '<div class="cek-summary-line"><span class="label">Tenggang:</span> ' +
+          h.masaTenggang +
+          "</div>";
       }
 
-      html += `</div>`;
+      html += "</div>";
     }
 
     if (!hasPakets) {
-      html += `<div class="no-paket-msg">Anda tidak memiliki kuota aktif.</div>`;
+      html +=
+        '<div class="no-paket-msg">Anda tidak memiliki kuota aktif.</div>';
       cekResultBody.innerHTML = html;
       return;
     }
 
-    html += `<div class="paket-list">`;
+    html += '<div class="paket-list">';
 
     parsed.pakets.forEach((p) => {
-      html += `<div class="paket-card ${typeToClass(p.tipe)}">`;
-      html += `<div class="paket-title">${p.nama}</div>`;
+      html += '<div class="paket-card ' + typeToClass(p.tipe) + '">';
+      html += '<div class="paket-title">' + p.nama + "</div>";
       html += createLine("Tipe", p.tipe);
       html += createLine("Kuota", p.total);
       html += createLine("Sisa", p.sisa);
       if (p.masaAktif) html += createLine("Masa aktif", p.masaAktif);
-      html += `</div>`;
+      html += "</div>";
     });
 
-    html += `</div>`;
+    html += "</div>";
     cekResultBody.innerHTML = html;
   }
 
@@ -305,13 +329,19 @@ document.addEventListener("DOMContentLoaded", () => {
         let json;
         try {
           json = JSON.parse(text);
-        } catch {
+        } catch (e2) {
           cekResultBody.textContent = text;
           return;
         }
 
-        const hasilHtml = json?.data?.hasil || "";
-        const quotasValue = json?.data?.data_sp?.quotas?.value || [];
+        const hasilHtml = (json && json.data && json.data.hasil) || "";
+        const quotasValue =
+          (json &&
+            json.data &&
+            json.data.data_sp &&
+            json.data.data_sp.quotas &&
+            json.data.data_sp.quotas.value) ||
+          [];
 
         const parsed = buildParsedResult(hasilHtml, quotasValue);
         const fallbackText = hasilHtml.replace(/<br\s*\/?>/gi, "\n");
@@ -428,4 +458,3 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 });
-```0
