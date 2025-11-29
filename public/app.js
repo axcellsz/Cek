@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ====================================================== */
   function normalizeAmount(str) {
     if (!str) return "";
-    return str
+    return String(str)
       .replace(/([0-9])([A-Za-z])/g, "$1 $2")
       .replace(/([A-Za-z])([0-9])/g, "$1 $2")
       .trim();
@@ -104,14 +104,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const header = {};
 
     for (const line of lines) {
-      if (line.startsWith("MSISDN:"))
+      if (line.startsWith("MSISDN:")) {
         header.msisdn = formatMsisdn(line.replace("MSISDN:", "").trim());
-      else if (line.startsWith("Tipe Kartu:"))
+      } else if (line.startsWith("Tipe Kartu:")) {
         header.tipeKartu = line.replace("Tipe Kartu:", "").trim();
-      else if (line.startsWith("Masa Aktif:"))
+      } else if (line.startsWith("Masa Aktif:")) {
         header.masaAktif = line.replace("Masa Aktif:", "").trim();
-      else if (line.startsWith("Masa Berakhir Tenggang"))
+      } else if (line.startsWith("Masa Berakhir Tenggang")) {
         header.masaTenggang = line.split(":").slice(1).join(":").trim();
+      }
     }
 
     return header;
@@ -146,6 +147,9 @@ document.addEventListener("DOMContentLoaded", () => {
     return pakets;
   }
 
+  /* =====================================================
+     GABUNG HEADER + PAKET
+  ====================================================== */
   function buildParsedResult(hasilHtml, quotasValue) {
     return {
       header: parseHeaderFromHasil(hasilHtml),
@@ -159,37 +163,42 @@ document.addEventListener("DOMContentLoaded", () => {
   const cekResultBody = document.getElementById("cek-result-body");
 
   function renderParsedResult(parsed, fallbackText) {
+    if (!cekResultBody) return;
+
     let html = "";
 
-    const h = parsed.header || {};
-    const hasHeader =
-      h.msisdn || h.tipeKartu || h.masaAktif || h.masaTenggang;
-    const hasPakets = parsed.pakets && parsed.pakets.length > 0;
+    const h = parsed.header;
+    const hasHeader = h.msisdn || h.tipeKartu || h.masaAktif || h.masaTenggang;
+    const hasPakets = parsed.pakets.length > 0;
 
-    // summary
     if (hasHeader) {
       html += `<div class="cek-summary">`;
 
-      if (h.msisdn)
+      if (h.msisdn) {
         html += `<div class="summary-main">${h.msisdn}</div>`;
-      if (h.tipeKartu)
+      }
+
+      if (h.tipeKartu) {
         html += `<div class="cek-summary-line"><span class="label">Kartu:</span> ${h.tipeKartu}</div>`;
-      if (h.masaAktif)
+      }
+
+      if (h.masaAktif) {
         html += `<div class="cek-summary-line"><span class="label">Masa aktif:</span> ${h.masaAktif}</div>`;
-      if (h.masaTenggang)
+      }
+
+      if (h.masaTenggang) {
         html += `<div class="cek-summary-line"><span class="label">Tenggang:</span> ${h.masaTenggang}</div>`;
+      }
 
       html += `</div>`;
     }
 
-    // tidak ada paket
     if (!hasPakets) {
       html += `<div class="no-paket-msg">Anda tidak memiliki kuota aktif.</div>`;
       cekResultBody.innerHTML = html;
       return;
     }
 
-    // daftar paket
     html += `<div class="paket-list">`;
 
     parsed.pakets.forEach((p) => {
@@ -216,7 +225,7 @@ document.addEventListener("DOMContentLoaded", () => {
     cekForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const nomor = (cekNumberInput.value || "").trim();
+      const nomor = cekNumberInput.value.trim();
       if (!nomor) {
         cekResultBody.textContent = "Nomor belum diisi.";
         return;
@@ -243,6 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const parsed = buildParsedResult(hasilHtml, quotasValue);
         const fallbackText = hasilHtml.replace(/<br\s*\/?>/gi, "\n");
+
         renderParsedResult(parsed, fallbackText);
       } catch (err) {
         cekResultBody.textContent = "Error: " + err.message;
@@ -251,36 +261,40 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     TAB LOGIN / DAFTAR
+     TAB MASUK / DAFTAR
   ====================================================== */
-  document.querySelectorAll(".tab-btn").forEach((btn) => {
+  const tabButtons = document.querySelectorAll(".tab-btn");
+  const tabContents = document.querySelectorAll(".tab-content");
+
+  tabButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
-      document
-        .querySelectorAll(".tab-btn")
-        .forEach((b) => b.classList.remove("active"));
+      tabButtons.forEach((b) => b.classList.remove("active"));
       btn.classList.add("active");
 
-      const tab = btn.dataset.tab; // "login" atau "register"
-      document
-        .querySelectorAll(".tab-content")
-        .forEach((c) => c.classList.remove("active"));
+      const tab = btn.dataset.tab;
+      tabContents.forEach((c) => c.classList.remove("active"));
       const target = document.getElementById("tab-" + tab);
       if (target) target.classList.add("active");
     });
   });
 
   /* =====================================================
-     FORM DAFTAR
+     FORM DAFTAR AKUN BARU
   ====================================================== */
-  const regForm = document.getElementById("reg-form");
-  if (regForm) {
+  const regForm = document.getElementById("register-form");
+  const regName = document.getElementById("reg-name");
+  const regWa = document.getElementById("reg-wa");
+  const regPassword = document.getElementById("reg-password");
+  const regXl = document.getElementById("reg-xl");
+
+  if (regForm && regName && regWa && regPassword && regXl) {
     regForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const name = (document.getElementById("reg-name")?.value || "").trim();
-      const whatsapp = (document.getElementById("reg-wa")?.value || "").trim();
-      const password = (document.getElementById("reg-pass")?.value || "").trim();
-      const xl = (document.getElementById("reg-xl")?.value || "").trim();
+      const name = regName.value.trim();
+      const whatsapp = regWa.value.trim();
+      const password = regPassword.value.trim();
+      const xl = regXl.value.trim();
 
       if (!name || !whatsapp || !password || !xl) {
         alert("Semua data daftar wajib diisi.");
@@ -290,22 +304,23 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const res = await fetch("/api/auth/register", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ name, whatsapp, password, xl }),
         });
 
         const data = await res.json();
-        alert(data.message || "Gagal mendaftar.");
 
-        if (data.status) {
-          // kalau sukses, pindah ke tab login
-          const btnLogin = document.querySelector('.tab-btn[data-tab="login"]');
-          if (btnLogin) btnLogin.click();
+        if (!data.status) {
+          alert(data.message || "Gagal mendaftar.");
+          return;
         }
+
+        alert("Daftar berhasil. Silakan masuk.");
+        // opsional: otomatis pindah ke tab Masuk
+        const tabMasukBtn = document.querySelector('[data-tab="login"]');
+        if (tabMasukBtn) tabMasukBtn.click();
       } catch (err) {
-        alert("Terjadi kesalahan saat daftar: " + err.message);
+        alert("Gagal menghubungi server: " + err.message);
       }
     });
   }
@@ -314,14 +329,15 @@ document.addEventListener("DOMContentLoaded", () => {
      FORM LOGIN
   ====================================================== */
   const loginForm = document.getElementById("login-form");
-  if (loginForm) {
+  const loginIdentifier = document.getElementById("login-identifier");
+  const loginPassword = document.getElementById("login-password");
+
+  if (loginForm && loginIdentifier && loginPassword) {
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const identifier =
-        (document.getElementById("login-id")?.value || "").trim();
-      const password =
-        (document.getElementById("login-pass")?.value || "").trim();
+      const identifier = loginIdentifier.value.trim();
+      const password = loginPassword.value.trim();
 
       if (!identifier || !password) {
         alert("Nama / No WhatsApp dan password wajib diisi.");
@@ -331,21 +347,21 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const res = await fetch("/api/auth/login", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ identifier, password }),
         });
 
         const data = await res.json();
-        alert(data.message || "Gagal login.");
 
-        if (data.status) {
-          // di sini nanti bisa simpan data user ke localStorage dll
-          console.log("Login sukses:", data.data);
+        if (!data.status) {
+          alert(data.message || "Gagal masuk.");
+          return;
         }
+
+        alert("Login berhasil sebagai " + data.data.name);
+        // di sini nanti bisa simpan ke localStorage/session kalau mau
       } catch (err) {
-        alert("Terjadi kesalahan saat login: " + err.message);
+        alert("Gagal menghubungi server: " + err.message);
       }
     });
   }
