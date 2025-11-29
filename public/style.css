@@ -1,24 +1,26 @@
-/* Reset + fullscreen */
-html,
-body {
+/* =========================================
+   GLOBAL RESET & BASE
+========================================= */
+html, body {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(180deg, #e0f2fe 0%, #f9fafb 40%, #f3f4f6 100%);
+  background: linear-gradient(180deg, #dbeafe 0%, #f1f5f9 40%, #f8fafc 100%);
   overflow: hidden;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #0f172a;
 }
 
-/* Area konten utama (di atas footer) */
+/* Area konten utama */
 #app {
   width: 100%;
-  height: calc(100% - 80px); /* sisakan sedikit jarak di atas footer */
+  height: calc(100% - 80px); /* sisakan ruang footer */
   box-sizing: border-box;
   padding: 12px 12px 0;
 }
 
+/* Screen hidden default */
 .screen {
   width: 100%;
   height: 100%;
@@ -26,19 +28,25 @@ body {
   display: none;
 }
 
-/* Card container umum untuk semua screen */
+/* =====================================================
+   CARD STYLE UMUM (dipakai oleh semua screen)
+===================================================== */
 .screen-card {
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0.97);
+  background: #ffffff;
   border-radius: 20px;
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.1),
-    0 0 0 1px rgba(148, 163, 184, 0.15);
   padding: 18px 16px 12px;
   box-sizing: border-box;
+
+  /* Shadow premium */
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    0 12px 24px rgba(0, 0, 0, 0.06),
+    0 24px 48px rgba(0, 0, 0, 0.04);
 }
 
-/* Screen default: teks di tengah */
+/* Default Screen */
 #screen-default {
   display: flex;
   justify-content: center;
@@ -68,7 +76,9 @@ body {
   color: #6b7280;
 }
 
-/* ------------ CEK KUOTA SCREEN ------------ */
+/* =====================================================
+   CEK KUOTA SCREEN
+===================================================== */
 #screen-cek {
   display: none;
 }
@@ -77,109 +87,116 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
-  box-sizing: border-box;
 }
 
+/* Header Judul */
 .cek-header {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 700;
-  margin-bottom: 10px;
-  color: #020617;
+  margin-bottom: 12px;
+  color: #0f172a;
 }
 
+/* Container utama */
 .cek-container {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  box-sizing: border-box;
+  gap: 12px;
   min-height: 0;
 }
 
-/* FORM UTAMA / HASIL CEK – kasih shadow */
+/* Hasil cek kuota card */
 .cek-result {
   flex: 1;
-  border-radius: 14px;
-  border: 1px solid #e5e7eb;
-  padding: 0;
-  background: #ffffff; /* putih biar keliatan card */
-  display: flex;
-  flex-direction: column;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #e2e8f0;
   overflow: hidden;
 
-  /* shadow lembut untuk form utama */
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.10);
+  /* shadow keren */
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    0 12px 24px rgba(0, 0, 0, 0.06),
+    0 24px 48px rgba(0, 0, 0, 0.04);
 }
 
+/* Title area */
 .cek-result-title {
-  font-size: 13px;
-  font-weight: 600;
-  padding: 8px 12px 6px;
-  background: linear-gradient(90deg, #eff6ff, #e0f2fe);
-  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+  font-weight: 700;
+  padding: 10px 12px;
+  background: linear-gradient(90deg, #e8f0ff, #dbeafe);
+  border-bottom: 1px solid #e2e8f0;
 }
 
+/* Scroll area */
 .cek-result-body {
-  font-size: 13px;
-  color: #4b5563;
   flex: 1;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #334155;
   overflow-y: auto;
-  max-height: 100%;
-  padding: 8px 10px 10px;
-  box-sizing: border-box;
 }
 
-/* SUMMARY NOMOR */
+/* Ringkasan Nomor */
 .cek-summary {
-  margin-bottom: 8px;
-  padding: 8px 10px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #dbeafe, #e0f2fe);
-  border: 1px solid #bfdbfe;
+  padding: 12px 14px;
+  border-radius: 16px;
+  background: #eef4ff;
+  border: 1px solid #dbe7ff;
+
+  /* shadow */
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    0 12px 24px rgba(0, 0, 0, 0.06),
+    0 24px 48px rgba(0, 0, 0, 0.04);
 }
 
+/* Summary teks */
 .summary-main {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   color: #1d4ed8;
-  margin-bottom: 3px;
+  margin-bottom: 4px;
 }
 
 .cek-summary-line {
-  font-size: 12px;
-  margin: 1px 0;
-  color: #1f2937;
+  font-size: 13px;
+  margin: 2px 0;
 }
 
-.cek-summary-line span.label {
-  color: #6b7280;
-  margin-right: 4px;
-}
-
-/* DAFTAR PAKET */
+/* Section Daftar Kuota */
 .paket-section-title {
   font-size: 11px;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #9ca3af;
-  margin: 0 0 4px;
+  letter-spacing: 0.07em;
+  color: #94a3b8;
+  margin-top: 4px;
 }
 
+/* List Paket */
 .paket-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
 }
 
+/* Card Paket */
 .paket-card {
-  border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  background: #ffffff;
-  padding: 6px 9px;
   position: relative;
-  overflow: hidden;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+
+  /* shadow */
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.06),
+    0 10px 20px rgba(0, 0, 0, 0.05);
 }
 
+/* Warna garis kiri */
 .paket-card::before {
   content: "";
   position: absolute;
@@ -187,150 +204,145 @@ body {
   top: 0;
   bottom: 0;
   width: 4px;
-  background: #9ca3af; /* default */
+  background: #64748b;
+  border-radius: 4px;
 }
 
-/* warna garis kiri per tipe */
-.paket-card.data::before {
-  background: #2563eb;
-}
+.paket-card.data::before { background: #2563eb; }
+.paket-card.voice::before { background: #16a34a; }
+.paket-card.sms::before { background: #f97316; }
 
-.paket-card.voice::before {
-  background: #16a34a;
-}
-
-.paket-card.sms::before {
-  background: #f97316;
-}
-
+/* Info Title */
 .paket-title {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
-  margin-bottom: 2px;
-  color: #111827;
+  margin-bottom: 4px;
 }
 
+/* Detail Teks */
 .paket-line {
-  font-size: 11.5px;
+  font-size: 13px;
   margin: 1px 0;
 }
 
-.paket-line span.label {
-  color: #6b7280;
-  margin-right: 4px;
-}
-
-.paket-line span.value-strong {
-  font-weight: 600;
-}
-
-/* Blok form input nomor (di bawah, dekat footer) */
+/* =====================================================
+   FORM INPUT (Dekat Footer)
+===================================================== */
 .cek-form {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   align-items: center;
-  margin-top: 2px;
 }
 
 .cek-input {
   flex: 1;
-  padding: 8px 11px;
-  font-size: 13px;
+  padding: 12px 14px;
+  font-size: 14px;
   border-radius: 999px;
-  border: 1px solid #d1d5db;
+  border: 1px solid #d8dee7;
+  background: #f8fafc;
   outline: none;
-  background: #f9fafb;
-  -webkit-tap-highlight-color: transparent;
 }
 
+/* Fokus */
 .cek-input:focus {
-  border-color: #3b82f6;
+  border-color: #2563eb;
   background: #ffffff;
 }
 
-/* TOMBOL CEK – shadow, putih saat ditekan, tanpa highlight biru */
+/* Tombol cek */
 .cek-button {
-  padding: 8px 16px;
+  padding: 12px 18px;
+  min-width: 70px;
+  font-size: 14px;
   border-radius: 999px;
   border: none;
-  font-size: 13px;
-  background: #020617;
+  background: #0f172a;
   color: white;
   cursor: pointer;
-  min-width: 64px;
 
-  /* tambahan */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
   -webkit-tap-highlight-color: transparent;
-  outline: none;
-  transition: background 0.15s ease, color 0.15s ease, transform 0.1s ease;
+
+  /* shadow */
+  box-shadow:
+    0 4px 10px rgba(0, 0, 0, 0.18),
+    0 2px 6px rgba(0, 0, 0, 0.12);
+
+  transition: background 0.15s, color 0.15s, transform 0.1s;
 }
 
+/* Saat ditekan */
 .cek-button:active {
-  background: #ffffff;   /* jadi putih saat ditekan */
-  color: #020617;        /* teks gelap */
+  background: #334155;
   transform: scale(0.96);
 }
 
+/* HILANGKAN BAYANGAN BIRU */
 .cek-button:focus {
   outline: none;
 }
 
-/* ------------ FOOTER ------------ */
+/* =====================================================
+   FOOTER (Navbar)
+===================================================== */
 .footer {
   position: fixed;
   bottom: 0;
-  width: 100%;
   height: 70px;
+  width: 100%;
   background: #ffffff;
+
+  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.08);
+
   display: flex;
   justify-content: space-around;
   align-items: center;
-
-  /* shadow di atas footer */
-  box-shadow: 0 -4px 10px rgba(15, 23, 42, 0.12);
 }
 
+/* Tombol footer */
 .nav-btn {
   flex: 1;
   text-align: center;
-  color: #4b5563;
   font-size: 12px;
+  color: #475569;
   text-decoration: none;
   -webkit-tap-highlight-color: transparent;
-  transition: transform 0.1s ease, opacity 0.1s ease;
+  transition: opacity 0.15s, transform 0.1s;
 }
 
+/* Icon */
 .nav-btn-icon {
   display: block;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
 }
 
 .nav-btn-icon svg {
   width: 24px;
   height: 24px;
-  stroke: #4b5563;
+  stroke: #475569;
 }
 
+/* Aktif */
 .nav-btn.active {
-  color: #111827;
+  color: #0f172a;
 }
 
-.nav-btn.active .nav-btn-icon svg {
-  stroke: #111827;
+.nav-btn.active svg {
+  stroke: #0f172a;
 }
 
 .nav-btn.active::after {
   content: "";
   display: block;
-  width: 28px;
   height: 2px;
-  background: #111827;
+  width: 30px;
+  background: #0f172a;
   margin: 3px auto 0;
   border-radius: 999px;
 }
 
+/* Tekan */
 .nav-btn:active {
+  transform: scale(0.92);
   opacity: 0.7;
-  transform: scale(0.93);
 }
