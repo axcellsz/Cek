@@ -16,7 +16,7 @@ body {
 /* Area konten utama */
 #app {
   width: 100%;
-  height: calc(100% - 80px);
+  height: calc(100% - 80px); /* sisakan ruang footer */
   box-sizing: border-box;
   padding: 12px 12px 0;
 }
@@ -29,7 +29,9 @@ body {
   display: none;
 }
 
-/* CARD GLOBAL */
+/* =====================================================
+   CARD STYLE UMUM (dipakai oleh semua screen)
+===================================================== */
 .screen-card {
   width: 100%;
   height: 100%;
@@ -37,13 +39,15 @@ body {
   border-radius: 20px;
   padding: 18px 16px 12px;
   box-sizing: border-box;
+
+  /* Shadow premium */
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.08),
     0 12px 24px rgba(0, 0, 0, 0.06),
     0 24px 48px rgba(0, 0, 0, 0.04);
 }
 
-/* Default screen */
+/* Default Screen */
 #screen-default {
   display: flex;
   justify-content: center;
@@ -74,9 +78,11 @@ body {
 }
 
 /* =====================================================
-   CEK KUOTA
+   CEK KUOTA SCREEN
 ===================================================== */
-#screen-cek { display: none; }
+#screen-cek {
+  display: none;
+}
 
 .cek-card {
   display: flex;
@@ -84,6 +90,7 @@ body {
   height: 100%;
 }
 
+/* Header Judul */
 .cek-header {
   font-size: 18px;
   font-weight: 700;
@@ -91,6 +98,7 @@ body {
   color: #0f172a;
 }
 
+/* Container utama */
 .cek-container {
   flex: 1;
   display: flex;
@@ -99,109 +107,120 @@ body {
   min-height: 0;
 }
 
-/* HASIL CEK */
+/* Hasil cek kuota card */
 .cek-result {
   flex: 1;
   background: #ffffff;
   border-radius: 18px;
   border: 1px solid #e2e8f0;
   overflow: hidden;
-  min-height: 0;
+  min-height: 0; /* penting supaya anaknya bisa scroll */
+
+  /* shadow keren */
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.08),
     0 12px 24px rgba(0, 0, 0, 0.06),
     0 24px 48px rgba(0, 0, 0, 0.04);
 }
 
+/* Title area */
 .cek-result-title {
   font-size: 14px;
   font-weight: 700;
   padding: 10px 12px;
-  background: linear-gradient(90deg, #e8f0ff, #dbeafe);
-  border-bottom: 1px solid #e2e8f0;
+
+  /* UBAH MENJADI HITAM */
+  background: #000000 !important;
+
+  /* teks putih biar jelas */
+  color: #ffffff !important;
+
+  border-bottom: 1px solid #1e293b;
 }
 
 /* Scroll area */
 .cek-result-body {
   flex: 1;
-  padding: 10px 12px 16px;
+  padding: 10px 12px 16px; /* + padding bawah biar kartu terakhir nggak nempel */
   font-size: 14px;
   color: #334155;
-  overflow-y: auto;
+  overflow-y: auto;   /* di sini scroll daftar kuota */
   max-height: 100%;
   box-sizing: border-box;
 }
 
-/* =====================================================
-   SUMMARY (CARD NOMOR HP)
-===================================================== */
+/* Ringkasan Nomor */
 .cek-summary {
   padding: 12px 14px;
   border-radius: 16px;
+  background: #eef4ff;
+  border: 1px solid #dbe7ff;
 
-  /* 🔥 GANTI JADI HITAM */
-  background: #000000 !important;
-  border: 1px solid #1f2937 !important;
-
-  color: #ffffff !important;
-
+  /* shadow */
   box-shadow:
-    0 4px 12px rgba(0,0,0,0.4),
-    0 8px 24px rgba(0,0,0,0.3);
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    0 12px 24px rgba(0, 0, 0, 0.06),
+    0 24px 48px rgba(0, 0, 0, 0.04);
 }
 
-/* NOMOR HP = GOLD */
+/* Summary teks */
 .summary-main {
   font-size: 16px;
   font-weight: 700;
-  color: #fbbf24 !important; /* gold */
+  color: #1d4ed8;
   margin-bottom: 4px;
 }
 
-/* Ubah garis info menjadi putih */
 .cek-summary-line {
-  color: #e5e7eb !important;
+  font-size: 13px;
+  margin: 2px 0;
 }
 
-.cek-summary-line span {
-  color: #e5e7eb !important;
+/* Section Daftar Kuota – DISABLE TEKSNYA */
+.paket-section-title {
+  display: none;
 }
 
-.label {
-  color: #e5e7eb !important;
-}
-
-/* =====================================================
-   PAKET KUOTA
-===================================================== */
-.paket-section-title { display: none; }
-
+/* List Paket */
 .paket-list {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-top: 8px;
+  margin-top: 8px;   /* jarak antara summary & kartu pertama */
 }
 
+/* Card Paket – tanpa garis biru kiri, warna lembut */
 .paket-card {
+  position: relative;
   padding: 12px 14px;
   border-radius: 14px;
   background: linear-gradient(135deg, #eef2ff, #e0f2fe);
   border: 1px solid #dbeafe;
+
+  /* shadow lembut */
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.06),
     0 10px 20px rgba(0, 0, 0, 0.05);
-  margin-bottom: 2px;
+
+  margin-bottom: 2px; /* jarak tipis antar kartu */
 }
 
-.paket-card::before { content: none !important; }
+/* Hilangkan garis vertikal di kiri (override semua) */
+.paket-card::before,
+.paket-card.data::before,
+.paket-card.voice::before,
+.paket-card.sms::before {
+  content: none !important;
+}
 
+/* Info Title */
 .paket-title {
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 4px;
 }
 
+/* Detail Teks */
 .paket-line {
   font-size: 13px;
   margin: 1px 0;
@@ -210,7 +229,7 @@ body {
 }
 
 /* =====================================================
-   FORM CEK
+   FORM INPUT (Dekat Footer)
 ===================================================== */
 .cek-form {
   display: flex;
@@ -228,11 +247,13 @@ body {
   outline: none;
 }
 
+/* Fokus */
 .cek-input:focus {
   border-color: #2563eb;
   background: #ffffff;
 }
 
+/* Tombol cek */
 .cek-button {
   padding: 12px 18px;
   min-width: 70px;
@@ -242,21 +263,30 @@ body {
   background: #0f172a;
   color: white;
   cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+
+  /* shadow */
   box-shadow:
     0 4px 10px rgba(0, 0, 0, 0.18),
     0 2px 6px rgba(0, 0, 0, 0.12);
+
   transition: background 0.15s, color 0.15s, transform 0.1s;
 }
 
+/* Saat ditekan */
 .cek-button:active {
   background: #334155;
   transform: scale(0.96);
 }
 
-.cek-button:focus { outline: none; }
+/* HILANGKAN BAYANGAN BIRU */
+.cek-button:focus {
+  outline: none;
+}
 
 /* =====================================================
-   FOOTER
+   FOOTER (Navbar)
 ===================================================== */
 .footer {
   position: fixed;
@@ -264,22 +294,30 @@ body {
   height: 70px;
   width: 100%;
   background: #ffffff;
+
   box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.08);
+
   display: flex;
   justify-content: space-around;
   align-items: center;
 }
 
+/* Tombol footer */
 .nav-btn {
   flex: 1;
   text-align: center;
   font-size: 12px;
   color: #475569;
   text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
   transition: opacity 0.15s, transform 0.1s;
 }
 
-.nav-btn-icon { display: block; margin-bottom: 2px; }
+/* Icon */
+.nav-btn-icon {
+  display: block;
+  margin-bottom: 2px;
+}
 
 .nav-btn-icon svg {
   width: 24px;
@@ -287,6 +325,7 @@ body {
   stroke: #475569;
 }
 
+/* Aktif */
 .nav-btn.active {
   color: #0f172a;
 }
@@ -305,6 +344,16 @@ body {
   border-radius: 999px;
 }
 
+/* Tekan */
+.nav-btn:active {
+  transform: scale(0.92);
+  opacity: 0.7;
+}
+.no-paket-msg {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #6b7280;
+}
 .no-paket-msg {
   margin-top: 10px;
   font-size: 13px;
