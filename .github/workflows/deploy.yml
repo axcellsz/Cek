@@ -1,4 +1,4 @@
-name: Deploy Worker cek_kuota_vpn
+name: Deploy Worker
 
 on:
   push:
@@ -21,14 +21,8 @@ jobs:
         with:
           node-version: 18
 
-      # ⬇️ TIDAK ADA install global (-g) lagi
-      - name: Install Wrangler v3 (lokal di project)
-        run: |
-          npm init -y
-          npm install wrangler@3
+      - name: Install Wrangler v4
+        run: npm install --save-dev wrangler@4
 
-      - name: Cek versi Wrangler (harus 3.x.x)
-        run: npx wrangler --version
-
-      - name: Deploy Worker
+      - name: Deploy Worker (V4)
         run: npx wrangler deploy
