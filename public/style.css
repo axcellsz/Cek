@@ -368,3 +368,28 @@ body {
   transform: scale(0.92);
   opacity: 0.7;
 }
+/* =========================================
+   HILANGKAN OUTLINE / HIGHLIGHT BAWAAN
+========================================= */
+input,
+button,
+textarea {
+  outline: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* khusus state focus */
+input:focus,
+button:focus,
+textarea:focus,
+input:focus-visible,
+button:focus-visible,
+textarea:focus-visible {
+  outline: none !important;
+  box-shadow: none;         /* kalau ada shadow fokus bawaan */
+}
+
+/* untuk browser lama (Firefox, dll) di tombol */
+button::-moz-focus-inner {
+  border: 0;
+}
