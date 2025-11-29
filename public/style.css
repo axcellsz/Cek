@@ -150,22 +150,45 @@ body {
 }
 
 /* Ringkasan Nomor */
+/* ===== DARK PREMIUM SUMMARY (Pilihan 1) ===== */
 .cek-summary {
   padding: 12px 14px;
   border-radius: 16px;
-  background: linear-gradient(135deg, #111111, #1c1c1c);
-  border: 1px solid #2b2b2b;
 
+  /* Gradient dark premium */
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+
+  /* Border halus */
+  border: 1px solid rgba(255,255,255,0.06);
+
+  /* Shadow premium */
   box-shadow:
-    0 4px 10px rgba(0,0,0,0.4),
-    0 8px 18px rgba(0,0,0,0.28);
+    0 6px 14px rgba(0,0,0,0.35),
+    0 12px 28px rgba(0,0,0,0.25);
 }
 
+/* Nomor utama */
 .summary-main {
-  color: #ffffff !important;
+  font-size: 16px;
+  font-weight: 700;
+  color: #38bdf8 !important; /* Biru neon */
+  margin-bottom: 4px;
 }
-.cek-summary-line span {
-  color: #d1d5db; /* abu terang */
+
+/* Label + isi */
+.cek-summary-line {
+  font-size: 13px;
+  margin: 2px 0;
+}
+
+.cek-summary-line .label {
+  color: #94a3b8 !important; /* Abu muda */
+  font-weight: 500;
+}
+
+.cek-summary-line span:last-child {
+  color: #e2e8f0 !important; /* Putih lembut */
+  font-weight: 600;
 }
 
 /* Summary teks */
