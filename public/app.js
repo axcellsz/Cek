@@ -259,3 +259,23 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 });
+
+// ===========================
+// TAB LOGIN / REGISTER
+// ===========================
+document.querySelectorAll(".tab-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    // hilangkan active di semua tombol
+    document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+
+    // tampilkan tab yg benar
+    const tab = btn.dataset.tab;
+
+    document.querySelectorAll(".tab-content").forEach(c => {
+      c.classList.remove("active");
+    });
+
+    document.querySelector("#tab-" + tab).classList.add("active");
+  });
+});
