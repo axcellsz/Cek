@@ -1,228 +1,105 @@
 export default {
-  async fetch(request, env, ctx) {
+  async fetch(request, env) {
     const url = new URL(request.url);
-    const { pathname } = url;
+    const pathname = url.pathname;
 
-    // Helper response JSON
-    const json = (obj, status = 200) =>
-      new Response(JSON.stringify(obj), {
-        status,
-        headers: {
-          "content-type": "application/json;charset=utf-8",
-          "Access-Control-Allow-Origin": "*",
-        },
-      });
-
-    // Helper hash password (harus sama dengan versi sebelumnya)
-    async function hashPassword(pwd) {
-      const enc = new TextEncoder().encode(pwd);
-      const buf = await crypto.subtle.digest("SHA-256", enc);
-      const arr = Array.from(new Uint8Array(buf));
-      return arr.map((b) => b.toString(16).padStart(2, "0")).join("");
-    }
-
-    // =====================================
-    // 1) REGISTER
-    // =====================================
+    // ======= API: REGISTER USER =======
     if (pathname === "/api/auth/register" && request.method === "POST") {
       try {
         const body = await request.json();
-        const name = (body.name || "").trim();
-        const whatsapp = (body.whatsapp || "").trim();
-        const password = (body.password || "").trim();
-        const xl = (body.xl || "").trim();
+        const { name, whatsapp, password, xl } = body;
 
         if (!name || !whatsapp || !password || !xl) {
-          return json(
-            {
-              status: false,
-              message: "Semua data daftar wajib diisi.",
-            },
-            400
-          );
+          return json({ status: false, message: "Semua field wajib diisi" });
         }
 
-        const key = "user:" + whatsapp;
-        const existing = await env.USER_VPN.get(key);
+        // Cek apakah nomor WA sudah ada
+        const existing = await env.USER_VPN.get(whatsapp);
         if (existing) {
-          return json(
-            {
-              status: false,
-              message: "Nomor WhatsApp sudah terdaftar.",
-            },
-            400
-          );
+          return json({
+            status: false,
+            message: "Nomor WhatsApp sudah terdaftar",
+          });
         }
 
-        const hashed = await hashPassword(password);
-        const dataToStore = {
+        const userData = {
           name,
           whatsapp,
-          password: hashed,
+          password,
           xl,
           createdAt: new Date().toISOString(),
         };
 
-        await env.USER_VPN.put(key, JSON.stringify(dataToStore));
+        await env.USER_VPN.put(whatsapp, JSON.stringify(userData));
 
         return json({
           status: true,
-          message: "Pendaftaran berhasil.",
-          data: {
-            name,
-            whatsapp,
-            xl,
-            createdAt: dataToStore.createdAt,
-          },
+          message: "Berhasil mendaftar",
+          data: userData,
         });
-      } catch (err) {
-        return json(
-          {
-            status: false,
-            message: "Gagal memproses data pendaftaran.",
-            error: err.message,
-          },
-          500
-        );
+      } catch (e) {
+        return json({ status: false, message: "Error register: " + e.message });
       }
     }
 
-    // =====================================
-    // 2) LOGIN
-    // =====================================
+    // ======= API: LOGIN USER =======
     if (pathname === "/api/auth/login" && request.method === "POST") {
       try {
         const body = await request.json();
-        const identifier = (body.identifier || "").trim();
-        const password = (body.password || "").trim();
+        const { identifier, password } = body;
 
         if (!identifier || !password) {
-          return json(
-            {
-              status: false,
-              message: "Nama/No WhatsApp dan password wajib diisi.",
-            },
-            400
-          );
+          return json({
+            status: false,
+            message: "Nama/No WhatsApp dan password wajib diisi.",
+          });
         }
 
-        // Untuk saat ini kita pakai identifier sebagai No WhatsApp
-        const key = "user:" + identifier;
-        const raw = await env.USER_VPN.get(key);
+        // ambil user dari KV berdasarkan nomor WA
+        const raw = await env.USER_VPN.get(identifier);
         if (!raw) {
-          return json(
-            {
-              status: false,
-              message: "User tidak ditemukan.",
-            },
-            404
-          );
+          return json({ status: false, message: "User tidak ditemukan." });
         }
 
-        let user;
-        try {
-          user = JSON.parse(raw);
-        } catch {
-          return json(
-            {
-              status: false,
-              message: "Data user rusak di KV.",
-            },
-            500
-          );
-        }
+        const user = JSON.parse(raw);
 
-        const hashedInput = await hashPassword(password);
-        if (!user.password || user.password !== hashedInput) {
-          return json(
-            {
-              status: false,
-              message: "Password salah.",
-            },
-            400
-          );
+        if (user.password !== password) {
+          return json({ status: false, message: "Password salah." });
         }
 
         return json({
           status: true,
-          message: "Login berhasil.",
-          data: {
-            name: user.name,
-            whatsapp: user.whatsapp,
-            xl: user.xl,
-            createdAt: user.createdAt,
-          },
+          message: "Login berhasil",
+          data: user,
         });
-      } catch (err) {
-        return json(
-          {
-            status: false,
-            message: "Gagal memproses data login.",
-            error: err.message,
-          },
-          500
-        );
+      } catch (e) {
+        return json({ status: false, message: "Error login: " + e.message });
       }
     }
 
-    // =====================================
-    // 3) LIST USER (BARU)
-    // =====================================
-    if (pathname === "/api/users" && request.method === "GET") {
+    // ======= API: LIST SEMUA USER (BARU) =======
+    if (pathname === "/api/users") {
       try {
-        const list = await env.USER_VPN.list({ prefix: "user:" });
-        const users = [];
+        const list = [];
+        const { keys } = await env.USER_VPN.list();
 
-        for (const item of list.keys) {
-          const raw = await env.USER_VPN.get(item.name);
-          if (!raw) continue;
-          try {
-            const u = JSON.parse(raw);
-            users.push({
-              name: u.name,
-              whatsapp: u.whatsapp,
-              xl: u.xl,
-              createdAt: u.createdAt,
-            });
-          } catch {
-            // skip jika JSON rusak
-          }
+        for (const key of keys) {
+          const raw = await env.USER_VPN.get(key.name);
+          if (raw) list.push(JSON.parse(raw));
         }
 
-        // Bisa diurutkan berdasarkan createdAt (terbaru di atas)
-        users.sort((a, b) => {
-          const ta = a.createdAt ? Date.parse(a.createdAt) : 0;
-          const tb = b.createdAt ? Date.parse(b.createdAt) : 0;
-          return tb - ta;
-        });
-
-        return json({
-          status: true,
-          data: users,
-        });
-      } catch (err) {
-        return json(
-          {
-            status: false,
-            message: "Gagal mengambil data user.",
-            error: err.message,
-          },
-          500
-        );
+        return json({ ok: true, users: list });
+      } catch (e) {
+        return json({ ok: false, message: "Gagal ambil user: " + e.message });
       }
     }
 
-    // =====================================
-    // 4) PROXY CEK KUOTA (SAMA SEPERTI AWAL)
-    // =====================================
+    // ======= API: CEK KUOTA (punya kamu, aku biarkan) =======
     if (pathname === "/api/cek-kuota") {
       const msisdn = url.searchParams.get("msisdn");
 
       if (!msisdn) {
-        return json(
-          { ok: false, message: "Parameter msisdn wajib diisi" },
-          400
-        );
+        return json({ ok: false, message: "Parameter msisdn wajib diisi" }, 400);
       }
 
       const upstreamUrl =
@@ -263,15 +140,23 @@ export default {
       }
     }
 
-    // =====================================
-    // 5) STATIC FILES (ASSETS)
-    // =====================================
+    // ======= SERVE FILE STATIC =======
     try {
       return await env.ASSETS.fetch(request);
     } catch (e) {
-      const fallbackUrl = new URL("/", request.url);
-      const fallbackRequest = new Request(fallbackUrl.toString(), request);
-      return await env.ASSETS.fetch(fallbackRequest);
+      const fallback = new URL("/", request.url);
+      return await env.ASSETS.fetch(new Request(fallback, request));
     }
   },
 };
+
+// Fungsi helper respon JSON
+function json(obj, status = 200) {
+  return new Response(JSON.stringify(obj), {
+    status,
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
+}
