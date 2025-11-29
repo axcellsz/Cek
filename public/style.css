@@ -128,8 +128,14 @@ body {
   font-size: 14px;
   font-weight: 700;
   padding: 10px 12px;
-  background: linear-gradient(90deg, #e8f0ff, #dbeafe);
-  border-bottom: 1px solid #e2e8f0;
+
+  /* UBAH MENJADI HITAM */
+  background: #000000 !important;
+
+  /* teks putih biar jelas */
+  color: #ffffff !important;
+
+  border-bottom: 1px solid #1e293b;
 }
 
 /* Scroll area */
