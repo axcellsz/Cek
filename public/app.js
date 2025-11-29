@@ -263,15 +263,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const tabButtons = document.querySelectorAll(".tab-btn");
   const tabContents = document.querySelectorAll(".tab-content");
 
+  function setActiveTab(tabName) {
+    // tombol
+    tabButtons.forEach((b) => b.classList.remove("active"));
+    const btn = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+    if (btn) btn.classList.add("active");
+
+    // konten
+    tabContents.forEach((c) => c.classList.remove("active"));
+    const targetContent = document.getElementById("tab-" + tabName);
+    if (targetContent) targetContent.classList.add("active");
+  }
+
   tabButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
-      tabButtons.forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-
       const tab = btn.dataset.tab;
-      tabContents.forEach((c) => c.classList.remove("active"));
-      const target = document.getElementById("tab-" + tab);
-      if (target) target.classList.add("active");
+      setActiveTab(tab);
     });
   });
 
@@ -314,9 +321,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         alert("Daftar berhasil. Silakan masuk.");
 
-        // === AUTO PINDAH KE TAB MASUK ===
-        const tabMasukBtn = document.querySelector('.tab-btn[data-tab="login"]');
-        if (tabMasukBtn) tabMasukBtn.click();
+        // Bersihkan form register
+        regForm.reset();
+
+        // === PAKSA PINDAH KE TAB MASUK (tanpa click) ===
+        setActiveTab("login");
 
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
@@ -344,11 +353,14 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       try {
-        // KIRIM SEBAGAI whatsapp → cocok dengan API kamu
+        // Backend kamu berhasil saat dipanggil dengan field "whatsapp"
         const res = await fetch("/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ whatsapp: identifier, password }),
+          body: JSON.stringify({
+            whatsapp: identifier,
+            password,
+          }),
         });
 
         const data = await res.json();
