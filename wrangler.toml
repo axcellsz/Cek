@@ -1,1 +1,8 @@
-wrangler
+name = "cek_kuota_vpn"
+main = "index.js"
+compatibility_date = "2024-01-01"
+account_id = "7431e1cb1076e540960f6796b8971a49"
+
+kv_namespaces = [
+  { binding = "USER_VPN", id = "16a8f179b2ee4743a0dd49892bbee3ee" }
+]
