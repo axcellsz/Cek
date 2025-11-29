@@ -6,11 +6,10 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!num) return "";
     let s = String(num).trim();
 
-    if (s.startsWith("+628")) return "0" + s.slice(4);
-    if (s.startsWith("628")) return "0" + s.slice(3);
-    if (s.startsWith("08")) return s;
-    if (s.startsWith("8")) return "0" + s;
-
+    if (s.startsWith("+62")) return "0" + s.slice(4);
+    if (s.startsWith("62")) return "0" + s.slice(3);
+    if (s.startsWith("0")) return s;
+    
     return s;
   }
 
