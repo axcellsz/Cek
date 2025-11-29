@@ -15,15 +15,15 @@
       padding: 0;
       width: 100%;
       height: 100%;
-      background: white;
-      overflow: hidden;      /* layar dikunci, tidak bisa scroll */
-      font-family: sans-serif;
+      background: #f3f4f6;
+      overflow: hidden;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
     /* Area konten utama (di atas footer) */
     #app {
       width: 100%;
-      height: calc(100% - 70px); /* sisakan ruang untuk footer */
+      height: calc(100% - 70px);
       box-sizing: border-box;
     }
 
@@ -46,12 +46,13 @@
     .screen-title {
       font-size: 20px;
       margin-bottom: 8px;
-      font-weight: 600;
+      font-weight: 700;
+      color: #111827;
     }
 
     .screen-desc {
       font-size: 14px;
-      color: #666;
+      color: #6b7280;
     }
 
     /* ------------ CEK KUOTA SCREEN ------------ */
@@ -70,37 +71,64 @@
 
     .cek-result {
       flex: 1;
-      border-radius: 10px;
+      border-radius: 16px;
       border: 1px solid #e5e7eb;
-      padding: 12px;
+      padding: 14px 14px 10px;
       background: #f9fafb;
       display: flex;
       flex-direction: column;
+      box-shadow: 0 6px 14px rgba(15, 23, 42, 0.06);
     }
 
     .cek-result-title {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #374151;
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #111827;
     }
 
     .cek-result-body {
       font-size: 13px;
       color: #4b5563;
       flex: 1;
-      overflow-y: auto;      /* scroll di dalam box kalau konten panjang */
+      overflow-y: auto;
       max-height: 100%;
     }
 
+    /* SUMMARY NOMOR */
     .cek-summary {
-      margin-bottom: 8px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid #e5e7eb;
+      margin-bottom: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #e5f0ff;
+      border: 1px solid #bfdbfe;
+    }
+
+    .summary-main {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1d4ed8;
+      margin-bottom: 4px;
     }
 
     .cek-summary-line {
+      font-size: 12px;
       margin: 2px 0;
+      color: #1f2937;
+    }
+
+    .cek-summary-line span.label {
+      color: #6b7280;
+      margin-right: 4px;
+    }
+
+    /* DAFTAR PAKET */
+    .paket-section-title {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #9ca3af;
+      margin: 4px 0 6px;
     }
 
     .paket-list {
@@ -110,16 +138,42 @@
     }
 
     .paket-card {
-      border-radius: 8px;
+      border-radius: 12px;
       border: 1px solid #e5e7eb;
       background: #ffffff;
       padding: 8px 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .paket-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 4px;
+      background: #9ca3af; /* default */
+    }
+
+    /* warna garis kiri per tipe */
+    .paket-card.data::before {
+      background: #2563eb;
+    }
+
+    .paket-card.voice::before {
+      background: #16a34a;
+    }
+
+    .paket-card.sms::before {
+      background: #f97316;
     }
 
     .paket-title {
       font-size: 13px;
       font-weight: 600;
       margin-bottom: 4px;
+      color: #111827;
     }
 
     .paket-line {
@@ -129,6 +183,11 @@
 
     .paket-line span.label {
       color: #6b7280;
+      margin-right: 4px;
+    }
+
+    .paket-line span.value-strong {
+      font-weight: 600;
     }
 
     /* Blok form input nomor (di bawah, dekat footer) */
@@ -145,10 +204,12 @@
       border-radius: 999px;
       border: 1px solid #d1d5db;
       outline: none;
+      background: #f9fafb;
     }
 
     .cek-input:focus {
       border-color: #3b82f6;
+      background: #ffffff;
     }
 
     .cek-button {
@@ -156,13 +217,14 @@
       border-radius: 999px;
       border: none;
       font-size: 14px;
-      background: #111827;
+      background: #020617;
       color: white;
       cursor: pointer;
+      min-width: 70px;
     }
 
     .cek-button:active {
-      opacity: 0.8;
+      opacity: 0.9;
       transform: scale(0.97);
     }
 
@@ -173,7 +235,7 @@
       width: 100%;
       height: 70px;
       background: #ffffff;
-      box-shadow: 0 -2px 6px rgba(0,0,0,0.12);
+      box-shadow: 0 -2px 8px rgba(15, 23, 42, 0.08);
       display: flex;
       justify-content: space-around;
       align-items: center;
@@ -182,7 +244,7 @@
     .nav-btn {
       flex: 1;
       text-align: center;
-      color: #444;
+      color: #4b5563;
       font-size: 12px;
       text-decoration: none;
       -webkit-tap-highlight-color: transparent;
@@ -197,11 +259,15 @@
     .nav-btn-icon svg {
       width: 24px;
       height: 24px;
-      stroke: #444;
+      stroke: #4b5563;
     }
 
     .nav-btn.active {
-      color: #444;
+      color: #111827;
+    }
+
+    .nav-btn.active .nav-btn-icon svg {
+      stroke: #111827;
     }
 
     .nav-btn.active::after {
@@ -209,9 +275,9 @@
       display: block;
       width: 28px;
       height: 2px;
-      background: #ccc;
+      background: #111827;
       margin: 3px auto 0;
-      border-radius: 2px;
+      border-radius: 999px;
     }
 
     .nav-btn:active {
@@ -359,6 +425,7 @@
       screens.forEach(s => s.style.display = "none");
 
       if (!name) {
+        document.getElementById("screen-default").display = "flex";
         document.getElementById("screen-default").style.display = "flex";
         return;
       }
@@ -422,6 +489,14 @@
       return { header, pakets };
     }
 
+    function typeToClass(tipe = "") {
+      const t = tipe.toLowerCase();
+      if (t.includes("voice") || t.includes("nelp") || t.includes("telp")) return "voice";
+      if (t.includes("sms")) return "sms";
+      if (t.includes("data")) return "data";
+      return "";
+    }
+
     function renderResultParsed(container, parsed, rawFallback) {
       if ((!parsed.header.msisdn && !parsed.pakets.length) && rawFallback) {
         container.textContent = rawFallback;
@@ -430,31 +505,35 @@
 
       let html = "";
 
+      // SUMMARY
       if (parsed.header.msisdn || parsed.header.tipeKartu || parsed.header.masaAktif) {
         html += '<div class="cek-summary">';
         if (parsed.header.msisdn)
-          html += `<div class="cek-summary-line"><strong>No:</strong> ${parsed.header.msisdn}</div>`;
+          html += `<div class="summary-main">${parsed.header.msisdn}</div>`;
         if (parsed.header.tipeKartu)
-          html += `<div class="cek-summary-line"><strong>Kartu:</strong> ${parsed.header.tipeKartu}</div>`;
+          html += `<div class="cek-summary-line"><span class="label">Kartu</span><strong>${parsed.header.tipeKartu}</strong></div>`;
         if (parsed.header.masaAktif)
-          html += `<div class="cek-summary-line"><strong>Masa aktif:</strong> ${parsed.header.masaAktif}</div>`;
+          html += `<div class="cek-summary-line"><span class="label">Masa aktif</span>${parsed.header.masaAktif}</div>`;
         if (parsed.header.masaTenggang)
-          html += `<div class="cek-summary-line"><strong>Tenggang:</strong> ${parsed.header.masaTenggang}</div>`;
+          html += `<div class="cek-summary-line"><span class="label">Tenggang</span>${parsed.header.masaTenggang}</div>`;
         html += "</div>";
       }
 
+      // PAKET
       if (parsed.pakets.length) {
+        html += '<div class="paket-section-title">Daftar kuota</div>';
         html += '<div class="paket-list">';
         parsed.pakets.forEach(p => {
-          html += '<div class="paket-card">';
+          const cls = typeToClass(p.tipe);
+          html += `<div class="paket-card ${cls}">`;
           html += `<div class="paket-title">${p.nama || "Paket"}</div>`;
           if (p.tipe)
-            html += `<div class="paket-line"><span class="label">Tipe:</span> ${p.tipe}</div>`;
+            html += `<div class="paket-line"><span class="label">Tipe</span>${p.tipe}</div>`;
           if (p.total)
-            html += `<div class="paket-line"><span class="label">Kuota:</span> ${p.total}</div>`;
+            html += `<div class="paket-line"><span class="label">Kuota</span><span class="value-strong">${p.total}</span></div>`;
           if (p.sisa)
-            html += `<div class="paket-line"><span class="label">Sisa:</span> ${p.sisa}</div>`;
-          html += "</div>";
+            html += `<div class="paket-line"><span class="label">Sisa</span><span class="value-strong">${p.sisa}</span></div>`;
+          html += "</div>`;
         });
         html += "</div>";
       }
