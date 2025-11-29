@@ -7,8 +7,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let s = String(num).trim();
 
     if (s.startsWith("+62")) return "0" + s.slice(3);
-    if (s.startsWith("62"))  return "0" + s.slice(2);
-    if (s.startsWith("0"))   return s;
+    if (s.startsWith("62")) return "0" + s.slice(2);
+    if (s.startsWith("0")) return s;
 
     return s;
   }
@@ -17,10 +17,10 @@ document.addEventListener("DOMContentLoaded", () => {
      NAVIGASI BOTTOM BAR
   ====================================================== */
   const navButtons = document.querySelectorAll(".nav-btn");
-  const screens    = document.querySelectorAll(".screen");
+  const screens = document.querySelectorAll(".screen");
 
   function showScreen(name) {
-    screens.forEach(s => (s.style.display = "none"));
+    screens.forEach((s) => (s.style.display = "none"));
 
     if (!name) {
       const def = document.getElementById("screen-default");
@@ -29,17 +29,19 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const target = document.getElementById("screen-" + name);
-    if (target) target.style.display = name === "cek" ? "block" : "flex";
+    if (target) {
+      target.style.display = name === "cek" ? "block" : "flex";
+    }
   }
 
   function setActiveNav(name) {
-    navButtons.forEach(btn => btn.classList.remove("active"));
-    navButtons.forEach(btn => {
+    navButtons.forEach((btn) => btn.classList.remove("active"));
+    navButtons.forEach((btn) => {
       if (btn.dataset.screen === name) btn.classList.add("active");
     });
   }
 
-  navButtons.forEach(btn => {
+  navButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       const name = btn.dataset.screen;
       showScreen(name);
@@ -47,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // tampilkan welcome screen
+  // screen awal
   showScreen(null);
 
   /* =====================================================
@@ -55,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
   ====================================================== */
   function normalizeAmount(str) {
     if (!str) return "";
-    return String(str)
+    return str
       .replace(/([0-9])([A-Za-z])/g, "$1 $2")
       .replace(/([A-Za-z])([0-9])/g, "$1 $2")
       .trim();
@@ -66,7 +68,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const isSisa = label.toLowerCase() === "sisa";
 
     const valueHtml = isSisa
-      ? `<span style="font-weight:600;color:#16a34a;">${normalizeAmount(value)}</span>`
+      ? `<span style="font-weight:600;color:#16a34a;">${normalizeAmount(
+          value
+        )}</span>`
       : `<span style="font-weight:600;">${normalizeAmount(value)}</span>`;
 
     return `
@@ -80,8 +84,8 @@ document.addEventListener("DOMContentLoaded", () => {
     if (!tipe) return "";
     const t = tipe.toLowerCase();
     if (t.includes("voice") || t.includes("telp")) return "voice";
-    if (t.includes("sms"))    return "sms";
-    if (t.includes("data"))   return "data";
+    if (t.includes("sms")) return "sms";
+    if (t.includes("data")) return "data";
     return "";
   }
 
@@ -94,21 +98,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const lines = hasilHtml
       .replace(/<br\s*\/?>/gi, "\n")
       .split("\n")
-      .map(a => a.trim())
+      .map((a) => a.trim())
       .filter(Boolean);
 
     const header = {};
 
     for (const line of lines) {
-      if (line.startsWith("MSISDN:")) {
+      if (line.startsWith("MSISDN:"))
         header.msisdn = formatMsisdn(line.replace("MSISDN:", "").trim());
-      } else if (line.startsWith("Tipe Kartu:")) {
+      else if (line.startsWith("Tipe Kartu:"))
         header.tipeKartu = line.replace("Tipe Kartu:", "").trim();
-      } else if (line.startsWith("Masa Aktif:")) {
+      else if (line.startsWith("Masa Aktif:"))
         header.masaAktif = line.replace("Masa Aktif:", "").trim();
-      } else if (line.startsWith("Masa Berakhir Tenggang")) {
+      else if (line.startsWith("Masa Berakhir Tenggang"))
         header.masaTenggang = line.split(":").slice(1).join(":").trim();
-      }
     }
 
     return header;
@@ -121,20 +124,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const pakets = [];
     if (!Array.isArray(quotasValue)) return pakets;
 
-    quotasValue.forEach(group => {
+    quotasValue.forEach((group) => {
       if (!Array.isArray(group)) return;
 
-      group.forEach(item => {
-        const expDate  = item?.packages?.expDate || "";
+      group.forEach((item) => {
+        const expDate = item?.packages?.expDate || "";
         const benefits = item?.benefits || [];
 
-        benefits.forEach(b => {
+        benefits.forEach((b) => {
           pakets.push({
-            nama     : b.bname    || "Paket",
-            tipe     : b.type     || "",
-            total    : b.quota    || "",
-            sisa     : b.remaining|| "",
-            masaAktif: expDate ? expDate.replace("T", " ") : ""
+            nama: b.bname || "Paket",
+            tipe: b.type || "",
+            total: b.quota || "",
+            sisa: b.remaining || "",
+            masaAktif: expDate ? expDate.replace("T", " ") : "",
           });
         });
       });
@@ -143,13 +146,10 @@ document.addEventListener("DOMContentLoaded", () => {
     return pakets;
   }
 
-  /* =====================================================
-     GABUNG HEADER + PAKET
-  ====================================================== */
   function buildParsedResult(hasilHtml, quotasValue) {
     return {
       header: parseHeaderFromHasil(hasilHtml),
-      pakets: parsePaketsFromQuotas(quotasValue)
+      pakets: parsePaketsFromQuotas(quotasValue),
     };
   }
 
@@ -161,31 +161,28 @@ document.addEventListener("DOMContentLoaded", () => {
   function renderParsedResult(parsed, fallbackText) {
     let html = "";
 
-    const h          = parsed.header || {};
-    const hasHeader  = h.msisdn || h.tipeKartu || h.masaAktif || h.masaTenggang;
-    const hasPakets  = parsed.pakets && parsed.pakets.length > 0;
+    const h = parsed.header || {};
+    const hasHeader =
+      h.msisdn || h.tipeKartu || h.masaAktif || h.masaTenggang;
+    const hasPakets = parsed.pakets && parsed.pakets.length > 0;
 
-    // summary nomor
+    // summary
     if (hasHeader) {
       html += `<div class="cek-summary">`;
 
-      if (h.msisdn) {
+      if (h.msisdn)
         html += `<div class="summary-main">${h.msisdn}</div>`;
-      }
-      if (h.tipeKartu) {
+      if (h.tipeKartu)
         html += `<div class="cek-summary-line"><span class="label">Kartu:</span> ${h.tipeKartu}</div>`;
-      }
-      if (h.masaAktif) {
+      if (h.masaAktif)
         html += `<div class="cek-summary-line"><span class="label">Masa aktif:</span> ${h.masaAktif}</div>`;
-      }
-      if (h.masaTenggang) {
+      if (h.masaTenggang)
         html += `<div class="cek-summary-line"><span class="label">Tenggang:</span> ${h.masaTenggang}</div>`;
-      }
 
       html += `</div>`;
     }
 
-    // tidak ada kuota
+    // tidak ada paket
     if (!hasPakets) {
       html += `<div class="no-paket-msg">Anda tidak memiliki kuota aktif.</div>`;
       cekResultBody.innerHTML = html;
@@ -195,15 +192,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // daftar paket
     html += `<div class="paket-list">`;
 
-    parsed.pakets.forEach(p => {
+    parsed.pakets.forEach((p) => {
       html += `<div class="paket-card ${typeToClass(p.tipe)}">`;
       html += `<div class="paket-title">${p.nama}</div>`;
       html += createLine("Tipe", p.tipe);
       html += createLine("Kuota", p.total);
       html += createLine("Sisa", p.sisa);
-      if (p.masaAktif) {
-        html += createLine("Masa aktif", p.masaAktif);
-      }
+      if (p.masaAktif) html += createLine("Masa aktif", p.masaAktif);
       html += `</div>`;
     });
 
@@ -214,14 +209,14 @@ document.addEventListener("DOMContentLoaded", () => {
   /* =====================================================
      FORM CEK KUOTA
   ====================================================== */
-  const cekForm        = document.getElementById("cek-form");
+  const cekForm = document.getElementById("cek-form");
   const cekNumberInput = document.getElementById("cek-number");
 
   if (cekForm && cekNumberInput && cekResultBody) {
-    cekForm.addEventListener("submit", async e => {
+    cekForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const nomor = cekNumberInput.value.trim();
+      const nomor = (cekNumberInput.value || "").trim();
       if (!nomor) {
         cekResultBody.textContent = "Nomor belum diisi.";
         return;
@@ -230,7 +225,9 @@ document.addEventListener("DOMContentLoaded", () => {
       cekResultBody.textContent = "Memeriksa kuota...\nMohon tunggu.";
 
       try {
-        const res  = await fetch("/api/cek-kuota?msisdn=" + encodeURIComponent(nomor));
+        const res = await fetch(
+          "/api/cek-kuota?msisdn=" + encodeURIComponent(nomor)
+        );
         const text = await res.text();
 
         let json;
@@ -241,12 +238,11 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        const hasilHtml    = json?.data?.hasil ?? "";
-        const quotasValue  = json?.data?.data_sp?.quotas?.value ?? [];
+        const hasilHtml = json?.data?.hasil || "";
+        const quotasValue = json?.data?.data_sp?.quotas?.value || [];
 
-        const parsed       = buildParsedResult(hasilHtml, quotasValue);
+        const parsed = buildParsedResult(hasilHtml, quotasValue);
         const fallbackText = hasilHtml.replace(/<br\s*\/?>/gi, "\n");
-
         renderParsedResult(parsed, fallbackText);
       } catch (err) {
         cekResultBody.textContent = "Error: " + err.message;
@@ -255,39 +251,36 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     TAB MASUK / DAFTAR (PROFILE)
+     TAB LOGIN / DAFTAR
   ====================================================== */
-  const tabButtons = document.querySelectorAll(".tab-btn");
-  const tabContents = document.querySelectorAll(".tab-content");
+  document.querySelectorAll(".tab-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      document
+        .querySelectorAll(".tab-btn")
+        .forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
 
-  if (tabButtons.length) {
-    tabButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        tabButtons.forEach(b => b.classList.remove("active"));
-        btn.classList.add("active");
-
-        const tab = btn.dataset.tab;
-        tabContents.forEach(c => c.classList.remove("active"));
-        const activeTab = document.getElementById("tab-" + tab);
-        if (activeTab) activeTab.classList.add("active");
-      });
+      const tab = btn.dataset.tab; // "login" atau "register"
+      document
+        .querySelectorAll(".tab-content")
+        .forEach((c) => c.classList.remove("active"));
+      const target = document.getElementById("tab-" + tab);
+      if (target) target.classList.add("active");
     });
-  }
+  });
 
   /* =====================================================
-     AUTH: REGISTER & LOGIN
+     FORM DAFTAR
   ====================================================== */
-
-  // --- Register ---
-  const registerForm = document.getElementById("register-form");
-  if (registerForm) {
-    registerForm.addEventListener("submit", async (e) => {
+  const regForm = document.getElementById("reg-form");
+  if (regForm) {
+    regForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const name     = document.getElementById("reg-name")?.value.trim();
-      const whatsapp = document.getElementById("reg-wa")?.value.trim();
-      const password = document.getElementById("reg-pass")?.value.trim();
-      const xl       = document.getElementById("reg-xl")?.value.trim();
+      const name = (document.getElementById("reg-name")?.value || "").trim();
+      const whatsapp = (document.getElementById("reg-wa")?.value || "").trim();
+      const password = (document.getElementById("reg-pass")?.value || "").trim();
+      const xl = (document.getElementById("reg-xl")?.value || "").trim();
 
       if (!name || !whatsapp || !password || !xl) {
         alert("Semua data daftar wajib diisi.");
@@ -297,30 +290,38 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const res = await fetch("/api/auth/register", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({ name, whatsapp, password, xl }),
         });
 
         const data = await res.json();
-        alert(data.message || (data.status ? "Registrasi berhasil" : "Registrasi gagal"));
+        alert(data.message || "Gagal mendaftar.");
 
         if (data.status) {
-          registerForm.reset();
+          // kalau sukses, pindah ke tab login
+          const btnLogin = document.querySelector('.tab-btn[data-tab="login"]');
+          if (btnLogin) btnLogin.click();
         }
       } catch (err) {
-        alert("Terjadi kesalahan: " + err.message);
+        alert("Terjadi kesalahan saat daftar: " + err.message);
       }
     });
   }
 
-  // --- Login ---
+  /* =====================================================
+     FORM LOGIN
+  ====================================================== */
   const loginForm = document.getElementById("login-form");
   if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
 
-      const identifier = document.getElementById("login-id")?.value.trim();
-      const password   = document.getElementById("login-pass")?.value.trim();
+      const identifier =
+        (document.getElementById("login-id")?.value || "").trim();
+      const password =
+        (document.getElementById("login-pass")?.value || "").trim();
 
       if (!identifier || !password) {
         alert("Nama / No WhatsApp dan password wajib diisi.");
@@ -330,19 +331,21 @@ document.addEventListener("DOMContentLoaded", () => {
       try {
         const res = await fetch("/api/auth/login", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({ identifier, password }),
         });
 
         const data = await res.json();
-        alert(data.message || (data.status ? "Login berhasil" : "Login gagal"));
+        alert(data.message || "Gagal login.");
 
         if (data.status) {
-          // contoh simpan ke localStorage (opsional)
-          localStorage.setItem("user_vpn", JSON.stringify(data.data || {}));
+          // di sini nanti bisa simpan data user ke localStorage dll
+          console.log("Login sukses:", data.data);
         }
       } catch (err) {
-        alert("Terjadi kesalahan: " + err.message);
+        alert("Terjadi kesalahan saat login: " + err.message);
       }
     });
   }
