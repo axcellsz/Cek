@@ -343,3 +343,8 @@ body {
   transform: scale(0.92);
   opacity: 0.7;
 }
+.no-paket-msg {
+  margin-top: 12px;
+  font-size: 13px;
+  color: #6b7280;
+}
