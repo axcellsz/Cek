@@ -323,67 +323,80 @@
 
   </div>
 
-  <script>
-    const navButtons = document.querySelectorAll(".nav-btn");
-    const screens = document.querySelectorAll(".screen");
+<script>
+  const navButtons = document.querySelectorAll(".nav-btn");
+  const screens = document.querySelectorAll(".screen");
 
-    function showScreen(name) {
-      // Sembunyikan semua screen
-      screens.forEach(s => s.style.display = "none");
+  function showScreen(name) {
+    screens.forEach(s => s.style.display = "none");
 
-      if (!name) {
-        // kalau tidak ada nama -> tampilkan default
-        document.getElementById("screen-default").style.display = "flex";
-        return;
-      }
-
-      const target = document.getElementById("screen-" + name);
-      if (target) {
-        // kebanyakan screen pakai flex tengah
-        if (name === "cek") {
-          target.style.display = "block"; // cek pakai layout sendiri
-        } else {
-          target.style.display = "flex";
-        }
-      }
+    if (!name) {
+      document.getElementById("screen-default").style.display = "flex";
+      return;
     }
 
-    function setActiveNav(name) {
-      navButtons.forEach(btn => btn.classList.remove("active"));
-      navButtons.forEach(btn => {
-        if (btn.dataset.screen === name) {
-          btn.classList.add("active");
-        }
-      });
+    const target = document.getElementById("screen-" + name);
+    if (target) {
+      if (name === "cek") target.style.display = "block";
+      else target.style.display = "flex";
     }
+  }
 
-    // Klik footer nav
+  function setActiveNav(name) {
+    navButtons.forEach(btn => btn.classList.remove("active"));
     navButtons.forEach(btn => {
-      btn.addEventListener("click", () => {
-        const name = btn.dataset.screen;
-        showScreen(name);
-        setActiveNav(name);
-      });
+      if (btn.dataset.screen === name) {
+        btn.classList.add("active");
+      }
     });
+  }
 
-    // ====== LOGIKA FORM CEK KUOTA (sementara dummy) ======
-    const cekForm = document.getElementById("cek-form");
-    const cekNumberInput = document.getElementById("cek-number");
-    const cekResultBody = document.getElementById("cek-result-body");
+  navButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      const name = btn.dataset.screen;
+      showScreen(name);
+      setActiveNav(name);
+    });
+  });
 
-    cekForm.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const nomor = (cekNumberInput.value || "").trim();
+  // ====== CEK KUOTA: LOGIKA API ======
+  const cekForm = document.getElementById("cek-form");
+  const cekNumberInput = document.getElementById("cek-number");
+  const cekResultBody = document.getElementById("cek-result-body");
 
-      if (!nomor) {
-        cekResultBody.textContent = "Nomor belum diisi. Silakan masukkan nomor terlebih dahulu.";
+  cekForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const nomor = (cekNumberInput.value || "").trim();
+
+    if (!nomor) {
+      cekResultBody.textContent = "Nomor belum diisi. Silakan masukkan nomor terlebih dahulu.";
+      return;
+    }
+
+    // Tampilkan loading
+    cekResultBody.textContent = "Memeriksa kuota...\nMohon tunggu.";
+
+    try {
+      const url = `https://apigw.kmsp-store.com/sidompul/v4/cek_kuota?msisdn=${encodeURIComponent(nomor)}`;
+
+      const res = await fetch(url);
+
+      if (!res.ok) {
+        cekResultBody.textContent = `Gagal mengakses server. Status: ${res.status}`;
         return;
       }
 
-      // Nanti bagian ini diganti call ke API Worker
-      cekResultBody.textContent = `Belum terhubung ke server cek kuota.\nNomor yang dimasukkan: ${nomor}`;
-    });
-  </script>
+      const data = await res.json();
+
+      // Format tampilan hasil
+      cekResultBody.textContent = JSON.stringify(data, null, 2);
+
+    } catch (err) {
+      cekResultBody.textContent = "Terjadi kesalahan saat menghubungi server:\n" + err.message;
+    }
+  });
+</script>
 
 </body>
 </html>
