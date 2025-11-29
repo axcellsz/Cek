@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // screen awal → langsung ke profile (karena di screenshot kamu begitu)
+  // screen awal → langsung ke profile
   showScreen("profile");
   setActiveNav("profile");
 
@@ -365,8 +365,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     LIST USER (BARU)
+     LIST USER
   ====================================================== */
+
+  // Helper: sensor 4 digit terakhir
+  function maskLast4(num) {
+    if (!num) return "";
+    const s = String(num);
+    if (s.length <= 4) return "****";
+    return s.slice(0, -4) + "****";
+  }
+
   const userListEl = document.getElementById("user-list");
   const reloadUsersBtn = document.getElementById("reload-users");
 
@@ -379,7 +388,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const data = await res.json();
 
       if (!data.ok) {
-        userListEl.innerHTML = "<div class='user-item'>Gagal memuat user.</div>";
+        userListEl.innerHTML =
+          "<div class='user-item'>Gagal memuat user.</div>";
         return;
       }
 
@@ -394,23 +404,20 @@ document.addEventListener("DOMContentLoaded", () => {
       userListEl.innerHTML = users
         .map((u, idx) => {
           const name = u.name || "-";
-          const wa = u.whatsapp || "-";
-          const xl = u.xl || "-";
-          const createdAt = u.createdAt || u.created_at || "";
+          const wa = u.whatsapp || "";
+          const xl = u.xl || "";
+
+          const waMasked = wa ? maskLast4(wa) : "-";
+          const xlMasked = xl ? maskLast4(xl) : "-";
 
           return `
             <div class="user-item">
               <div class="user-item-header">
                 <span>${idx + 1}. ${name}</span>
-                <span>${wa}</span>
+                <span>${waMasked}</span>
               </div>
               <div class="user-item-body">
-                <div>No XL: ${xl}</div>
-                ${
-                  createdAt
-                    ? `<div class="user-item-small">Dibuat: ${createdAt}</div>`
-                    : ""
-                }
+                <div>No XL: ${xlMasked}</div>
               </div>
             </div>
           `;
@@ -426,7 +433,7 @@ document.addEventListener("DOMContentLoaded", () => {
     reloadUsersBtn.addEventListener("click", loadUsers);
   }
 
-  // opsional: setiap kali buka tab "List user" dari footer, otomatis muat
+  // otomatis muat saat buka tab "List user" dari footer
   navButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       if (btn.dataset.screen === "users") {
