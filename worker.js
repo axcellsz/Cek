@@ -1,106 +1,191 @@
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const url = new URL(request.url);
-    const pathname = url.pathname;
+    const { USER_VPN } = env;
 
-    // =====================================================================
-    // 1. ==== REGISTER USER =================================================
-    // =====================================================================
-    if (pathname === "/api/auth/register" && request.method === "POST") {
+    // ===========================================
+    // Helper response JSON
+    // ===========================================
+    const json = (obj, status = 200) =>
+      new Response(JSON.stringify(obj), {
+        status,
+        headers: {
+          "content-type": "application/json;charset=utf-8",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+
+    // ===========================================
+    // 1) REGISTER: POST /api/auth/register
+    // ===========================================
+    if (url.pathname === "/api/auth/register" && request.method === "POST") {
+      let body;
       try {
-        const body = await request.json();
-        const { name, whatsapp, password, xl } = body;
-
-        if (!name || !whatsapp || !password || !xl) {
-          return json({ ok: false, message: "Semua data daftar wajib diisi." }, 400);
-        }
-
-        const wa = whatsapp.trim();
-        const key = `user:${wa}`;
-
-        const existing = await env.USER_VPN.get(key);
-        if (existing) {
-          return json({ ok: false, message: "User sudah terdaftar." }, 400);
-        }
-
-        const hashed = await hashPassword(password);
-
-        const userData = {
-          name,
-          whatsapp: wa,
-          password: hashed,
-          xl,
-          createdAt: Date.now()
-        };
-
-        await env.USER_VPN.put(key, JSON.stringify(userData));
-
-        return json({ ok: true, message: "Pendaftaran berhasil.", data: userData });
-      } catch (e) {
-        return json({ ok: false, error: e.message }, 500);
+        body = await request.json();
+      } catch {
+        return json(
+          { ok: false, status: false, message: "Body harus JSON." },
+          400,
+        );
       }
+
+      const name = (body.name || "").trim();
+      const whatsapp = (body.whatsapp || "").trim();
+      const password = (body.password || "").trim();
+      const xl = (body.xl || "").trim();
+
+      if (!name || !whatsapp || !password || !xl) {
+        return json(
+          {
+            ok: false,
+            status: false,
+            message: "Semua data daftar wajib diisi.",
+          },
+          400,
+        );
+      }
+
+      const key = "user:" + whatsapp;
+      const exist = await USER_VPN.get(key);
+      if (exist) {
+        return json(
+          {
+            ok: false,
+            status: false,
+            message: "No WhatsApp sudah terdaftar.",
+          },
+          400,
+        );
+      }
+
+      // hash password
+      const enc = new TextEncoder();
+      const digest = await crypto.subtle.digest(
+        "SHA-256",
+        enc.encode(password),
+      );
+      const hashArr = Array.from(new Uint8Array(digest));
+      const hashHex = hashArr.map((b) => b.toString(16).padStart(2, "0")).join(
+        "",
+      );
+
+      const user = {
+        name,
+        whatsapp,
+        password: hashHex,
+        xl,
+        createdAt: new Date().toISOString(),
+      };
+
+      await USER_VPN.put(key, JSON.stringify(user));
+
+      return json({
+        ok: true,
+        status: true,
+        message: "Pendaftaran berhasil.",
+        data: user,
+      });
     }
 
-    // =====================================================================
-    // 2. ==== LOGIN USER ====================================================
-    // =====================================================================
-    if (pathname === "/api/auth/login" && request.method === "POST") {
+    // ===========================================
+    // 2) LOGIN: POST /api/auth/login
+    // ===========================================
+    if (url.pathname === "/api/auth/login" && request.method === "POST") {
+      let body;
       try {
-        const body = await request.json();
-        const { user, password } = body;
-
-        if (!user || !password) {
-          return json({ ok: false, message: "Nama/No WhatsApp dan password wajib diisi." }, 400);
-        }
-
-        const wa = user.trim();
-        const key = `user:${wa}`;
-        const data = await env.USER_VPN.get(key);
-
-        if (!data) {
-          return json({ ok: false, message: "User tidak ditemukan." }, 404);
-        }
-
-        const userData = JSON.parse(data);
-
-        const valid = await verifyPassword(password, userData.password);
-        if (!valid) {
-          return json({ ok: false, message: "Password salah." }, 401);
-        }
-
-        return json({ ok: true, message: "Login berhasil.", data: userData });
-      } catch (e) {
-        return json({ ok: false, error: e.message }, 500);
-      }
-    }
-
-    // =====================================================================
-    // 3. ==== LIST USER =====================================================
-    // =====================================================================
-    if (pathname === "/api/auth/users" && request.method === "GET") {
-      const list = [];
-      const users = await env.USER_VPN.list({ prefix: "user:" });
-
-      for (const item of users.keys) {
-        const data = await env.USER_VPN.get(item.name);
-        if (data) {
-          const parsed = JSON.parse(data);
-          delete parsed.password; // hide hash
-          list.push(parsed);
-        }
+        body = await request.json();
+      } catch {
+        return json(
+          { ok: false, status: false, message: "Body harus JSON." },
+          400,
+        );
       }
 
-      return json({ ok: true, users: list });
+      // Bisa kirim: { identifier, password }
+      // atau { whatsapp, password } atau { name, password }
+      const identifier = (
+        body.identifier ||
+        body.whatsapp ||
+        body.name ||
+        ""
+      ).trim();
+      const password = (body.password || "").trim();
+
+      // >>> Pesan ini yang muncul di alert <<<
+      if (!identifier || !password) {
+        return json(
+          {
+            ok: false,
+            status: false,
+            message: "Nama/No WhatsApp dan password wajib diisi.",
+          },
+          400,
+        );
+      }
+
+      // Di KV kita menyimpan key "user:<whatsapp>"
+      // anggap identifier = no WhatsApp yang dipakai saat daftar
+      const key = "user:" + identifier;
+      const stored = await USER_VPN.get(key);
+
+      if (!stored) {
+        return json(
+          {
+            ok: false,
+            status: false,
+            message: "User tidak ditemukan.",
+          },
+          404,
+        );
+      }
+
+      const user = JSON.parse(stored);
+
+      // hash password input lalu bandingkan
+      const enc = new TextEncoder();
+      const digest = await crypto.subtle.digest(
+        "SHA-256",
+        enc.encode(password),
+      );
+      const hashArr = Array.from(new Uint8Array(digest));
+      const hashHex = hashArr.map((b) => b.toString(16).padStart(2, "0")).join(
+        "",
+      );
+
+      if (hashHex !== user.password) {
+        return json(
+          { ok: false, status: false, message: "Password salah." },
+          401,
+        );
+      }
+
+      return json({
+        ok: true,
+        status: true,
+        message: "Login berhasil.",
+        data: {
+          name: user.name,
+          whatsapp: user.whatsapp,
+          xl: user.xl,
+        },
+      });
     }
 
-    // =====================================================================
-    // 4. ==== API CEK KUOTA ================================================
-    // =====================================================================
-    if (pathname === "/api/cek-kuota") {
+    // ===========================================
+    // 3) CEK KUOTA: /api/cek-kuota?msisdn=...
+    //    (bagian ini sama seperti versi lu sebelumnya)
+    // ===========================================
+    if (url.pathname === "/api/cek-kuota") {
       const msisdn = url.searchParams.get("msisdn");
 
       if (!msisdn) {
-        return json({ ok: false, message: "Parameter msisdn wajib diisi" }, 400);
+        return json(
+          {
+            ok: false,
+            message: "Parameter msisdn wajib diisi",
+          },
+          400,
+        );
       }
 
       const upstreamUrl =
@@ -136,50 +221,20 @@ export default {
             message: "Gagal menghubungi API upstream",
             error: err.message,
           },
-          500
+          500,
         );
       }
     }
 
-    // =====================================================================
-    // 5. ==== STATIC FILE ====================================================
-    // =====================================================================
+    // ===========================================
+    // 4) Static file dari folder public
+    // ===========================================
     try {
       return await env.ASSETS.fetch(request);
     } catch (e) {
       const fallbackUrl = new URL("/", request.url);
-      return await env.ASSETS.fetch(new Request(fallbackUrl, request));
+      const fallbackRequest = new Request(fallbackUrl.toString(), request);
+      return await env.ASSETS.fetch(fallbackRequest);
     }
   },
 };
-
-
-// =====================================================================
-// HELPER: JSON RESPONSE
-// =====================================================================
-function json(obj, status = 200) {
-  return new Response(JSON.stringify(obj), {
-    status,
-    headers: { "content-type": "application/json", "Access-Control-Allow-Origin": "*" }
-  });
-}
-
-
-// =====================================================================
-// HELPER: PASSWORD HASHING
-// =====================================================================
-async function hashPassword(password) {
-  const enc = new TextEncoder().encode(password);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", enc);
-  return hex(hashBuffer);
-}
-
-async function verifyPassword(password, hashed) {
-  const hash2 = await hashPassword(password);
-  return hash2 === hashed;
-}
-
-function hex(buffer) {
-  const arr = Array.from(new Uint8Array(buffer));
-  return arr.map(b => b.toString(16).padStart(2, "0")).join("");
-}
