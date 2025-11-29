@@ -41,11 +41,77 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  /* =====================================================
+     LIST USER (dari KV)
+  ====================================================== */
+  const userListBody = document.getElementById("user-list-body");
+  const userListRefreshBtn = document.getElementById("user-list-refresh");
+
+  async function loadUserList() {
+    if (!userListBody) return;
+
+    userListBody.textContent = "Memuat data user...";
+
+    try {
+      const res = await fetch("/api/users");
+      const data = await res.json();
+
+      if (!data.status) {
+        userListBody.textContent = data.message || "Gagal memuat user.";
+        return;
+      }
+
+      const users = data.data || [];
+      if (!users.length) {
+        userListBody.textContent = "Belum ada user terdaftar.";
+        return;
+      }
+
+      const html = users
+        .map(
+          (u) => `
+        <div class="user-card">
+          <div class="user-main">${u.name || "(tanpa nama)"}</div>
+          <div class="user-line">
+            <span class="label">WhatsApp:</span> ${u.whatsapp || "-"}
+          </div>
+          <div class="user-line">
+            <span class="label">No XL:</span> ${u.xl || "-"}
+          </div>
+          ${
+            u.createdAt
+              ? `<div class="user-line"><span class="label">Daftar:</span> ${
+                  u.createdAt.split("T")[0]
+                }</div>`
+              : ""
+          }
+        </div>`
+        )
+        .join("");
+
+      userListBody.innerHTML = html;
+    } catch (err) {
+      userListBody.textContent = "Error: " + err.message;
+    }
+  }
+
+  if (userListRefreshBtn) {
+    userListRefreshBtn.addEventListener("click", () => {
+      loadUserList();
+    });
+  }
+
+  // klik nav bottom
   navButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       const name = btn.dataset.screen;
       showScreen(name);
       setActiveNav(name);
+
+      // kalau buka layar List user, otomatis load
+      if (name === "users") {
+        loadUserList();
+      }
     });
   });
 
@@ -263,22 +329,15 @@ document.addEventListener("DOMContentLoaded", () => {
   const tabButtons = document.querySelectorAll(".tab-btn");
   const tabContents = document.querySelectorAll(".tab-content");
 
-  function setActiveTab(tabName) {
-    tabButtons.forEach((btn) => {
-      if (btn.dataset.tab === tabName) btn.classList.add("active");
-      else btn.classList.remove("active");
-    });
-
-    tabContents.forEach((c) => {
-      if (c.id === "tab-" + tabName) c.classList.add("active");
-      else c.classList.remove("active");
-    });
-  }
-
   tabButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
+      tabButtons.forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+
       const tab = btn.dataset.tab;
-      setActiveTab(tab);
+      tabContents.forEach((c) => c.classList.remove("active"));
+      const target = document.getElementById("tab-" + tab);
+      if (target) target.classList.add("active");
     });
   });
 
@@ -314,18 +373,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const data = await res.json();
 
-        if (!data.status && !data.ok) {
+        if (!data.status) {
           alert(data.message || "Gagal mendaftar.");
           return;
         }
 
         alert("Daftar berhasil. Silakan masuk.");
 
-        // bersihkan form
-        regForm.reset();
-
-        // === AUTO PINDAH KE TAB MASUK ===
-        setActiveTab("login");
+        const tabMasukBtn = document.querySelector('[data-tab="login"]');
+        if (tabMasukBtn) tabMasukBtn.click();
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
       }
@@ -334,7 +390,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* =====================================================
      FORM LOGIN
-     (TANPA VALIDASI FRONT-END PAKAI PESAN WAJIB DIISI)
   ====================================================== */
   const loginForm = document.getElementById("login-form");
   const loginIdentifier = document.getElementById("login-identifier");
@@ -347,33 +402,30 @@ document.addEventListener("DOMContentLoaded", () => {
       const identifier = loginIdentifier.value.trim();
       const password = loginPassword.value.trim();
 
-      // Tidak ada lagi alert "Nama/No WhatsApp dan password wajib diisi." di sisi client
+      if (!identifier || !password) {
+        alert("Nama / No WhatsApp dan password wajib diisi.");
+        return;
+      }
 
       try {
-        const body = {
-          identifier,
-          whatsapp: identifier,
-          name: identifier,
-          password,
-        };
-
         const res = await fetch("/api/auth/login", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body),
+          body: JSON.stringify({ identifier, password }),
         });
 
         const data = await res.json();
 
-        if (!data.status && !data.ok) {
+        if (!data.status) {
           alert(data.message || "Gagal masuk.");
           return;
         }
 
-        alert("Login berhasil sebagai " + (data.data?.name || identifier));
+        alert("Login berhasil sebagai " + data.data.name);
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
       }
     });
   }
 });
+```0
