@@ -3,49 +3,47 @@
 <head>
   <meta charset="UTF-8" />
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
 
   <title>Aplikasi</title>
 
-  <!-- CSS terpisah -->
   <link rel="stylesheet" href="style.css" />
-
-  <!-- JS terpisah -->
   <script src="app.js" defer></script>
 </head>
+
 <body>
-  <!-- KONTEN UTAMA -->
   <div id="app">
-    <!-- Default screen -->
+
+    <!-- DEFAULT / HOME -->
     <div id="screen-default" class="screen">
       <div class="screen-card">
         <div class="screen-card-inner">
           <div class="screen-title">Selamat datang</div>
-          <div class="screen-desc">Silakan pilih menu di bawah untuk memulai.</div>
+          <div class="screen-desc">Silakan pilih menu di bawah.</div>
         </div>
       </div>
     </div>
 
-    <!-- Profile -->
+    <!-- PROFILE -->
     <div id="screen-profile" class="screen">
       <div class="screen-card">
         <div class="profile-container">
-          <!-- TAB MENU -->
+
+          <!-- TAB -->
           <div class="profile-tabs">
             <button class="tab-btn active" data-tab="login">Masuk</button>
             <button class="tab-btn" data-tab="register">Daftar</button>
           </div>
 
-          <!-- FORM LOGIN -->
+          <!-- LOGIN -->
           <div id="tab-login" class="tab-content active">
             <div class="screen-title" style="margin-bottom:12px;">Masuk</div>
 
             <form id="login-form" class="profile-form">
               <label>Nama / No WhatsApp</label>
               <input
+                id="login-identifier"
                 type="text"
                 class="input-box"
                 placeholder="Masukkan nama atau No WhatsApp"
@@ -53,6 +51,7 @@
 
               <label>Password</label>
               <input
+                id="login-password"
                 type="password"
                 class="input-box"
                 placeholder="Masukkan password"
@@ -62,13 +61,15 @@
             </form>
           </div>
 
-          <!-- FORM DAFTAR -->
+          <!-- REGISTER -->
           <div id="tab-register" class="tab-content">
             <div class="screen-title" style="margin-bottom:12px;">Daftar Akun</div>
 
             <form id="register-form" class="profile-form">
+
               <label>Nama</label>
               <input
+                id="reg-name"
                 type="text"
                 class="input-box"
                 placeholder="Masukkan nama lengkap"
@@ -76,6 +77,7 @@
 
               <label>No WhatsApp</label>
               <input
+                id="reg-wa"
                 type="tel"
                 class="input-box"
                 placeholder="08xxxxxxxxxx"
@@ -83,6 +85,7 @@
 
               <label>Password</label>
               <input
+                id="reg-password"
                 type="password"
                 class="input-box"
                 placeholder="Masukkan password"
@@ -90,6 +93,7 @@
 
               <label>No XL-mu</label>
               <input
+                id="reg-xl"
                 type="tel"
                 class="input-box"
                 placeholder="08xxxxxxxxxx"
@@ -98,52 +102,27 @@
               <button type="submit" class="profile-btn">Daftar</button>
             </form>
           </div>
+
         </div>
       </div>
     </div>
 
-    <!-- List user -->
+    <!-- USERS -->
     <div id="screen-users" class="screen">
       <div class="screen-card">
-        <div
-          style="
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            box-sizing: border-box;
-            text-align: center;
-          "
-        >
-          <div>
-            <div class="screen-title">List user</div>
-            <div class="screen-desc">
-              Daftar user VPN akan ditampilkan di sini.
-            </div>
-          </div>
+        <div style="text-align:center; padding-top:35%;">
+          <div class="screen-title">List user</div>
+          <div class="screen-desc">Daftar user VPN akan tampil di sini.</div>
         </div>
       </div>
     </div>
 
-    <!-- Beli kuota -->
+    <!-- BELI KUOTA -->
     <div id="screen-beli" class="screen">
       <div class="screen-card">
-        <div
-          style="
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100%;
-            box-sizing: border-box;
-            text-align: center;
-          "
-        >
-          <div>
-            <div class="screen-title">Beli kuota</div>
-            <div class="screen-desc">
-              Pilihan paket dan pembelian kuota akan muncul di sini.
-            </div>
-          </div>
+        <div style="text-align:center; padding-top:35%;">
+          <div class="screen-title">Beli kuota</div>
+          <div class="screen-desc">Menu pembelian kuota.</div>
         </div>
       </div>
     </div>
@@ -151,106 +130,36 @@
     <!-- CEK KUOTA -->
     <div id="screen-cek" class="screen">
       <div class="screen-card cek-card">
+
         <div class="cek-header">Axstore</div>
 
         <div class="cek-container">
           <div class="cek-result">
             <div class="cek-result-title">Info kuota</div>
-            <div class="cek-result-body" id="cek-result-body">
-              <!-- hasil cek kuota -->
-            </div>
+            <div class="cek-result-body" id="cek-result-body"></div>
           </div>
 
-          <form class="cek-form" id="cek-form">
+          <form id="cek-form" class="cek-form">
             <input
-              type="tel"
               id="cek-number"
+              type="tel"
               class="cek-input"
-              placeholder="Masukkan nomor HP"
-              inputmode="numeric"
-            />
+              placeholder="Masukkan nomor HP"/>
             <button type="submit" class="cek-button">Cek</button>
           </form>
         </div>
+
       </div>
     </div>
+
   </div>
 
-  <!-- FOOTER -->
+  <!-- FOOTER/BOTTOM BAR -->
   <div class="footer">
-    <!-- PROFILE -->
-    <a class="nav-btn" href="javascript:void(0)" data-screen="profile">
-      <span class="nav-btn-icon">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <circle cx="12" cy="7" r="4" />
-          <path d="M5.5 21c1-4 4-6 6.5-6s5.5 2 6.5 6" />
-        </svg>
-      </span>
-      Profile
-    </a>
-
-    <!-- LIST USER -->
-    <a class="nav-btn" href="javascript:void(0)" data-screen="users">
-      <span class="nav-btn-icon">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M4 6h12" />
-          <path d="M4 12h12" />
-          <path d="M4 18h12" />
-          <circle cx="19" cy="6" r="2" />
-          <circle cx="19" cy="12" r="2" />
-          <circle cx="19" cy="18" r="2" />
-        </svg>
-      </span>
-      List user
-    </a>
-
-    <!-- BELI KUOTA -->
-    <a class="nav-btn" href="javascript:void(0)" data-screen="beli">
-      <span class="nav-btn-icon">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <circle cx="9" cy="21" r="1" />
-          <circle cx="20" cy="21" r="1" />
-          <path d="M1 1h4l2.7 13c.2 1 1 2 2 2h9" />
-          <path d="M6 5h15l-1.5 8h-13" />
-        </svg>
-      </span>
-      Beli kuota
-    </a>
-
-    <!-- CEK KUOTA -->
-    <a class="nav-btn" href="javascript:void(0)" data-screen="cek">
-      <span class="nav-btn-icon">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
-          <path d="M3 17l6-6 4 4 8-10" />
-          <path d="M3 21h18" />
-        </svg>
-      </span>
-      Cek kuota
-    </a>
+    <a class="nav-btn" data-screen="profile">Profile</a>
+    <a class="nav-btn" data-screen="users">List user</a>
+    <a class="nav-btn" data-screen="beli">Beli kuota</a>
+    <a class="nav-btn" data-screen="cek">Cek kuota</a>
   </div>
 </body>
 </html>
