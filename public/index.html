@@ -425,8 +425,8 @@
       screens.forEach(s => s.style.display = "none");
 
       if (!name) {
-        document.getElementById("screen-default").display = "flex";
-        document.getElementById("screen-default").style.display = "flex";
+        const def = document.getElementById("screen-default");
+        def.style.display = "flex";
         return;
       }
 
@@ -533,7 +533,7 @@
             html += `<div class="paket-line"><span class="label">Kuota</span><span class="value-strong">${p.total}</span></div>`;
           if (p.sisa)
             html += `<div class="paket-line"><span class="label">Sisa</span><span class="value-strong">${p.sisa}</span></div>`;
-          html += "</div>`;
+          html += "</div>";
         });
         html += "</div>";
       }
