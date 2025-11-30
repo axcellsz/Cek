@@ -40,7 +40,6 @@ body {
   padding: 18px 16px 12px;
   box-sizing: border-box;
 
-  /* Shadow premium */
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.08),
     0 12px 24px rgba(0, 0, 0, 0.06),
@@ -120,7 +119,6 @@ body {
   flex-direction: column;
   box-sizing: border-box;
 
-  /* shadow keren */
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.08),
     0 12px 24px rgba(0, 0, 0, 0.06),
@@ -132,10 +130,8 @@ body {
   font-size: 14px;
   font-weight: 700;
   padding: 10px 12px;
-
   background: #000000;
   color: #ffffff;
-
   border-bottom: 1px solid #1e293b;
 }
 
@@ -156,15 +152,12 @@ body {
   border-radius: 16px;
   background: #eef4ff;
   border: 1px solid #dbe7ff;
-
-  /* shadow */
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.08),
     0 12px 24px rgba(0, 0, 0, 0.06),
     0 24px 48px rgba(0, 0, 0, 0.04);
 }
 
-/* Summary teks – nomor dalam pill hitam + gold */
 .summary-main {
   display: inline-block;
   padding: 6px 14px;
@@ -181,7 +174,6 @@ body {
   margin: 2px 0;
 }
 
-/* Section Daftar Kuota – DISABLE TEKSNYA */
 .paket-section-title {
   display: none;
 }
@@ -194,23 +186,19 @@ body {
   margin-top: 8px;
 }
 
-/* Card Paket – tanpa garis biru kiri, warna lembut */
+/* Card Paket */
 .paket-card {
   position: relative;
   padding: 12px 14px;
   border-radius: 14px;
   background: linear-gradient(135deg, #eef2ff, #e0f2fe);
   border: 1px solid #dbeafe;
-
-  /* shadow lembut */
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.06),
     0 10px 20px rgba(0, 0, 0, 0.05);
-
   margin-bottom: 2px;
 }
 
-/* Hilangkan garis vertikal di kiri (override semua) */
 .paket-card::before,
 .paket-card.data::before,
 .paket-card.voice::before,
@@ -218,14 +206,12 @@ body {
   content: none !important;
 }
 
-/* Info Title */
 .paket-title {
   font-size: 14px;
   font-weight: 600;
   margin-bottom: 4px;
 }
 
-/* Detail Teks */
 .paket-line {
   font-size: 13px;
   margin: 1px 0;
@@ -260,7 +246,6 @@ body {
   background: #ffffff;
 }
 
-/* Tombol cek */
 .cek-button {
   padding: 12px 18px;
   min-width: 70px;
@@ -271,11 +256,9 @@ body {
   color: white;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-
   box-shadow:
     0 4px 10px rgba(0, 0, 0, 0.18),
     0 2px 6px rgba(0, 0, 0, 0.12);
-
   transition: background 0.15s, color 0.15s, transform 0.1s;
 }
 
@@ -297,15 +280,12 @@ body {
   height: 70px;
   width: 100%;
   background: #ffffff;
-
   box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.08);
-
   display: flex;
   justify-content: space-around;
   align-items: center;
 }
 
-/* Tombol footer */
 .nav-btn {
   flex: 1;
   text-align: center;
@@ -316,7 +296,6 @@ body {
   transition: opacity 0.15s, transform 0.1s;
 }
 
-/* Icon */
 .nav-btn-icon {
   display: block;
   margin-bottom: 2px;
@@ -328,7 +307,6 @@ body {
   stroke: #475569;
 }
 
-/* Aktif */
 .nav-btn.active {
   color: #0f172a;
 }
@@ -347,13 +325,11 @@ body {
   border-radius: 999px;
 }
 
-/* Tekan */
 .nav-btn:active {
   transform: scale(0.92);
   opacity: 0.7;
 }
 
-/* Pesan tidak ada paket */
 .no-paket-msg {
   margin-top: 10px;
   font-size: 13px;
@@ -361,56 +337,35 @@ body {
   font-weight: 600;
 }
 
-./* ============================
-   PROFILE FORM (LOGIN & REGISTER)
+/* ============================
+   PROFILE (LOGIN & REGISTER)
 ============================ */
 
-/* CONTAINER – sekarang cuma flex column, tanpa justify-content */
-.profile-container {
-  padding: 10px 4px;
-  height: 100%;
-  overflow-y: auto;
-
+#screen-profile .screen-card {
   display: flex;
   flex-direction: column;
+  height: 100%;
+  overflow: hidden; /* supaya tidak nutup footer */
 }
 
-/* TAB BUTTON (masih boleh dipakai, atau bisa dihapus dari HTML kalau sudah tidak perlu) */
-.profile-tabs {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 18px;
-}
-
-.tab-btn {
+.profile-container {
   flex: 1;
-  padding: 10px 0;
-  background: #e2e8f0;
-  color: #334155;
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.2s;
+  padding: 10px 4px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* yang scroll nanti hanya bagian extra */
 }
 
-.tab-btn.active {
-  background: #0f172a;
-  color: white;
-}
-
-/* CONTENT AREA – blok form ini kita dorong ke bawah dengan margin-top:auto */
+/* Saat BELUM login → pakai tab-content (login/register) */
 .tab-content {
   display: none;
-  margin-top: auto;      /* <=== KUNCI: dorong tab (judul+form) ke bawah card */
+  margin-top: auto; /* dorong form ke bawah card */
 }
 
 .tab-content.active {
   display: block;
 }
 
-/* FORM STYLE */
 .profile-form {
   display: flex;
   flex-direction: column;
@@ -418,7 +373,7 @@ body {
   text-align: left;
   width: 100%;
   max-width: 450px;
-  margin: 0 auto 16px;   /* ada jarak sedikit dari bawah card */
+  margin: 0 auto 16px;
 }
 
 .profile-form label {
@@ -429,17 +384,15 @@ body {
   margin-bottom: 2px;
 }
 
-/* INPUT LOGIN & DAFTAR – TikTok style garis bawah */
+/* INPUT TikTok style */
 .input-box {
   width: 100%;
   box-sizing: border-box;
-
   padding: 10px 0;
   border: none;
   border-bottom: 2px solid #cbd5e1;
   border-radius: 0;
   background: transparent;
-
   font-size: 15px;
   outline: none;
   transition: border-color 0.2s ease, background-color 0.2s ease;
@@ -454,7 +407,6 @@ body {
   color: #9ca3af;
 }
 
-/* BUTTON UTAMA */
 .profile-btn {
   margin-top: 10px;
   padding: 14px;
@@ -478,14 +430,6 @@ body {
   background: #334155;
 }
 
-/* Tombol kecil pindah login/daftar di bawah form */
-.form-switch-row {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 8px;
-}
-
-/* TEKS PINDAH LOGIN/DAFTAR (style baru) */
 .form-switch-text {
   text-align: center;
   font-size: 13px;
@@ -498,6 +442,7 @@ body {
   font-weight: 600;
   cursor: pointer;
 }
+
 /* ============================
    LIST USER
 ============================ */
@@ -551,121 +496,16 @@ body {
   color: #64748b;
   margin-top: 2px;
 }
-/* Tombol pindah login/daftar di bawah form */
-.form-switch-row {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 8px;
-}
 
-/* UBAH BAGIAN INI */
-.secondary-btn {
-  border: none;
-  border-radius: 999px;
-  padding: 8px 18px;
-  background: #0f172a;      /* warna gelap sama seperti tombol besar */
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  box-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.18),
-    0 1px 3px rgba(0, 0, 0, 0.12);
-}
-
-.secondary-btn:active {
-  transform: scale(0.96);
-  opacity: 0.9;
-}
 /* ============================
-   DASHBOARD PROFILE (SETELAH LOGIN)
-============================ */
-
-.profile-dashboard {
-  display: none;             /* default tersembunyi, muncul via JS */
-  height: 100%;
-  box-sizing: border-box;
-}
-
-/* Header biru seperti dompet digital */
-.profile-hero {
-  background: linear-gradient(135deg, #0ea5e9, #2563eb);
-  padding: 18px 16px;
-  border-radius: 18px;
-  margin: -4px -4px 16px;
-  color: #ffffff;
-}
-
-.profile-hero-main {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.profile-avatar {
-  width: 54px;
-  height: 54px;
-  border-radius: 999px;
-  background: rgba(15, 23, 42, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.profile-hero-name {
-  font-size: 18px;
-  font-weight: 700;
-}
-
-.profile-hero-phone {
-  margin-top: 2px;
-  font-size: 14px;
-  opacity: 0.9;
-}
-
-/* Card putih berisi detail dan tombol keluar */
-.profile-info-card {
-  margin-top: -8px;
-  padding: 14px 12px 18px;
-  border-radius: 18px;
-  background: #ffffff;
-  box-shadow:
-    0 6px 12px rgba(15, 23, 42, 0.08),
-    0 18px 36px rgba(15, 23, 42, 0.06);
-}
-
-.profile-info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 6px 2px;
-  font-size: 14px;
-}
-
-.profile-info-label {
-  color: #64748b;
-}
-
-.profile-info-value {
-  font-weight: 600;
-  color: #0f172a;
-}
-
-/* tombol keluar full width tapi sedikit jarak ke atas */
-.profile-logout-btn {
-  margin-top: 14px;
-   }
-/* ============================
-   PROFILE DASHBOARD BARU
+   DASHBOARD PROFILE BARU
 ============================ */
 
 .profile-dashboard {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  height: 100%;
 }
 
 /* Baris paling atas: avatar + nama */
@@ -739,7 +579,7 @@ body {
     0 8px 16px rgba(15, 23, 42, 0.04);
 }
 
-/* ===== Form 1: Saldo / Kuota / Bonus ===== */
+/* Form 1: Saldo / Kuota / Bonus */
 .profile-balance-card {
   display: flex;
   justify-content: space-between;
@@ -762,7 +602,7 @@ body {
   color: #6b7280;
 }
 
-/* ===== Form 2: Aksi cepat ===== */
+/* Form 2: Aksi cepat */
 .profile-actions-card {
   display: flex;
   justify-content: space-between;
@@ -798,7 +638,7 @@ body {
   font-size: 12px;
 }
 
-/* ===== Form 3: Info akun ===== */
+/* Form 3: Info akun */
 .profile-info-card {
   display: flex;
   flex-direction: column;
@@ -820,7 +660,7 @@ body {
   color: #0f172a;
 }
 
-/* ===== 4 slot kosong ===== */
+/* 4 slot kosong */
 .profile-empty-card {
   height: 46px;
   border-radius: 16px;
@@ -831,28 +671,6 @@ body {
 /* Tombol keluar di profile */
 .profile-logout-btn {
   margin-top: 4px;
-   }
-
-/* Supaya konten profile bisa scroll di dalam kartu, bukan keluar */
-#screen-profile .screen-card {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;          /* biar yang kelebihan disembunyikan */
-}
-
-.profile-container {
-  flex: 1;
-  padding: 10px 4px;
-  overflow: hidden;          /* container utama tidak scroll, yang scroll hanya extra */
-}
-
-/* Dashboard utama (header + kartu-kartu) */
-.profile-dashboard {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  height: 100%;
 }
 
 /* Area form kosong + tombol keluar yang bisa di-scroll */
@@ -866,8 +684,6 @@ body {
   padding-bottom: 12px;
 }
 
-/* Biar form kosong tidak terlalu mepet bawah radius */}
 .profile-empty-card:last-child {
   margin-bottom: 4px;
 }
-
