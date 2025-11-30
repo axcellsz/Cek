@@ -8,20 +8,20 @@ body {
   width: 100%;
   height: 100%;
   background: linear-gradient(180deg, #dbeafe 0%, #f1f5f9 40%, #f8fafc 100%);
-  overflow: hidden;
+  overflow: hidden; /* biar hanya konten dalam card yang scroll */
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   color: #0f172a;
 }
 
-/* Area konten utama */
+/* Area konten utama (di atas footer) */
 #app {
   width: 100%;
-  height: calc(100% - 80px); /* sisakan ruang footer */
+  height: calc(100% - 80px); /* sisakan ruang untuk footer */
   box-sizing: border-box;
   padding: 12px 12px 0;
 }
 
-/* Screen hidden default */
+/* Semua screen disembunyikan default, nanti diatur via JS */
 .screen {
   width: 100%;
   height: 100%;
@@ -46,9 +46,11 @@ body {
     0 24px 48px rgba(0, 0, 0, 0.04);
 }
 
-/* Default Screen */
+/* ============================
+   SCREEN DEFAULT (HOME)
+============================ */
 #screen-default {
-  display: flex;
+  display: flex;              /* akan diubah lagi via JS */
   justify-content: center;
   align-items: center;
   text-align: center;
@@ -80,7 +82,7 @@ body {
    CEK KUOTA SCREEN
 ===================================================== */
 #screen-cek {
-  display: none;
+  display: none; /* di-show via JS */
 }
 
 .cek-card {
@@ -135,7 +137,7 @@ body {
   border-bottom: 1px solid #1e293b;
 }
 
-/* Scroll area */
+/* Scroll area hasil cek kuota */
 .cek-result-body {
   flex: 1;
   padding: 10px 12px 24px;
@@ -174,6 +176,7 @@ body {
   margin: 2px 0;
 }
 
+/* Hilangkan judul 'Daftar Kuota' lama */
 .paket-section-title {
   display: none;
 }
@@ -199,6 +202,7 @@ body {
   margin-bottom: 2px;
 }
 
+/* Hilangkan garis vertikal kiri */
 .paket-card::before,
 .paket-card.data::before,
 .paket-card.voice::before,
@@ -220,7 +224,7 @@ body {
 }
 
 /* =====================================================
-   FORM INPUT (Dekat Footer)
+   FORM INPUT CEK KUOTA (Dekat Footer)
 ===================================================== */
 .cek-form {
   display: flex;
@@ -271,8 +275,16 @@ body {
   outline: none;
 }
 
+/* Pesan jika tidak ada paket */
+.no-paket-msg {
+  margin-top: 10px;
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 600;
+}
+
 /* =====================================================
-   FOOTER (Navbar)
+   FOOTER (Navbar bawah)
 ===================================================== */
 .footer {
   position: fixed;
@@ -330,36 +342,34 @@ body {
   opacity: 0.7;
 }
 
-.no-paket-msg {
-  margin-top: 10px;
-  font-size: 13px;
-  color: #64748b;
-  font-weight: 600;
-}
-
 /* ============================
    PROFILE (LOGIN & REGISTER)
 ============================ */
 
+/* Card profile dibuat flex column & overflow hidden
+   supaya footer tidak ketutup dan konten di dalam bisa diatur scrollnya */
 #screen-profile .screen-card {
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden; /* supaya tidak nutup footer */
+  overflow: hidden;
 }
 
+/* Container utama profile:
+   - Saat awal → berisi form login/register
+   - Setelah login → diisi ulang jadi dashboard profile */
 .profile-container {
   flex: 1;
   padding: 10px 4px;
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* yang scroll nanti hanya bagian extra */
+  overflow: hidden;
 }
 
-/* Saat BELUM login → pakai tab-content (login/register) */
+/* TAB LOGIN / REGISTER (saat belum login) */
 .tab-content {
   display: none;
-  margin-top: auto; /* dorong form ke bawah card */
+  margin-top: auto; /* dorong form ke bawah card, biar gampang dicapai jempol */
 }
 
 .tab-content.active {
@@ -384,7 +394,7 @@ body {
   margin-bottom: 2px;
 }
 
-/* INPUT TikTok style */
+/* INPUT TikTok style (garis bawah saja) */
 .input-box {
   width: 100%;
   box-sizing: border-box;
@@ -407,6 +417,7 @@ body {
   color: #9ca3af;
 }
 
+/* Tombol utama (Masuk / Daftar / Keluar) */
 .profile-btn {
   margin-top: 10px;
   padding: 14px;
@@ -430,6 +441,7 @@ body {
   background: #334155;
 }
 
+/* Teks kecil pindah login/daftar */
 .form-switch-text {
   text-align: center;
   font-size: 13px;
@@ -444,22 +456,19 @@ body {
 }
 
 /* ============================
-   LIST USER
+   LIST USER (SCROLL DI DALAM CARD)
 ============================ */
 
-/* ============================
-   LIST USER
-============================ */
-
-/* Bungkus utama list user di dalam kartu */
+/* Kartu list user memenuhi tinggi layar, tapi konten di dalamnya bisa scroll */
 #screen-users .screen-card {
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow: hidden;            /* biar yang kepanjangan discroll di dalam */
+  overflow: hidden;
 }
 
-#screen-users .profile-container {
+/* Container di dalam list user */
+.user-list-container {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -469,13 +478,13 @@ body {
 }
 
 /* Tombol reload di atas list */
-#reload-users {
+.user-reload-btn {
   margin-top: 4px;
   margin-bottom: 4px;
 }
 
-/* AREA LIST YANG BISA DISCROLL */
-#user-list {
+/* Area list yang bisa scroll */
+.user-list {
   flex: 1;
   overflow-y: auto;
   padding-right: 2px;
@@ -484,7 +493,7 @@ body {
   gap: 8px;
 }
 
-/* Item user-nya tetap seperti dulu */
+/* Item user */
 .user-item {
   padding: 10px 12px;
   border-radius: 12px;
@@ -513,9 +522,10 @@ body {
 }
 
 /* ============================
-   DASHBOARD PROFILE BARU
+   DASHBOARD PROFILE BARU (SETELAH LOGIN)
 ============================ */
 
+/* Wrapper dashboard: full height, kolom, sebagian fixed, sebagian scroll */
 .profile-dashboard {
   display: flex;
   flex-direction: column;
@@ -523,7 +533,7 @@ body {
   height: 100%;
 }
 
-/* Baris paling atas: avatar + nama */
+/* Baris paling atas: avatar + nama + edit photo */
 .profile-header-row {
   display: flex;
   align-items: center;
@@ -584,7 +594,7 @@ body {
   color: #64748b;
 }
 
-/* Kartu umum */
+/* Kartu umum putih */
 .profile-card {
   border-radius: 18px;
   background: #ffffff;
@@ -675,7 +685,7 @@ body {
   color: #0f172a;
 }
 
-/* 4 slot kosong */
+/* 4 slot kosong untuk fitur ke depan */
 .profile-empty-card {
   height: 46px;
   border-radius: 16px;
@@ -683,12 +693,13 @@ body {
   border: 1px dashed #d1d5db;
 }
 
-/* Tombol keluar di profile */
+/* Tombol keluar di dalam dashboard */
 .profile-logout-btn {
-  margin-top: 4px;
+  margin-top: 8px;
 }
 
-/* Area form kosong + tombol keluar yang bisa di-scroll */
+/* Bagian bawah dashboard yang bisa di-scroll:
+   - berisi info akun, 4 slot kosong, tombol keluar */
 .profile-extra-scroll {
   flex: 1;
   overflow-y: auto;
