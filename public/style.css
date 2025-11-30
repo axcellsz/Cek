@@ -714,3 +714,49 @@ body {
 .profile-empty-card:last-child {
   margin-bottom: 4px;
 }
+/* ============================
+   FOTO PROFIL (AVATAR + UPLOAD)
+============================ */
+
+/* Bungkus avatar + tombol "Edit photo" */
+.profile-avatar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Lingkaran avatar (huruf awal / foto) */
+.profile-avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 999px;
+  background: #0f172a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+  font-weight: 700;
+  color: #e5f0ff;
+  overflow: hidden;           /* supaya foto tidak keluar lingkaran */
+}
+
+/* Kalau sudah ada foto, fotonya mengisi lingkaran */
+.profile-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+/* Tombol kecil “Edit photo” di bawah avatar */
+.profile-edit-photo {
+  border: none;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 500;
+  color: #0f172a;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
