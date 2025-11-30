@@ -832,3 +832,42 @@ body {
 .profile-logout-btn {
   margin-top: 4px;
    }
+
+/* Supaya konten profile bisa scroll di dalam kartu, bukan keluar */
+#screen-profile .screen-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;          /* biar yang kelebihan disembunyikan */
+}
+
+.profile-container {
+  flex: 1;
+  padding: 10px 4px;
+  overflow: hidden;          /* container utama tidak scroll, yang scroll hanya extra */
+}
+
+/* Dashboard utama (header + kartu-kartu) */
+.profile-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+}
+
+/* Area form kosong + tombol keluar yang bisa di-scroll */
+.profile-extra-scroll {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: 4px;
+  padding-bottom: 12px;
+}
+
+/* Biar form kosong tidak terlalu mepet bawah radius */}
+.profile-empty-card:last-child {
+  margin-bottom: 4px;
+}
+
