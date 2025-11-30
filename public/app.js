@@ -1,29 +1,34 @@
 document.addEventListener("DOMContentLoaded", () => {
 
+  // ========================================
+  // BANNER HOME (PAKAI home-banner-list)
+  // ========================================
   function loadHomeBanners() {
-  const container = document.getElementById("home-banner-list");
-  if (!container) return;
+    const container = document.getElementById("home-banner-list");
+    if (!container) return;
 
-  const MAX_BANNER = 10;  
+    const MAX_BANNER = 10;
 
-  for (let i = 1; i <= MAX_BANNER; i++) {
-    const wrapper = document.createElement("div");
-    wrapper.className = "home-banner-item";
+    for (let i = 1; i <= MAX_BANNER; i++) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "home-banner-item";
 
-    const img = document.createElement("img");
-    img.src = `/img/banner${i}.jpg`;
-    img.alt = `Banner ${i}`;
-    img.loading = "lazy";
+      const img = document.createElement("img");
+      img.src = `/img/banner${i}.jpg`;
+      img.alt = `Banner ${i}`;
+      img.loading = "lazy";
 
-    img.onerror = () => {
-      wrapper.remove();
-    };
+      img.onerror = () => {
+        wrapper.remove();
+      };
 
-    wrapper.appendChild(img);
-    container.appendChild(wrapper);
+      wrapper.appendChild(img);
+      container.appendChild(wrapper);
+    }
   }
-}
-  
+
+  // ==== PANGGIL FUNGSINYA ====
+  loadHomeBanners();
   
   
   /* =====================================================
