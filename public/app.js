@@ -82,7 +82,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const isSisa = label.toLowerCase() === "sisa";
 
     const valueHtml = isSisa
-      ? `<span style="font-weight:600;color:#16a34a;">${normalizeAmount(value)}</span>`
+      ? `<span style="font-weight:600;color:#16a34a;">${normalizeAmount(
+          value
+        )}</span>`
       : `<span style="font-weight:600;">${normalizeAmount(value)}</span>`;
 
     return `
@@ -270,12 +272,12 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     LOGIN / REGISTER SWITCH (tombol di bawah form)
+     LOGIN / REGISTER SWITCH (tulisan di bawah form)
   ====================================================== */
   const tabLogin = document.getElementById("tab-login");
   const tabRegister = document.getElementById("tab-register");
-  const switchToRegister = document.getElementById("switch-to-register");
-  const switchToLogin = document.getElementById("switch-to-login");
+  const goRegister = document.getElementById("go-register");
+  const goLogin = document.getElementById("go-login");
 
   function showLoginTab() {
     if (tabLogin && tabRegister) {
@@ -291,12 +293,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 
-  if (switchToRegister) {
-    switchToRegister.addEventListener("click", showRegisterTab);
+  // klik "Belum punya akun? Daftar"
+  if (goRegister) {
+    goRegister.addEventListener("click", (e) => {
+      e.preventDefault();
+      showRegisterTab();
+    });
   }
 
-  if (switchToLogin) {
-    switchToLogin.addEventListener("click", showLoginTab);
+  // klik "Sudah punya akun? Masuk"
+  if (goLogin) {
+    goLogin.addEventListener("click", (e) => {
+      e.preventDefault();
+      showLoginTab();
+    });
   }
 
   /* =====================================================
