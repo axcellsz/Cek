@@ -271,69 +271,62 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     LOGIN / REGISTER / DASHBOARD SWITCH
+     LOGIN / REGISTER SWITCH + DASHBOARD
   ====================================================== */
   const tabLogin = document.getElementById("tab-login");
   const tabRegister = document.getElementById("tab-register");
-  const tabDashboard = document.getElementById("profile-dashboard");
+  const profileDashboard = document.getElementById("profile-dashboard");
 
-  const switchToRegister = document.getElementById("switch-to-register");
-  const switchToLogin = document.getElementById("switch-to-login");
+  const goRegister = document.getElementById("go-register");
+  const goLogin = document.getElementById("go-login");
 
-  const dashName = document.getElementById("dash-name");
-  const dashWa = document.getElementById("dash-wa");
-  const dashXl = document.getElementById("dash-xl");
+  const profName = document.getElementById("prof-name");
+  const profWa = document.getElementById("prof-wa");
+  const profXl = document.getElementById("prof-xl");
   const logoutBtn = document.getElementById("logout-btn");
 
-  function setActiveProfileTab(tabEl) {
-    [tabLogin, tabRegister, tabDashboard].forEach((el) => {
-      if (!el) return;
-      el.classList.remove("active");
-    });
-    if (tabEl) tabEl.classList.add("active");
-  }
-
   function showLoginTab() {
-    setActiveProfileTab(tabLogin);
+    if (tabLogin) tabLogin.classList.add("active");
+    if (tabRegister) tabRegister.classList.remove("active");
+    if (profileDashboard) profileDashboard.classList.remove("active");
   }
 
   function showRegisterTab() {
-    setActiveProfileTab(tabRegister);
+    if (tabRegister) tabRegister.classList.add("active");
+    if (tabLogin) tabLogin.classList.remove("active");
+    if (profileDashboard) profileDashboard.classList.remove("active");
   }
 
-  function showDashboardTab(user) {
-    if (!tabDashboard) return;
+  function showProfileDashboard(user) {
+    if (!profileDashboard) return;
 
-    if (dashName) dashName.textContent = user.name || "-";
-    if (dashWa) dashWa.textContent = user.whatsapp || "-";
-    if (dashXl) dashXl.textContent = user.xl || "-";
+    if (tabLogin) tabLogin.classList.remove("active");
+    if (tabRegister) tabRegister.classList.remove("active");
+    profileDashboard.classList.add("active");
 
-    setActiveProfileTab(tabDashboard);
+    if (profName) profName.textContent = user.name || "-";
+    if (profWa) profWa.textContent = user.whatsapp || "-";
+    if (profXl) profXl.textContent = user.xl || "-";
   }
 
-  // klik teks kecil di bawah form
-  if (switchToRegister) {
-    switchToRegister.addEventListener("click", showRegisterTab);
-  }
-  if (switchToLogin) {
-    switchToLogin.addEventListener("click", showLoginTab);
+  if (goRegister) {
+    goRegister.addEventListener("click", (e) => {
+      e.preventDefault();
+      showRegisterTab();
+    });
   }
 
-  // cek kalau sudah pernah login (data di localStorage)
-  try {
-    const saved = localStorage.getItem("userData");
-    if (saved) {
-      const user = JSON.parse(saved);
-      if (user && user.name) {
-        showDashboardTab(user);
-      } else {
-        showLoginTab();
-      }
-    } else {
+  if (goLogin) {
+    goLogin.addEventListener("click", (e) => {
+      e.preventDefault();
       showLoginTab();
-    }
-  } catch {
-    showLoginTab();
+    });
+  }
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      showLoginTab();
+    });
   }
 
   /* =====================================================
@@ -374,7 +367,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         alert("Daftar berhasil. Silakan masuk.");
-        regForm.reset();
         showLoginTab();
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
@@ -415,30 +407,13 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        const user = data.data || {};
-        alert("Login berhasil sebagai " + (user.name || ""));
+        alert("Login berhasil sebagai " + data.data.name);
 
-        // simpan di localStorage & tampilkan dashboard
-        try {
-          localStorage.setItem("userData", JSON.stringify(user));
-        } catch {}
-        showDashboardTab(user);
+        // === pindah ke dashboard profile ===
+        showProfileDashboard(data.data || {});
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
       }
-    });
-  }
-
-  /* =====================================================
-     LOGOUT
-  ====================================================== */
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      try {
-        localStorage.removeItem("userData");
-      } catch {}
-      if (loginForm) loginForm.reset();
-      showLoginTab();
     });
   }
 
