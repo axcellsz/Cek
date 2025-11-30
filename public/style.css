@@ -406,40 +406,41 @@ body {
 }
 
 /* FORM STYLE */
-.profile-form {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  text-align: left;
-  width: 100%;
-  max-width: 450px;
-  margin: 0 auto;
-}
-
 .profile-form label {
   font-size: 14px;
   font-weight: 600;
   color: #0f172a;
   margin-left: 4px;
+  margin-bottom: 2px;
 }
 
+/* INPUT LOGIN & DAFTAR – TikTok style (garis bawah saja) */
 .input-box {
   width: 100%;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid #cbd5e1;
-  background: #f8fafc;
-  font-size: 14px;
-  outline: none;
-  transition: 0.2s;
   box-sizing: border-box;
+
+  padding: 10px 0;                 /* tanpa padding samping berlebihan */
+  border: none;                    /* hilangkan kotak */
+  border-bottom: 2px solid #cbd5e1;/* hanya garis bawah */
+
+  border-radius: 0;                /* tidak membulat */
+  background: transparent;         /* putih polos */
+
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
+/* Fokus: garis bawah lebih tebal/gelap */
 .input-box:focus {
-  border-color: #2563eb;
-  background: white;
+  border-bottom-color: #0f172a;
+  background: transparent;
 }
 
+/* Placeholder lebih soft */
+.input-box::placeholder {
+  color: #9ca3af;
+}
 /* BUTTON */
 .profile-btn {
   margin-top: 6px;
