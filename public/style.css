@@ -773,18 +773,3 @@ body {
 .home-banner-item img.loaded {
   opacity: 1;
 }
-/* Screen default awalnya transparan, nanti dibikin kelihatan kalau banner sudah siap */
-#screen-default {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-
-  opacity: 0;                    /* awal: tidak kelihatan */
-  transition: opacity 0.25s ease; /* efek halus saat muncul */
-}
-
-/* Kalau sudah siap (JS kasih class 'ready') baru kelihatan */
-#screen-default.ready {
-  opacity: 1;
-}
