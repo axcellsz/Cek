@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   /* =====================================================
-     FORMAT NOMOR (Fix 628xxxx → 08xxxx tanpa hilang angka)
+     FORMAT NOMOR
   ====================================================== */
   function formatMsisdn(num) {
     if (!num) return "";
@@ -13,7 +13,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return s;
   }
 
-  /* Helper sensor 4 digit terakhir */
   function maskLast4(num) {
     if (!num) return "";
     const s = String(num);
@@ -22,7 +21,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     NAVIGASI BOTTOM BAR
+     NAVBAR BAWAH
   ====================================================== */
   const navButtons = document.querySelectorAll(".nav-btn");
   const screens = document.querySelectorAll(".screen");
@@ -49,7 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // dipakai di klik nav (definisinya di bawah)
   navButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       const name = btn.dataset.screen;
@@ -67,103 +65,49 @@ document.addEventListener("DOMContentLoaded", () => {
   setActiveNav("profile");
 
   /* =====================================================
-     DASHBOARD PROFILE BARU + SESSION
+     DASHBOARD PROFILE (setelah login)
   ====================================================== */
 
-  function renderProfileDashboard(user) {
+  function renderProfile(user) {
     const container = document.querySelector("#screen-profile .profile-container");
     if (!container) return;
 
     const name = user.name || "-";
-    const whatsapp = user.whatsapp || user.msisdn || "";
+    const wa = user.whatsapp || user.msisdn || "";
     const xl = user.xl || user.no_xl || "";
-
     const avatarLetter = name.trim().charAt(0).toUpperCase() || "?";
-    const shortWa = whatsapp ? maskLast4(whatsapp) : "********";
 
-    const saldo = user.saldo ?? 0;
-    const sisaKuota = user.sisaKuota ?? 0;
-    const bonus = user.bonus ?? 0;
+    const maskedWa = wa ? maskLast4(wa) : "********";
 
     container.innerHTML = `
       <div class="profile-dashboard">
-        <!-- Header: avatar + nama -->
-        <div class="profile-header-row">
-          <div class="profile-avatar-col">
-            <div class="profile-avatar-circle">${avatarLetter}</div>
-            <button type="button" class="profile-edit-photo">Edit photo</button>
-          </div>
-          <div class="profile-header-info">
-            <div class="profile-header-name">${name}</div>
-            <div class="profile-header-phone">${shortWa}</div>
+        <div class="profile-hero">
+          <div class="profile-hero-main">
+            <div class="profile-avatar">${avatarLetter}</div>
+            <div>
+              <div class="profile-hero-name">${name}</div>
+              <div class="profile-hero-phone">${maskedWa}</div>
+            </div>
           </div>
         </div>
 
-        <!-- Form 1: saldo / kuota / bonus -->
-        <div class="profile-card profile-balance-card">
-          <div class="profile-balance-item">
-            <div class="profile-balance-value" id="balance-saldo">${saldo}</div>
-            <div class="profile-balance-label">Saldo</div>
+        <div class="profile-info-card">
+          <div class="profile-info-row">
+            <span class="profile-info-label">No WhatsApp</span>
+            <span class="profile-info-value">${wa || "-"}</span>
           </div>
-          <div class="profile-balance-item">
-            <div class="profile-balance-value" id="balance-kuota">${sisaKuota}</div>
-            <div class="profile-balance-label">Sisa kuota</div>
-          </div>
-          <div class="profile-balance-item">
-            <div class="profile-balance-value" id="balance-bonus">${bonus}</div>
-            <div class="profile-balance-label">Koin bonus</div>
-          </div>
-        </div>
-
-        <!-- Form 2: tombol cepat -->
-        <div class="profile-card profile-actions-card">
-          <button type="button" class="profile-action" data-action="saldo">
-            <div class="profile-action-icon">💰</div>
-            <div class="profile-action-label">Tambah saldo</div>
-          </button>
-          <button type="button" class="profile-action" data-action="kuota">
-            <div class="profile-action-icon">📶</div>
-            <div class="profile-action-label">Tambah kuota</div>
-          </button>
-          <button type="button" class="profile-action" data-action="bonus">
-            <div class="profile-action-icon">🎁</div>
-            <div class="profile-action-label">Dapatkan bonus</div>
-          </button>
-        </div>
-
-        <!-- Area bisa scroll: info akun + 4 form kosong + tombol keluar -->
-        <div class="profile-extra-scroll">
-          <!-- Form 3: info akun -->
-          <div class="profile-card profile-info-card">
-            <div class="profile-info-row">
-              <span class="profile-info-label">Nama</span>
-              <span class="profile-info-value">${name}</span>
-            </div>
-            <div class="profile-info-row">
-              <span class="profile-info-label">No WhatsApp</span>
-              <span class="profile-info-value">${whatsapp || "-"}</span>
-            </div>
-            <div class="profile-info-row">
-              <span class="profile-info-label">No XL</span>
-              <span class="profile-info-value">${xl || "-"}</span>
-            </div>
+          <div class="profile-info-row">
+            <span class="profile-info-label">No XL</span>
+            <span class="profile-info-value">${xl || "-"}</span>
           </div>
 
-          <!-- 4 slot kosong -->
-          <div class="profile-card profile-empty-card"></div>
-          <div class="profile-card profile-empty-card"></div>
-          <div class="profile-card profile-empty-card"></div>
-          <div class="profile-card profile-empty-card"></div>
-
-          <!-- Tombol keluar -->
-          <button type="button" id="logout-btn" class="profile-btn profile-logout-btn">
+          <button id="logout-btn" class="profile-btn profile-logout-btn">
             Keluar
           </button>
         </div>
       </div>
     `;
 
-    // tombol keluar
     const logoutBtn = container.querySelector("#logout-btn");
     if (logoutBtn) {
       logoutBtn.addEventListener("click", () => {
@@ -171,33 +115,16 @@ document.addEventListener("DOMContentLoaded", () => {
         location.reload();
       });
     }
-
-    // tombol edit photo (sementara alert)
-    const editPhotoBtn = container.querySelector(".profile-edit-photo");
-    if (editPhotoBtn) {
-      editPhotoBtn.addEventListener("click", () => {
-        alert("Fitur upload foto profil akan ditambahkan nanti.");
-      });
-    }
-
-    // aksi cepat (sementara alert)
-    container.querySelectorAll(".profile-action").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const act = btn.dataset.action;
-        if (act === "saldo") alert("Menu tambah saldo akan dibuat nanti.");
-        else if (act === "kuota") alert("Menu tambah kuota akan dibuat nanti.");
-        else if (act === "bonus") alert("Menu bonus akan dibuat nanti.");
-      });
-    });
   }
 
   function initSessionFromStorage() {
     const raw = localStorage.getItem("vpnUser");
     if (!raw) return;
+
     try {
       const user = JSON.parse(raw);
       if (user && user.name) {
-        renderProfileDashboard(user);
+        renderProfile(user);
       } else {
         localStorage.removeItem("vpnUser");
       }
@@ -207,7 +134,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     HELPER — FORMAT KUOTA
+     HELPER KUOTA
   ====================================================== */
   function normalizeAmount(str) {
     if (!str) return "";
@@ -242,7 +169,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     PARSE HEADER HASIL CEK KUOTA
+     PARSE HEADER HASIL KUOTA
   ====================================================== */
   function parseHeaderFromHasil(hasilHtml) {
     if (!hasilHtml) return {};
@@ -271,7 +198,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     PARSE PAKET
+     PARSE PAKET KUOTA
   ====================================================== */
   function parsePaketsFromQuotas(quotasValue) {
     const pakets = [];
@@ -365,7 +292,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     CEK KUOTA FORM
+     FORM CEK KUOTA
   ====================================================== */
   const cekForm = document.getElementById("cek-form");
   const cekNumberInput = document.getElementById("cek-number");
@@ -410,7 +337,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     LOGIN / REGISTER SWITCH (text di bawah form)
+     SWITCH LOGIN / REGISTER (teks bawah form)
   ====================================================== */
   const tabLogin = document.getElementById("tab-login");
   const tabRegister = document.getElementById("tab-register");
@@ -440,7 +367,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     FORM DAFTAR AKUN BARU
+     FORM DAFTAR
   ====================================================== */
   const regForm = document.getElementById("register-form");
   const regName = document.getElementById("reg-name");
@@ -520,11 +447,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const user = data.data || {};
         alert("Login berhasil sebagai " + (user.name || ""));
 
-        // simpan session
         localStorage.setItem("vpnUser", JSON.stringify(user));
 
-        // tampilkan dashboard profile
-        renderProfileDashboard(user);
+        renderProfile(user);
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
       }
@@ -592,7 +517,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     TERAPKAN SESSION JIKA ADA
+     APPLY SESSION JIKA ADA
   ====================================================== */
   initSessionFromStorage();
 });
