@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       if (!whatsapp) return;
 
-      await fetch("/api/profile-photo", {
+      const res = await fetch("/api/profile-photo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -95,38 +95,56 @@ document.addEventListener("DOMContentLoaded", () => {
           imageData: dataUrl, // data URL lengkap
         }),
       });
+
+      let data = {};
+      try {
+        data = await res.json();
+      } catch (_) {
+        // kalau bukan JSON / kosong, biarkan saja
+      }
+
+      if (!res.ok || !data.ok) {
+        console.error("Server menolak simpan foto:", res.status, data);
+        alert(
+          "Gagal menyimpan foto di server: " +
+            (data.message || "status " + res.status)
+        );
+      } else {
+        console.log("Foto profil tersimpan di KV:", data.message);
+      }
     } catch (err) {
       console.error("Gagal upload foto ke server:", err);
+      alert("Gagal mengirim foto ke server: " + err.message);
     }
   }
 
   // Ambil foto dari backend KV
- async function downloadProfilePhotoFromServer(whatsapp) {
-  try {
-    if (!whatsapp) return null;
+  async function downloadProfilePhotoFromServer(whatsapp) {
+    try {
+      if (!whatsapp) return null;
 
-    const res = await fetch(
-      "/api/profile-photo?whatsapp=" + encodeURIComponent(whatsapp)
-    );
+      const res = await fetch(
+        "/api/profile-photo?whatsapp=" + encodeURIComponent(whatsapp)
+      );
 
-    if (!res.ok) {
+      if (!res.ok) {
+        return null;
+      }
+
+      const data = await res.json();
+
+      // Backend mengirim: { ok: true, image: "data:image..." }
+      // Frontend baca imageData || image → kompatibel
+      const imageData = data.imageData || data.image;
+
+      if (!data.ok || !imageData) return null;
+
+      return imageData;
+    } catch (err) {
+      console.error("Gagal ambil foto dari server:", err);
       return null;
     }
-
-    const data = await res.json();
-
-    // Backend kamu mengirim: { ok: true, image: "data:image..." }
-    // Tetapi frontend awalnya baca imageData → kita buat kompatibel:
-    const imageData = data.imageData || data.image;
-
-    if (!data.ok || !imageData) return null;
-
-    return imageData;
-  } catch (err) {
-    console.error("Gagal ambil foto dari server:", err);
-    return null;
   }
-}
 
   /* =====================================================
      NAVBAR BAWAH & SCREEN SWITCHING
@@ -336,7 +354,7 @@ document.addEventListener("DOMContentLoaded", () => {
           avatarEl.style.backgroundPosition = "center";
           avatarEl.textContent = "";
 
-          uploadProfilePhotoToServer(whatsappKey, dataUrl);
+          await uploadProfilePhotoToServer(whatsappKey, dataUrl);
 
           alert("Foto profil disimpan.");
         } catch (err) {
@@ -700,9 +718,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  /* =====================================================
-     LIST USER (dengan foto kecil)
-  ====================================================== */
   /* =====================================================
      LIST USER
   ====================================================== */
