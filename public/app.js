@@ -55,7 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
       showScreen(name);
       setActiveNav(name);
 
-      // kalau buka tab "users", auto load
       if (name === "users") {
         loadUsers();
       }
@@ -272,41 +271,69 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     LOGIN / REGISTER SWITCH (tulisan di bawah form)
+     LOGIN / REGISTER / DASHBOARD SWITCH
   ====================================================== */
   const tabLogin = document.getElementById("tab-login");
   const tabRegister = document.getElementById("tab-register");
-  const goRegister = document.getElementById("go-register");
-  const goLogin = document.getElementById("go-login");
+  const tabDashboard = document.getElementById("profile-dashboard");
+
+  const switchToRegister = document.getElementById("switch-to-register");
+  const switchToLogin = document.getElementById("switch-to-login");
+
+  const dashName = document.getElementById("dash-name");
+  const dashWa = document.getElementById("dash-wa");
+  const dashXl = document.getElementById("dash-xl");
+  const logoutBtn = document.getElementById("logout-btn");
+
+  function setActiveProfileTab(tabEl) {
+    [tabLogin, tabRegister, tabDashboard].forEach((el) => {
+      if (!el) return;
+      el.classList.remove("active");
+    });
+    if (tabEl) tabEl.classList.add("active");
+  }
 
   function showLoginTab() {
-    if (tabLogin && tabRegister) {
-      tabLogin.classList.add("active");
-      tabRegister.classList.remove("active");
-    }
+    setActiveProfileTab(tabLogin);
   }
 
   function showRegisterTab() {
-    if (tabLogin && tabRegister) {
-      tabRegister.classList.add("active");
-      tabLogin.classList.remove("active");
-    }
+    setActiveProfileTab(tabRegister);
   }
 
-  // klik "Belum punya akun? Daftar"
-  if (goRegister) {
-    goRegister.addEventListener("click", (e) => {
-      e.preventDefault();
-      showRegisterTab();
-    });
+  function showDashboardTab(user) {
+    if (!tabDashboard) return;
+
+    if (dashName) dashName.textContent = user.name || "-";
+    if (dashWa) dashWa.textContent = user.whatsapp || "-";
+    if (dashXl) dashXl.textContent = user.xl || "-";
+
+    setActiveProfileTab(tabDashboard);
   }
 
-  // klik "Sudah punya akun? Masuk"
-  if (goLogin) {
-    goLogin.addEventListener("click", (e) => {
-      e.preventDefault();
+  // klik teks kecil di bawah form
+  if (switchToRegister) {
+    switchToRegister.addEventListener("click", showRegisterTab);
+  }
+  if (switchToLogin) {
+    switchToLogin.addEventListener("click", showLoginTab);
+  }
+
+  // cek kalau sudah pernah login (data di localStorage)
+  try {
+    const saved = localStorage.getItem("userData");
+    if (saved) {
+      const user = JSON.parse(saved);
+      if (user && user.name) {
+        showDashboardTab(user);
+      } else {
+        showLoginTab();
+      }
+    } else {
       showLoginTab();
-    });
+    }
+  } catch {
+    showLoginTab();
   }
 
   /* =====================================================
@@ -347,7 +374,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         alert("Daftar berhasil. Silakan masuk.");
-        // langsung pindah ke tab login
+        regForm.reset();
         showLoginTab();
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
@@ -388,10 +415,30 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        alert("Login berhasil sebagai " + data.data.name);
+        const user = data.data || {};
+        alert("Login berhasil sebagai " + (user.name || ""));
+
+        // simpan di localStorage & tampilkan dashboard
+        try {
+          localStorage.setItem("userData", JSON.stringify(user));
+        } catch {}
+        showDashboardTab(user);
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
       }
+    });
+  }
+
+  /* =====================================================
+     LOGOUT
+  ====================================================== */
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      try {
+        localStorage.removeItem("userData");
+      } catch {}
+      if (loginForm) loginForm.reset();
+      showLoginTab();
     });
   }
 
