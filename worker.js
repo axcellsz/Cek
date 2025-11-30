@@ -3,9 +3,7 @@ export default {
     const url = new URL(request.url);
     const pathname = url.pathname;
 
-    // =====================================================
-    // API: REGISTER USER
-    // =====================================================
+    // ======= API: REGISTER USER =======
     if (pathname === "/api/auth/register" && request.method === "POST") {
       try {
         const body = await request.json();
@@ -44,9 +42,7 @@ export default {
       }
     }
 
-    // =====================================================
-    // API: LOGIN USER
-    // =====================================================
+    // ======= API: LOGIN USER =======
     if (pathname === "/api/auth/login" && request.method === "POST") {
       try {
         const body = await request.json();
@@ -59,7 +55,7 @@ export default {
           });
         }
 
-        // Sekarang backend menganggap identifier = nomor WhatsApp (key di KV)
+        // ambil user dari KV berdasarkan nomor WA
         const raw = await env.USER_VPN.get(identifier);
         if (!raw) {
           return json({ status: false, message: "User tidak ditemukan." });
@@ -81,9 +77,7 @@ export default {
       }
     }
 
-    // =====================================================
-    // API: LIST SEMUA USER
-    // =====================================================
+    // ======= API: LIST SEMUA USER =======
     if (pathname === "/api/users") {
       try {
         const list = [];
@@ -100,86 +94,54 @@ export default {
       }
     }
 
-    // =====================================================
-    // API: PROFILE PHOTO (KV: PROFILE_PIC)
-    // =====================================================
-    // Kontrak:
-    //  POST /api/profile-photo
-    //    body JSON: { whatsapp: "08xxxx", imageData: "data:image/jpeg;base64,...." }
-    //
-    //  GET /api/profile-photo?whatsapp=08xxxx
-    //    response: { ok: true, imageData: "data:image/jpeg;base64,...." }
-    //
-    // Frontend nanti bakal pakai src=imageData untuk <img>.
-    // -----------------------------------------------------
+    // ======= API: FOTO PROFIL (GET / POST) =======
+    // GET  /api/profile-photo?whatsapp=08xxxx
+    if (pathname === "/api/profile-photo" && request.method === "GET") {
+      const wa = url.searchParams.get("whatsapp");
+      if (!wa) {
+        return json({ ok: false, message: "whatsapp wajib diisi" }, 400);
+      }
 
-    // === SIMPAN / UPDATE FOTO PROFIL ===
+      try {
+        const key = "pfp:" + wa;
+        const value = await env.PROFILE_PIC.get(key);
+
+        // kalau belum ada, tetap ok, tapi image = null
+        return json({ ok: true, image: value || null });
+      } catch (e) {
+        return json({ ok: false, message: "Error get photo: " + e.message }, 500);
+      }
+    }
+
+    // POST /api/profile-photo  body: { whatsapp, image }
+    // image boleh "data:image/jpeg;base64,...." atau base64 murni
     if (pathname === "/api/profile-photo" && request.method === "POST") {
       try {
         const body = await request.json();
-        const { whatsapp, imageData } = body || {};
+        let { whatsapp, image } = body;
 
-        if (!whatsapp || !imageData) {
+        if (!whatsapp || !image) {
           return json(
-            { ok: false, message: "whatsapp dan imageData wajib diisi" },
+            { ok: false, message: "whatsapp dan image wajib diisi" },
             400
           );
         }
 
-        // (opsional) Batasi panjang dataURL biar nggak kebablasan besar
-        // Misal: ~1MB base64 ≈ 1.3M karakter, kita batasi 2.5M karakter
-        if (imageData.length > 2_500_000) {
-          return json({
-            ok: false,
-            message: "Ukuran gambar terlalu besar setelah kompresi.",
-          });
+        // kalau image belum ada prefix, tambahkan
+        if (!image.startsWith("data:")) {
+          image = "data:image/jpeg;base64," + image;
         }
 
-        const key = `pfp:${whatsapp}`;
+        const key = "pfp:" + whatsapp;
+        await env.PROFILE_PIC.put(key, image);
 
-        // Simpan langsung sebagai string data URL di KV PROFILE_PIC
-        await env.PROFILE_PIC.put(key, imageData);
-
-        return json({ ok: true, message: "Foto profil tersimpan." });
+        return json({ ok: true, message: "Foto tersimpan" });
       } catch (e) {
-        return json({
-          ok: false,
-          message: "Gagal menyimpan foto profil: " + e.message,
-        });
+        return json({ ok: false, message: "Error save photo: " + e.message }, 500);
       }
     }
 
-    // === AMBIL FOTO PROFIL ===
-    if (pathname === "/api/profile-photo" && request.method === "GET") {
-      try {
-        const whatsapp = url.searchParams.get("whatsapp");
-        if (!whatsapp) {
-          return json(
-            { ok: false, message: "Parameter whatsapp wajib diisi" },
-            400
-          );
-        }
-
-        const key = `pfp:${whatsapp}`;
-        const imageData = await env.PROFILE_PIC.get(key);
-
-        if (!imageData) {
-          // Tidak dianggap error fatal, cuma info kalau belum ada foto
-          return json({ ok: false, message: "Foto profil belum ada." }, 404);
-        }
-
-        return json({ ok: true, imageData });
-      } catch (e) {
-        return json({
-          ok: false,
-          message: "Gagal mengambil foto profil: " + e.message,
-        });
-      }
-    }
-
-    // =====================================================
-    // API: CEK KUOTA (punya kamu, tetap sama)
-    // =====================================================
+    // ======= API: CEK KUOTA =======
     if (pathname === "/api/cek-kuota") {
       const msisdn = url.searchParams.get("msisdn");
 
@@ -225,9 +187,7 @@ export default {
       }
     }
 
-    // =====================================================
-    // SERVE FILE STATIC (index.html, app.js, dll)
-    // =====================================================
+    // ======= SERVE FILE STATIC =======
     try {
       return await env.ASSETS.fetch(request);
     } catch (e) {
