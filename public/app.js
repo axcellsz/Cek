@@ -1,4 +1,4 @@
-//document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
 
   // ========================================
   // BANNER HOME (PAKAI home-banner-list)
@@ -16,7 +16,7 @@
       const img = document.createElement("img");
       img.src = `/img/banner${i}.jpg`;
       img.alt = `Banner ${i}`;
-      img.loading = "lazy";
+    //  img.loading = "lazy";
 
       img.onerror = () => {
         wrapper.remove();
@@ -25,7 +25,7 @@
       wrapper.appendChild(img);
       container.appendChild(wrapper);
     }
-//  }
+  }
 
   // ==== PANGGIL FUNGSINYA ====
   loadHomeBanners();
