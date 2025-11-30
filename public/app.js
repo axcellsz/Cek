@@ -74,7 +74,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // =====================================================
   // KEY LOCALSTORAGE UNTUK FOTO PROFIL
-  // (sekarang disimpan sebagai data URL lengkap: "data:image/jpeg;base64,...")
+  // (disimpan sebagai data URL lengkap: "data:image/jpeg;base64,...")
   // =====================================================
   const AVATAR_KEY = "vpnUserPhoto";
 
@@ -95,10 +95,8 @@ document.addEventListener("DOMContentLoaded", () => {
           imageData: dataUrl, // data URL lengkap
         }),
       });
-      // Kalau mau, bisa cek response json; di sini kita diamkan saja
     } catch (err) {
       console.error("Gagal upload foto ke server:", err);
-      // Tidak perlu alert, biar UX tetap halus; cukup gagal silent.
     }
   }
 
@@ -190,10 +188,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const avatarLetter = name.trim().charAt(0).toUpperCase() || "?";
     const maskedWa = wa ? maskLast4(wa) : "********";
 
-    // whatsappKey untuk KV: pakai nilai yang disimpan di user (lebih konsisten)
+    // whatsappKey untuk KV: pakai field whatsapp yang disimpan user
     const whatsappKey = user.whatsapp || wa || waRaw;
 
-    // baca foto dari localStorage (sekarang bentuknya data URL lengkap)
+    // baca foto dari localStorage (data URL lengkap)
     const savedPhoto = localStorage.getItem(AVATAR_KEY);
 
     container.innerHTML = `
@@ -213,7 +211,7 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         </div>
 
-        <!-- Form 1: saldo / kuota / bonus (dummy dulu) -->
+        <!-- Form 1: saldo / kuota / bonus (dummy) -->
         <div class="profile-card profile-balance-card">
           <div class="profile-balance-item">
             <div class="profile-balance-value" id="balance-saldo">0</div>
@@ -279,16 +277,15 @@ document.addEventListener("DOMContentLoaded", () => {
     const editBtn = container.querySelector(".profile-edit-photo");
     const photoInput = container.querySelector("#profile-photo-input");
 
-    // === 1) Kalau ada foto di localStorage → langsung pakai
+    // 1) Kalau ada foto di localStorage → langsung pakai
     if (savedPhoto && avatarEl) {
       avatarEl.style.backgroundImage = `url(${savedPhoto})`;
       avatarEl.style.backgroundSize = "cover";
       avatarEl.style.backgroundPosition = "center";
-      avatarEl.textContent = ""; // sembunyikan huruf
+      avatarEl.textContent = "";
     }
 
-    // === 2) Coba ambil foto dari server (KV PROFILE_PIC)
-    //      kalau dapat, update avatar & simpan ke localStorage
+    // 2) Coba ambil foto dari server (KV PROFILE_PIC)
     if (whatsappKey && avatarEl) {
       (async () => {
         try {
@@ -308,7 +305,7 @@ document.addEventListener("DOMContentLoaded", () => {
       })();
     }
 
-    // === 3) Handler upload foto (kompres + simpan local + kirim ke server)
+    // 3) Handler upload foto (kompres + simpan local + kirim ke server)
     if (editBtn && photoInput && avatarEl) {
       editBtn.addEventListener("click", () => {
         photoInput.click();
@@ -325,22 +322,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-          // kompres gambar → base64 tanpa prefix
           const base64 = await compressImage(file, 320, 0.7);
-
-          // jadikan data URL lengkap
           const dataUrl = `data:image/jpeg;base64,${base64}`;
 
-          // simpan di localStorage
           localStorage.setItem(AVATAR_KEY, dataUrl);
 
-          // tampilkan di avatar
           avatarEl.style.backgroundImage = `url(${dataUrl})`;
           avatarEl.style.backgroundSize = "cover";
           avatarEl.style.backgroundPosition = "center";
           avatarEl.textContent = "";
 
-          // kirim ke backend untuk disimpan di KV
           uploadProfilePhotoToServer(whatsappKey, dataUrl);
 
           alert("Foto profil disimpan.");
@@ -367,7 +358,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* =====================================================
      SESSION: RESTORE DARI localStorage
-     - return true kalau ada user valid
   ====================================================== */
   function initSessionFromStorage() {
     const raw = localStorage.getItem("vpnUser");
@@ -707,7 +697,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     LIST USER
+     LIST USER (dengan foto kecil)
   ====================================================== */
   const userListEl = document.getElementById("user-list");
   const reloadUsersBtn = document.getElementById("reload-users");
@@ -734,6 +724,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
+      // Render list + avatar placeholder (huruf awal)
       userListEl.innerHTML = users
         .map((u, idx) => {
           const name = u.name || "-";
@@ -743,10 +734,20 @@ document.addEventListener("DOMContentLoaded", () => {
           const waMasked = wa ? maskLast4(wa) : "****";
           const xlMasked = xl ? maskLast4(xl) : "****";
 
+          const avatarLetter =
+            (name || "?").trim().charAt(0).toUpperCase() || "?";
+
+          const whatsappKey = wa; // dipakai untuk key KV foto
+
           return `
             <div class="user-item">
               <div class="user-item-header">
-                <span>${idx + 1}. ${name}</span>
+                <div class="user-header-main">
+                  <div class="user-avatar-small" data-wa="${whatsappKey}">
+                    ${avatarLetter}
+                  </div>
+                  <span>${idx + 1}. ${name}</span>
+                </div>
               </div>
               <div class="user-item-body">
                 <div>No WhatsApp: ${waMasked}</div>
@@ -756,6 +757,28 @@ document.addEventListener("DOMContentLoaded", () => {
           `;
         })
         .join("");
+
+      // Setelah HTML jadi, load foto dari KV untuk tiap user
+      const avatarEls = userListEl.querySelectorAll(
+        ".user-avatar-small[data-wa]"
+      );
+
+      avatarEls.forEach(async (el) => {
+        const waKey = el.dataset.wa;
+        if (!waKey) return;
+
+        try {
+          const photo = await downloadProfilePhotoFromServer(waKey);
+          if (photo) {
+            el.style.backgroundImage = `url(${photo})`;
+            el.style.backgroundSize = "cover";
+            el.style.backgroundPosition = "center";
+            el.textContent = "";
+          }
+        } catch (err) {
+          console.error("Gagal load avatar user list:", err);
+        }
+      });
     } catch (err) {
       userListEl.innerHTML =
         "<div class='user-item'>Error: " + err.message + "</div>";
