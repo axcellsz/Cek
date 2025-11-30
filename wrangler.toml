@@ -6,9 +6,9 @@ account_id = "2be8757c27accc0e32b2e7b191dab316"
 
 # KV kalau nanti mau dipakai
 kv_namespaces = [
-  { binding = "USER_VPN", id = "dff1b5e600a14e6c8b51b6f1ca2434ee" }
+  { binding = "USER_VPN", id = "dff1b5e600a14e6c8b51b6f1ca2434ee" },
+  { binding = "PROFILE_PIC", id = "bd884cff26074fa4988d5be44108d7fc" }
 ]
-
 # Static assets (index.html, js, css, dll)
 [assets]
 directory = "./public"
