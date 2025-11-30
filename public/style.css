@@ -365,13 +365,21 @@ body {
    PROFILE FORM (LOGIN & REGISTER)
 ============================ */
 
+./* ============================
+   PROFILE FORM (LOGIN & REGISTER)
+============================ */
+
+/* CONTAINER – sekarang cuma flex column, tanpa justify-content */
 .profile-container {
   padding: 10px 4px;
   height: 100%;
   overflow-y: auto;
+
+  display: flex;
+  flex-direction: column;
 }
 
-/* TAB BUTTON */
+/* TAB BUTTON (masih boleh dipakai, atau bisa dihapus dari HTML kalau sudah tidak perlu) */
 .profile-tabs {
   display: flex;
   gap: 10px;
@@ -396,9 +404,10 @@ body {
   color: white;
 }
 
-/* CONTENT AREA */
+/* CONTENT AREA – blok form ini kita dorong ke bawah dengan margin-top:auto */
 .tab-content {
   display: none;
+  margin-top: auto;      /* <=== KUNCI: dorong tab (judul+form) ke bawah card */
 }
 
 .tab-content.active {
@@ -406,6 +415,16 @@ body {
 }
 
 /* FORM STYLE */
+.profile-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  text-align: left;
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto 16px;   /* ada jarak sedikit dari bawah card */
+}
+
 .profile-form label {
   font-size: 14px;
   font-weight: 600;
@@ -414,37 +433,35 @@ body {
   margin-bottom: 2px;
 }
 
-/* INPUT LOGIN & DAFTAR – TikTok style (garis bawah saja) */
+/* INPUT LOGIN & DAFTAR – TikTok style garis bawah */
 .input-box {
   width: 100%;
   box-sizing: border-box;
 
-  padding: 10px 0;                 /* tanpa padding samping berlebihan */
-  border: none;                    /* hilangkan kotak */
-  border-bottom: 2px solid #cbd5e1;/* hanya garis bawah */
-
-  border-radius: 0;                /* tidak membulat */
-  background: transparent;         /* putih polos */
+  padding: 10px 0;
+  border: none;
+  border-bottom: 2px solid #cbd5e1;
+  border-radius: 0;
+  background: transparent;
 
   font-size: 15px;
   outline: none;
   transition: border-color 0.2s ease, background-color 0.2s ease;
 }
 
-/* Fokus: garis bawah lebih tebal/gelap */
 .input-box:focus {
   border-bottom-color: #0f172a;
   background: transparent;
 }
 
-/* Placeholder lebih soft */
 .input-box::placeholder {
   color: #9ca3af;
 }
-/* BUTTON */
+
+/* BUTTON UTAMA */
 .profile-btn {
-  margin-top: 6px;
-  padding: 12px;
+  margin-top: 10px;
+  padding: 14px;
   border: none;
   border-radius: 12px;
   background: #0f172a;
@@ -465,7 +482,31 @@ body {
   background: #334155;
 }
 
+/* Tombol kecil pindah login/daftar di bawah form */
+.form-switch-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
 
+.secondary-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 8px 18px;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, 0.18),
+    0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.secondary-btn:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+}
 /* ============================
    LIST USER
 ============================ */
