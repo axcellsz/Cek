@@ -72,7 +72,59 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // =====================================================
+  // KEY LOCALSTORAGE UNTUK FOTO PROFIL
+  // (sekarang disimpan sebagai data URL lengkap: "data:image/jpeg;base64,...")
+  // =====================================================
   const AVATAR_KEY = "vpnUserPhoto";
+
+  // =====================================================
+  // HELPER BACKEND FOTO PROFIL (KV PROFILE_PIC)
+  // =====================================================
+
+  // Kirim foto ke backend untuk disimpan di KV
+  async function uploadProfilePhotoToServer(whatsapp, dataUrl) {
+    try {
+      if (!whatsapp) return;
+
+      await fetch("/api/profile-photo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          whatsapp,
+          imageData: dataUrl, // data URL lengkap
+        }),
+      });
+      // Kalau mau, bisa cek response json; di sini kita diamkan saja
+    } catch (err) {
+      console.error("Gagal upload foto ke server:", err);
+      // Tidak perlu alert, biar UX tetap halus; cukup gagal silent.
+    }
+  }
+
+  // Ambil foto dari backend KV
+  async function downloadProfilePhotoFromServer(whatsapp) {
+    try {
+      if (!whatsapp) return null;
+
+      const res = await fetch(
+        "/api/profile-photo?whatsapp=" + encodeURIComponent(whatsapp)
+      );
+
+      if (!res.ok) {
+        // 404 (belum ada foto) atau error lain
+        return null;
+      }
+
+      const data = await res.json();
+      if (!data.ok || !data.imageData) return null;
+
+      return data.imageData; // data URL lengkap
+    } catch (err) {
+      console.error("Gagal ambil foto dari server:", err);
+      return null;
+    }
+  }
 
   /* =====================================================
      NAVBAR BAWAH & SCREEN SWITCHING
@@ -120,9 +172,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* =====================================================
      DASHBOARD PROFILE (SETELAH LOGIN)
-     - Mengganti isi .profile-container
-     - Menampilkan avatar, nama, no WA, no XL
-     - Menangani upload foto profil (dengan compressImage)
+     - Menangani avatar + upload foto + sinkron ke KV
   ====================================================== */
   function renderProfile(user) {
     const container = document.querySelector(
@@ -140,7 +190,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const avatarLetter = name.trim().charAt(0).toUpperCase() || "?";
     const maskedWa = wa ? maskLast4(wa) : "********";
 
-    // baca foto dari localStorage (sudah terkompres)
+    // whatsappKey untuk KV: pakai nilai yang disimpan di user (lebih konsisten)
+    const whatsappKey = user.whatsapp || wa || waRaw;
+
+    // baca foto dari localStorage (sekarang bentuknya data URL lengkap)
     const savedPhoto = localStorage.getItem(AVATAR_KEY);
 
     container.innerHTML = `
@@ -226,14 +279,36 @@ document.addEventListener("DOMContentLoaded", () => {
     const editBtn = container.querySelector(".profile-edit-photo");
     const photoInput = container.querySelector("#profile-photo-input");
 
-    // kalau ada foto tersimpan → pakai sebagai background avatar
+    // === 1) Kalau ada foto di localStorage → langsung pakai
     if (savedPhoto && avatarEl) {
-      avatarEl.style.backgroundImage = `url(data:image/jpeg;base64,${savedPhoto})`;
+      avatarEl.style.backgroundImage = `url(${savedPhoto})`;
       avatarEl.style.backgroundSize = "cover";
       avatarEl.style.backgroundPosition = "center";
       avatarEl.textContent = ""; // sembunyikan huruf
     }
 
+    // === 2) Coba ambil foto dari server (KV PROFILE_PIC)
+    //      kalau dapat, update avatar & simpan ke localStorage
+    if (whatsappKey && avatarEl) {
+      (async () => {
+        try {
+          const remotePhoto = await downloadProfilePhotoFromServer(
+            whatsappKey
+          );
+          if (remotePhoto) {
+            avatarEl.style.backgroundImage = `url(${remotePhoto})`;
+            avatarEl.style.backgroundSize = "cover";
+            avatarEl.style.backgroundPosition = "center";
+            avatarEl.textContent = "";
+            localStorage.setItem(AVATAR_KEY, remotePhoto);
+          }
+        } catch (err) {
+          console.error("Gagal sync foto dari server:", err);
+        }
+      })();
+    }
+
+    // === 3) Handler upload foto (kompres + simpan local + kirim ke server)
     if (editBtn && photoInput && avatarEl) {
       editBtn.addEventListener("click", () => {
         photoInput.click();
@@ -250,19 +325,25 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         try {
-          // kompres gambar
+          // kompres gambar → base64 tanpa prefix
           const base64 = await compressImage(file, 320, 0.7);
 
+          // jadikan data URL lengkap
+          const dataUrl = `data:image/jpeg;base64,${base64}`;
+
           // simpan di localStorage
-          localStorage.setItem(AVATAR_KEY, base64);
+          localStorage.setItem(AVATAR_KEY, dataUrl);
 
           // tampilkan di avatar
-          avatarEl.style.backgroundImage = `url(data:image/jpeg;base64,${base64})`;
+          avatarEl.style.backgroundImage = `url(${dataUrl})`;
           avatarEl.style.backgroundSize = "cover";
           avatarEl.style.backgroundPosition = "center";
           avatarEl.textContent = "";
 
-          alert("Foto profil disimpan di perangkat ini.");
+          // kirim ke backend untuk disimpan di KV
+          uploadProfilePhotoToServer(whatsappKey, dataUrl);
+
+          alert("Foto profil disimpan.");
         } catch (err) {
           console.error(err);
           alert("Gagal memproses gambar: " + err.message);
@@ -277,7 +358,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (logoutBtn) {
       logoutBtn.addEventListener("click", () => {
         localStorage.removeItem("vpnUser");
-        // kalau mau hapus foto juga:
+        // kalau mau sekalian hapus foto di device:
         // localStorage.removeItem(AVATAR_KEY);
         location.reload();
       });
