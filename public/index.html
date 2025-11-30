@@ -23,17 +23,10 @@
       </div>
     </div>
 
-    <!-- ================= PROFILE (LOGIN / DAFTAR / DASHBOARD) ================= -->
+    <!-- ================= PROFILE (LOGIN / DAFTAR / DASHBOARD DINAMIS) ================= -->
     <div id="screen-profile" class="screen">
       <div class="screen-card">
         <div class="profile-container">
-
-          <!-- ====== TAB LOGIN ====== -->
-<!-- Profile -->
-    <div id="screen-profile" class="screen">
-      <div class="screen-card">
-        <div class="profile-container">
-
           <!-- ====== TAB LOGIN (default) ====== -->
           <div id="tab-login" class="tab-content active">
             <div class="screen-title" style="margin-bottom:12px;">Masuk</div>
@@ -107,63 +100,29 @@
               </div>
             </form>
           </div>
-
-        </div>
-      </div>
-    </div>
-          <!-- ====== DASHBOARD PROFILE (SETELAH LOGIN) ====== -->
-          <div id="profile-dashboard" class="profile-dashboard">
-            <!-- Header biru + avatar -->
-            <div class="profile-hero">
-              <div class="profile-hero-main">
-                <div id="dash-avatar" class="profile-avatar">A</div>
-                <div>
-                  <div id="dash-name" class="profile-hero-name">Nama User</div>
-                  <div id="dash-phone-masked" class="profile-hero-phone">08••••••70</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Card putih detail -->
-            <div class="profile-info-card">
-              <div class="profile-info-row">
-                <span class="profile-info-label">No WhatsApp</span>
-                <span id="dash-wa-full" class="profile-info-value">08xxxx</span>
-              </div>
-              <div class="profile-info-row">
-                <span class="profile-info-label">No XL</span>
-                <span id="dash-xl-full" class="profile-info-value">08xxxx</span>
-              </div>
-
-              <button id="logout-btn" class="profile-btn profile-logout-btn">
-                Keluar
-              </button>
-            </div>
-          </div>
-
         </div>
       </div>
     </div>
 
-    <!-- List user -->
+    <!-- ================= LIST USER ================= -->
     <div id="screen-users" class="screen">
       <div class="screen-card">
-        <div class="profile-container">
+        <div class="user-list-container">
           <div class="screen-title">List user</div>
           <div class="screen-desc" style="margin-bottom:14px;">
             Daftar user VPN tersimpan di KV akan muncul di sini.
           </div>
 
-          <button id="reload-users" class="profile-btn" style="margin-bottom:12px;">
+          <button id="reload-users" class="profile-btn user-reload-btn">
             Muat ulang list user
           </button>
 
-          <div id="user-list"></div>
+          <div id="user-list" class="user-list"></div>
         </div>
       </div>
     </div>
 
-    <!-- Beli kuota -->
+    <!-- ================= BELI KUOTA ================= -->
     <div id="screen-beli" class="screen">
       <div class="screen-card">
         <div
@@ -186,7 +145,7 @@
       </div>
     </div>
 
-    <!-- CEK KUOTA -->
+    <!-- ================= CEK KUOTA ================= -->
     <div id="screen-cek" class="screen">
       <div class="screen-card cek-card">
         <div class="cek-header">Axstore</div>
@@ -214,7 +173,7 @@
     </div>
   </div>
 
-  <!-- FOOTER -->
+  <!-- FOOTER NAVBAR -->
   <div class="footer">
     <!-- PROFILE -->
     <a class="nav-btn" href="javascript:void(0)" data-screen="profile">
