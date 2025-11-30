@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   /* =====================================================
-     FORMAT NOMOR
+     FORMAT NOMOR (Fix 628xxxx → 08xxxx tanpa hilang angka)
   ====================================================== */
   function formatMsisdn(num) {
     if (!num) return "";
@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return s;
   }
 
-  // Sensor 4 digit terakhir
+  /* Helper sensor 4 digit terakhir */
   function maskLast4(num) {
     if (!num) return "";
     const s = String(num);
@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     NAVIGASI & SCREEN
+     NAVIGASI BOTTOM BAR
   ====================================================== */
   const navButtons = document.querySelectorAll(".nav-btn");
   const screens = document.querySelectorAll(".screen");
@@ -49,95 +49,92 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // fungsi loadUsers dipakai di click nav; definisinya ada di bawah, tapi aman karena function declaration di-hoist
+  navButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const name = btn.dataset.screen;
+      showScreen(name);
+      setActiveNav(name);
+
+      if (name === "users") {
+        loadUsers();
+      }
+    });
+  });
+
+  // screen awal: profile
+  showScreen("profile");
+  setActiveNav("profile");
+
   /* =====================================================
-     LOGIN / REGISTER & DASHBOARD PROFILE
+     DASHBOARD PROFIL (card biru) + SESSION
   ====================================================== */
-  const tabLogin = document.getElementById("tab-login");
-  const tabRegister = document.getElementById("tab-register");
-  const goRegister = document.getElementById("go-register");
-  const goLogin = document.getElementById("go-login");
 
-  const profileDashboard = document.getElementById("profile-dashboard");
-  const dashName = document.getElementById("dash-name");
-  const dashPhoneMasked = document.getElementById("dash-phone-masked");
-  const dashWaFull = document.getElementById("dash-wa-full");
-  const dashXlFull = document.getElementById("dash-xl-full");
-  const dashAvatar = document.getElementById("dash-avatar");
-  const logoutBtn = document.getElementById("logout-btn");
+  function renderProfileDashboard(user) {
+    const container = document.querySelector("#screen-profile .profile-container");
+    if (!container) return;
 
-  let currentUser = null;
+    const name = user.name || "-";
+    const wa = user.whatsapp || user.msisdn || "";
+    const xl = user.xl || "";
+    const waMasked = wa ? maskLast4(wa) : "****";
+    const avatarLetter = name ? name.charAt(0).toUpperCase() : "U";
 
-  function showLoginTab() {
-    if (tabLogin && tabRegister) {
-      tabLogin.classList.add("active");
-      tabRegister.classList.remove("active");
+    container.innerHTML = `
+      <div class="profile-dashboard-outer">
+        <div class="profile-dashboard-hero">
+          <div class="profile-avatar">${avatarLetter}</div>
+          <div class="profile-hero-info">
+            <div class="profile-hero-name">${name}</div>
+            <div class="profile-hero-number">${waMasked}</div>
+          </div>
+        </div>
+
+        <div class="profile-detail-card">
+          <div class="profile-detail-row">
+            <span>No WhatsApp</span>
+            <span>${wa || "-"}</span>
+          </div>
+          <div class="profile-detail-row">
+            <span>No XL</span>
+            <span>${xl || "-"}</span>
+          </div>
+
+          <button id="logout-btn" class="profile-btn" style="margin-top:16px;">
+            Keluar
+          </button>
+        </div>
+      </div>
+    `;
+  }
+
+  function initSessionFromStorage() {
+    const raw = localStorage.getItem("vpnUser");
+    if (!raw) return;
+    try {
+      const user = JSON.parse(raw);
+      if (user && user.name) {
+        renderProfileDashboard(user);
+      } else {
+        localStorage.removeItem("vpnUser");
+      }
+    } catch {
+      localStorage.removeItem("vpnUser");
     }
-    if (profileDashboard) {
-      profileDashboard.style.display = "none";
+  }
+
+  // global handler untuk tombol Keluar (karena element-nya dibuat via innerHTML)
+  document.addEventListener("click", (e) => {
+    const target = e.target;
+    if (target && target.id === "logout-btn") {
+      localStorage.removeItem("vpnUser");
+      // reload supaya form login/register balik lagi sesuai HTML awal
+      location.reload();
     }
-  }
-
-  function showRegisterTab() {
-    if (tabLogin && tabRegister) {
-      tabRegister.classList.add("active");
-      tabLogin.classList.remove("active");
-    }
-    if (profileDashboard) {
-      profileDashboard.style.display = "none";
-    }
-  }
-
-  if (goRegister) {
-    goRegister.addEventListener("click", (e) => {
-      e.preventDefault();
-      showRegisterTab();
-    });
-  }
-
-  if (goLogin) {
-    goLogin.addEventListener("click", (e) => {
-      e.preventDefault();
-      showLoginTab();
-    });
-  }
-
-  function fillProfileDashboard(user) {
-    if (!profileDashboard) return;
-
-    currentUser = user || {};
-
-    const name = currentUser.name || "-";
-    const whatsapp = currentUser.whatsapp || "";
-    const xl = currentUser.xl || "";
-
-    if (dashName) dashName.textContent = name;
-    if (dashPhoneMasked) dashPhoneMasked.textContent = whatsapp ? maskLast4(whatsapp) : "";
-    if (dashWaFull) dashWaFull.textContent = whatsapp || "-";
-    if (dashXlFull) dashXlFull.textContent = xl || "-";
-    if (dashAvatar) dashAvatar.textContent = (name.charAt(0) || "?").toUpperCase();
-
-    if (tabLogin && tabRegister) {
-      tabLogin.classList.remove("active");
-      tabRegister.classList.remove("active");
-    }
-    profileDashboard.style.display = "block";
-  }
-
-  function logoutUser() {
-    currentUser = null;
-    if (profileDashboard) profileDashboard.style.display = "none";
-    showLoginTab();
-  }
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", (e) => {
-      e.preventDefault();
-      logoutUser();
-    });
-  }
+  });
 
   /* =====================================================
-     CEK KUOTA HELPER
+     HELPER — FORMAT KUOTA
   ====================================================== */
   function normalizeAmount(str) {
     if (!str) return "";
@@ -171,6 +168,9 @@ document.addEventListener("DOMContentLoaded", () => {
     return "";
   }
 
+  /* =====================================================
+     PARSE HEADER
+  ====================================================== */
   function parseHeaderFromHasil(hasilHtml) {
     if (!hasilHtml) return {};
 
@@ -197,6 +197,9 @@ document.addEventListener("DOMContentLoaded", () => {
     return header;
   }
 
+  /* =====================================================
+     PARSE PAKET
+  ====================================================== */
   function parsePaketsFromQuotas(quotasValue) {
     const pakets = [];
     if (!Array.isArray(quotasValue)) return pakets;
@@ -230,6 +233,9 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
+  /* =====================================================
+     RENDER CEK KUOTA
+  ====================================================== */
   const cekResultBody = document.getElementById("cek-result-body");
 
   function renderParsedResult(parsed, fallbackText) {
@@ -285,6 +291,9 @@ document.addEventListener("DOMContentLoaded", () => {
     cekResultBody.innerHTML = html;
   }
 
+  /* =====================================================
+     CEK KUOTA FORM
+  ====================================================== */
   const cekForm = document.getElementById("cek-form");
   const cekNumberInput = document.getElementById("cek-number");
 
@@ -328,7 +337,37 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     FORM DAFTAR
+     LOGIN / REGISTER SWITCH (text di bawah form)
+  ====================================================== */
+  const tabLogin = document.getElementById("tab-login");
+  const tabRegister = document.getElementById("tab-register");
+  const switchToRegister = document.getElementById("go-register");
+  const switchToLogin = document.getElementById("go-login");
+
+  function showLoginTab() {
+    if (tabLogin && tabRegister) {
+      tabLogin.classList.add("active");
+      tabRegister.classList.remove("active");
+    }
+  }
+
+  function showRegisterTab() {
+    if (tabLogin && tabRegister) {
+      tabRegister.classList.add("active");
+      tabLogin.classList.remove("active");
+    }
+  }
+
+  if (switchToRegister) {
+    switchToRegister.addEventListener("click", showRegisterTab);
+  }
+
+  if (switchToLogin) {
+    switchToLogin.addEventListener("click", showLoginTab);
+  }
+
+  /* =====================================================
+     FORM DAFTAR AKUN BARU
   ====================================================== */
   const regForm = document.getElementById("register-form");
   const regName = document.getElementById("reg-name");
@@ -405,8 +444,14 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        alert("Login berhasil sebagai " + data.data.name);
-        fillProfileDashboard(data.data);
+        const user = data.data || {};
+        alert("Login berhasil sebagai " + (user.name || ""));
+
+        // SIMPAN SESSION DI BROWSER
+        localStorage.setItem("vpnUser", JSON.stringify(user));
+
+        // TAMPILKAN DASHBOARD PROFIL
+        renderProfileDashboard(user);
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
       }
@@ -446,7 +491,6 @@ document.addEventListener("DOMContentLoaded", () => {
           const name = u.name || "-";
           const wa = u.whatsapp || "";
           const xl = u.xl || "";
-
           const waMasked = wa ? maskLast4(wa) : "****";
           const xlMasked = xl ? maskLast4(xl) : "****";
 
@@ -474,30 +518,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     NAV BUTTON LISTENER (setelah semua fungsi siap)
+     TERAPKAN SESSION JIKA ADA (setelah semua fungsi siap)
   ====================================================== */
-  navButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const name = btn.dataset.screen;
-      showScreen(name);
-      setActiveNav(name);
-
-      if (name === "users") {
-        loadUsers();
-      }
-
-      if (name === "profile") {
-        if (currentUser && profileDashboard) {
-          fillProfileDashboard(currentUser);
-        } else {
-          showLoginTab();
-        }
-      }
-    });
-  });
-
-  // screen awal
-  showScreen("profile");
-  setActiveNav("profile");
-  showLoginTab();
+  initSessionFromStorage();
 });
