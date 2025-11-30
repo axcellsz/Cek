@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
   /* =====================================================
-     FORMAT NOMOR (Fix 628xxxx → 08xxxx tanpa hilang angka)
+     FORMAT NOMOR
   ====================================================== */
   function formatMsisdn(num) {
     if (!num) return "";
@@ -13,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return s;
   }
 
-  /* Helper sensor 4 digit terakhir */
+  // Sensor 4 digit terakhir
   function maskLast4(num) {
     if (!num) return "";
     const s = String(num);
@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     NAVIGASI BOTTOM BAR
+     NAVIGASI & SCREEN
   ====================================================== */
   const navButtons = document.querySelectorAll(".nav-btn");
   const screens = document.querySelectorAll(".screen");
@@ -49,24 +49,95 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  navButtons.forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const name = btn.dataset.screen;
-      showScreen(name);
-      setActiveNav(name);
+  /* =====================================================
+     LOGIN / REGISTER & DASHBOARD PROFILE
+  ====================================================== */
+  const tabLogin = document.getElementById("tab-login");
+  const tabRegister = document.getElementById("tab-register");
+  const goRegister = document.getElementById("go-register");
+  const goLogin = document.getElementById("go-login");
 
-      if (name === "users") {
-        loadUsers();
-      }
+  const profileDashboard = document.getElementById("profile-dashboard");
+  const dashName = document.getElementById("dash-name");
+  const dashPhoneMasked = document.getElementById("dash-phone-masked");
+  const dashWaFull = document.getElementById("dash-wa-full");
+  const dashXlFull = document.getElementById("dash-xl-full");
+  const dashAvatar = document.getElementById("dash-avatar");
+  const logoutBtn = document.getElementById("logout-btn");
+
+  let currentUser = null;
+
+  function showLoginTab() {
+    if (tabLogin && tabRegister) {
+      tabLogin.classList.add("active");
+      tabRegister.classList.remove("active");
+    }
+    if (profileDashboard) {
+      profileDashboard.style.display = "none";
+    }
+  }
+
+  function showRegisterTab() {
+    if (tabLogin && tabRegister) {
+      tabRegister.classList.add("active");
+      tabLogin.classList.remove("active");
+    }
+    if (profileDashboard) {
+      profileDashboard.style.display = "none";
+    }
+  }
+
+  if (goRegister) {
+    goRegister.addEventListener("click", (e) => {
+      e.preventDefault();
+      showRegisterTab();
     });
-  });
+  }
 
-  // screen awal: profile
-  showScreen("profile");
-  setActiveNav("profile");
+  if (goLogin) {
+    goLogin.addEventListener("click", (e) => {
+      e.preventDefault();
+      showLoginTab();
+    });
+  }
+
+  function fillProfileDashboard(user) {
+    if (!profileDashboard) return;
+
+    currentUser = user || {};
+
+    const name = currentUser.name || "-";
+    const whatsapp = currentUser.whatsapp || "";
+    const xl = currentUser.xl || "";
+
+    if (dashName) dashName.textContent = name;
+    if (dashPhoneMasked) dashPhoneMasked.textContent = whatsapp ? maskLast4(whatsapp) : "";
+    if (dashWaFull) dashWaFull.textContent = whatsapp || "-";
+    if (dashXlFull) dashXlFull.textContent = xl || "-";
+    if (dashAvatar) dashAvatar.textContent = (name.charAt(0) || "?").toUpperCase();
+
+    if (tabLogin && tabRegister) {
+      tabLogin.classList.remove("active");
+      tabRegister.classList.remove("active");
+    }
+    profileDashboard.style.display = "block";
+  }
+
+  function logoutUser() {
+    currentUser = null;
+    if (profileDashboard) profileDashboard.style.display = "none";
+    showLoginTab();
+  }
+
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      logoutUser();
+    });
+  }
 
   /* =====================================================
-     HELPER — FORMAT KUOTA
+     CEK KUOTA HELPER
   ====================================================== */
   function normalizeAmount(str) {
     if (!str) return "";
@@ -81,9 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const isSisa = label.toLowerCase() === "sisa";
 
     const valueHtml = isSisa
-      ? `<span style="font-weight:600;color:#16a34a;">${normalizeAmount(
-          value
-        )}</span>`
+      ? `<span style="font-weight:600;color:#16a34a;">${normalizeAmount(value)}</span>`
       : `<span style="font-weight:600;">${normalizeAmount(value)}</span>`;
 
     return `
@@ -102,9 +171,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return "";
   }
 
-  /* =====================================================
-     PARSE HEADER
-  ====================================================== */
   function parseHeaderFromHasil(hasilHtml) {
     if (!hasilHtml) return {};
 
@@ -131,9 +197,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return header;
   }
 
-  /* =====================================================
-     PARSE PAKET
-  ====================================================== */
   function parsePaketsFromQuotas(quotasValue) {
     const pakets = [];
     if (!Array.isArray(quotasValue)) return pakets;
@@ -167,9 +230,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  /* =====================================================
-     RENDER CEK KUOTA
-  ====================================================== */
   const cekResultBody = document.getElementById("cek-result-body");
 
   function renderParsedResult(parsed, fallbackText) {
@@ -225,9 +285,6 @@ document.addEventListener("DOMContentLoaded", () => {
     cekResultBody.innerHTML = html;
   }
 
-  /* =====================================================
-     CEK KUOTA FORM
-  ====================================================== */
   const cekForm = document.getElementById("cek-form");
   const cekNumberInput = document.getElementById("cek-number");
 
@@ -271,66 +328,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     LOGIN / REGISTER SWITCH + DASHBOARD
-  ====================================================== */
-  const tabLogin = document.getElementById("tab-login");
-  const tabRegister = document.getElementById("tab-register");
-  const profileDashboard = document.getElementById("profile-dashboard");
-
-  const goRegister = document.getElementById("go-register");
-  const goLogin = document.getElementById("go-login");
-
-  const profName = document.getElementById("prof-name");
-  const profWa = document.getElementById("prof-wa");
-  const profXl = document.getElementById("prof-xl");
-  const logoutBtn = document.getElementById("logout-btn");
-
-  function showLoginTab() {
-    if (tabLogin) tabLogin.classList.add("active");
-    if (tabRegister) tabRegister.classList.remove("active");
-    if (profileDashboard) profileDashboard.classList.remove("active");
-  }
-
-  function showRegisterTab() {
-    if (tabRegister) tabRegister.classList.add("active");
-    if (tabLogin) tabLogin.classList.remove("active");
-    if (profileDashboard) profileDashboard.classList.remove("active");
-  }
-
-  function showProfileDashboard(user) {
-    if (!profileDashboard) return;
-
-    if (tabLogin) tabLogin.classList.remove("active");
-    if (tabRegister) tabRegister.classList.remove("active");
-    profileDashboard.classList.add("active");
-
-    if (profName) profName.textContent = user.name || "-";
-    if (profWa) profWa.textContent = user.whatsapp || "-";
-    if (profXl) profXl.textContent = user.xl || "-";
-  }
-
-  if (goRegister) {
-    goRegister.addEventListener("click", (e) => {
-      e.preventDefault();
-      showRegisterTab();
-    });
-  }
-
-  if (goLogin) {
-    goLogin.addEventListener("click", (e) => {
-      e.preventDefault();
-      showLoginTab();
-    });
-  }
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
-      showLoginTab();
-    });
-  }
-
-  /* =====================================================
-     FORM DAFTAR AKUN BARU
+     FORM DAFTAR
   ====================================================== */
   const regForm = document.getElementById("register-form");
   const regName = document.getElementById("reg-name");
@@ -408,9 +406,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         alert("Login berhasil sebagai " + data.data.name);
-
-        // === pindah ke dashboard profile ===
-        showProfileDashboard(data.data || {});
+        fillProfileDashboard(data.data);
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
       }
@@ -476,4 +472,32 @@ document.addEventListener("DOMContentLoaded", () => {
   if (reloadUsersBtn && userListEl) {
     reloadUsersBtn.addEventListener("click", loadUsers);
   }
+
+  /* =====================================================
+     NAV BUTTON LISTENER (setelah semua fungsi siap)
+  ====================================================== */
+  navButtons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const name = btn.dataset.screen;
+      showScreen(name);
+      setActiveNav(name);
+
+      if (name === "users") {
+        loadUsers();
+      }
+
+      if (name === "profile") {
+        if (currentUser && profileDashboard) {
+          fillProfileDashboard(currentUser);
+        } else {
+          showLoginTab();
+        }
+      }
+    });
+  });
+
+  // screen awal
+  showScreen("profile");
+  setActiveNav("profile");
+  showLoginTab();
 });
