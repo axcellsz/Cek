@@ -1,9 +1,8 @@
+// app.js
 document.addEventListener("DOMContentLoaded", () => {
   /* =====================================================
-     FORMAT NOMOR & MASKING
+     HELPER: FORMAT & MASK NOMOR
   ====================================================== */
-
-  // Ubah format 62xxxx / +62xxxx → 08xxxx
   function formatMsisdn(num) {
     if (!num) return "";
     let s = String(num).trim();
@@ -15,7 +14,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return s;
   }
 
-  // Menyensor 4 digit terakhir nomor
   function maskLast4(num) {
     if (!num) return "";
     const s = String(num);
@@ -26,32 +24,27 @@ document.addEventListener("DOMContentLoaded", () => {
   /* =====================================================
      NAVBAR BAWAH (GANTI SCREEN)
   ====================================================== */
-
   const navButtons = document.querySelectorAll(".nav-btn");
   const screens = document.querySelectorAll(".screen");
 
-  // Menampilkan screen berdasarkan nama: "profile", "users", "beli", "cek"
-  // Kalau name tidak diisi → tampilkan screen-default
   function showScreen(name) {
-    // Sembunyikan semua screen dulu
+    // sembunyikan semua screen dulu
     screens.forEach((s) => (s.style.display = "none"));
 
-    // Kalau tidak ada nama → tampil screen-default
+    // kalau tidak ada nama → pakai screen-default
     if (!name) {
       const def = document.getElementById("screen-default");
       if (def) def.style.display = "flex";
       return;
     }
 
-    // Tampilkan screen yang diminta
     const target = document.getElementById("screen-" + name);
     if (target) {
-      // khusus "cek" pakai block biar scrollnya enak
+      // khusus screen-cek pakai block (supaya layout cek-kuota jalan)
       target.style.display = name === "cek" ? "block" : "flex";
     }
   }
 
-  // Mengatur status aktif di navbar bawah
   function setActiveNav(name) {
     navButtons.forEach((btn) => btn.classList.remove("active"));
     navButtons.forEach((btn) => {
@@ -59,229 +52,228 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // Klik tombol di navbar → ganti screen
+  // klik nav-bottom
   navButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       const name = btn.dataset.screen;
       showScreen(name);
       setActiveNav(name);
 
-      // Kalau buka tab "users", otomatis load user
+      // kalau buka list user → muat data
       if (name === "users") {
         loadUsers();
       }
     });
   });
 
-  // NOTE:
-  // Tidak memanggil showScreen("profile") di sini.
-  // Screen awal ditentukan oleh initSessionFromStorage():
-  // - kalau sudah login → langsung ke profile
-  // - kalau belum login → screen-default
+  // SCREEN AWAL: kosong (screen-default), tidak ada nav yang aktif
+  showScreen(null);
 
   /* =====================================================
      DASHBOARD PROFILE (SETELAH LOGIN)
   ====================================================== */
 
-  // Mengganti isi .profile-container menjadi dashboard baru
-  /* =====================================================
-     DASHBOARD PROFILE (setelah login)
-  ====================================================== */
-
-  // helper upload foto ke server
-  async function uploadProfilePhoto(file, user) {
-    const formData = new FormData();
-    formData.append("photo", file);
-    // kirim identitas user (silakan sesuaikan dengan backend-mu)
-    formData.append("userId", user.id || user.whatsapp || user.name || "");
-
-    const res = await fetch("/api/profile/photo", {
-      method: "POST",
-      body: formData,
-    });
-
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(text || "Gagal upload foto (status " + res.status + ")");
-    }
-
-    let data;
-    try {
-      data = await res.json();
-    } catch {
-      throw new Error("Respon server tidak valid.");
-    }
-
-    if (!data.photoUrl) {
-      throw new Error(data.message || "photoUrl tidak ditemukan di respon server.");
-    }
-
-    return data.photoUrl;
-  }
-
+  // fungsi utama untuk merender dashboard profile
   function renderProfile(user) {
-    const container = document.querySelector("#screen-profile .profile-container");
+    const container = document.querySelector(
+      "#screen-profile .profile-container"
+    );
     if (!container) return;
 
+    // ambil data user
     const name = user.name || "-";
-    const wa = user.whatsapp || user.msisdn || "";
-    const xl = user.xl || user.no_xl || "";
+    const waRaw = user.whatsapp || user.msisdn || "";
+    const xlRaw = user.xl || user.no_xl || "";
+
+    const wa = formatMsisdn(waRaw);
+    const xl = formatMsisdn(xlRaw);
+
     const avatarLetter = name.trim().charAt(0).toUpperCase() || "?";
     const maskedWa = wa ? maskLast4(wa) : "********";
 
-    // kalau user sudah punya photoUrl dari server / localStorage
-    const photoUrl = user.photoUrl || "";
+    // nilai saldo / kuota / bonus – sementara default kalau belum ada di server
+    const saldo = user.saldo ?? 0;
+    const sisaKuota = user.sisaKuota ?? "-";
+    const bonus = user.bonus ?? 0;
 
+    // foto profil yang disimpan di localStorage (base64 data URL)
+    const photoData = user.photoData || "";
+
+    // bangun HTML dashboard
     container.innerHTML = `
       <div class="profile-dashboard">
-        <!-- Bagian atas: avatar + nama -->
-        <div class="profile-hero">
-          <div class="profile-hero-main">
-            <div class="profile-avatar-wrapper">
-              <div class="profile-avatar">
-                ${
-                  photoUrl
-                    ? `<img src="${photoUrl}" alt="Foto profil" />`
-                    : avatarLetter
-                }
-              </div>
-              <button type="button" class="profile-edit-photo">
-                Edit photo
-              </button>
-              <!-- input file disembunyikan, dipanggil via JS -->
-              <input
-                type="file"
-                accept="image/*"
-                id="profile-photo-input"
-                style="display:none"
-              />
+        <!-- Baris 1: Avatar + Nama + Edit photo -->
+        <div class="profile-header-row">
+          <div class="profile-avatar-col">
+            <div class="profile-avatar-circle">
+              ${
+                photoData
+                  ? `<img src="${photoData}" alt="Avatar" style="width:100%;height:100%;border-radius:inherit;object-fit:cover;" />`
+                  : avatarLetter
+              }
             </div>
-
-            <div>
-              <div class="profile-hero-name">${name}</div>
-              <div class="profile-hero-phone">${maskedWa}</div>
-            </div>
+            <button type="button" class="profile-edit-photo">Edit photo</button>
+            <input type="file" accept="image/*" class="profile-photo-input" style="display:none" />
+          </div>
+          <div class="profile-header-info">
+            <div class="profile-header-name">${name}</div>
+            <div class="profile-header-phone">${maskedWa}</div>
           </div>
         </div>
 
-        <!-- Card info akun + tombol keluar -->
-        <div class="profile-info-card">
-          <div class="profile-info-row">
-            <span class="profile-info-label">No WhatsApp</span>
-            <span class="profile-info-value">${wa || "-"}</span>
+        <!-- Form 1: saldo / kuota / bonus -->
+        <div class="profile-card profile-balance-card">
+          <div class="profile-balance-item">
+            <div class="profile-balance-value" id="balance-saldo">${saldo}</div>
+            <div class="profile-balance-label">Saldo</div>
           </div>
-          <div class="profile-info-row">
-            <span class="profile-info-label">No XL</span>
-            <span class="profile-info-value">${xl || "-"}</span>
+          <div class="profile-balance-item">
+            <div class="profile-balance-value" id="balance-kuota">${sisaKuota}</div>
+            <div class="profile-balance-label">Sisa kuota</div>
+          </div>
+          <div class="profile-balance-item">
+            <div class="profile-balance-value" id="balance-bonus">${bonus}</div>
+            <div class="profile-balance-label">Koin bonus</div>
+          </div>
+        </div>
+
+        <!-- Form 2: tombol aksi cepat -->
+        <div class="profile-card profile-actions-card">
+          <button type="button" class="profile-action">
+            <div class="profile-action-icon">💰</div>
+            <div class="profile-action-label">Tambah saldo</div>
+          </button>
+          <button type="button" class="profile-action">
+            <div class="profile-action-icon">📶</div>
+            <div class="profile-action-label">Tambah kuota</div>
+          </button>
+          <button type="button" class="profile-action">
+            <div class="profile-action-icon">🎁</div>
+            <div class="profile-action-label">Dapatkan bonus</div>
+          </button>
+        </div>
+
+        <!-- Area bawah yang bisa discroll (info akun + slot kosong + logout) -->
+        <div class="profile-extra-scroll">
+          <!-- Form 3: info akun -->
+          <div class="profile-card profile-info-card">
+            <div class="profile-info-row">
+              <span class="profile-info-label">Nama</span>
+              <span class="profile-info-value">${name}</span>
+            </div>
+            <div class="profile-info-row">
+              <span class="profile-info-label">No WhatsApp</span>
+              <span class="profile-info-value">${wa || "-"}</span>
+            </div>
+            <div class="profile-info-row">
+              <span class="profile-info-label">No XL</span>
+              <span class="profile-info-value">${xl || "-"}</span>
+            </div>
           </div>
 
-          <button id="logout-btn" class="profile-btn profile-logout-btn">
+          <!-- 4 slot kosong untuk fitur ke depan -->
+          <div class="profile-card profile-empty-card"></div>
+          <div class="profile-card profile-empty-card"></div>
+          <div class="profile-card profile-empty-card"></div>
+          <div class="profile-card profile-empty-card"></div>
+
+          <!-- Tombol keluar -->
+          <button type="button" id="logout-btn" class="profile-btn profile-logout-btn">
             Keluar
           </button>
         </div>
       </div>
     `;
 
-    // ===== tombol Keluar: hapus session & reload =====
+    /* ---------------------------
+       HANDLER LOGOUT
+    ---------------------------- */
     const logoutBtn = container.querySelector("#logout-btn");
     if (logoutBtn) {
       logoutBtn.addEventListener("click", () => {
         localStorage.removeItem("vpnUser");
+        // reload supaya HTML kembali (login/register muncul lagi)
         location.reload();
       });
     }
 
-    // ===== tombol Edit photo + input file =====
-    const editBtn = container.querySelector(".profile-edit-photo");
-    const fileInput = container.querySelector("#profile-photo-input");
-    const avatarEl = container.querySelector(".profile-avatar");
+    /* ---------------------------
+       HANDLER EDIT / UPLOAD FOTO
+       - Simpan ke localStorage (field: photoData)
+       - Update avatar circle langsung
+    ---------------------------- */
+    const editPhotoBtn = container.querySelector(".profile-edit-photo");
+    const fileInput = container.querySelector(".profile-photo-input");
+    const avatarCircle = container.querySelector(".profile-avatar-circle");
 
-    if (editBtn && fileInput && avatarEl) {
-      // klik tulisan "Edit photo" → buka dialog file
-      editBtn.addEventListener("click", () => {
+    if (editPhotoBtn && fileInput && avatarCircle) {
+      // klik "Edit photo" → buka file picker
+      editPhotoBtn.addEventListener("click", () => {
         fileInput.click();
       });
 
-      // ketika user memilih file
-      fileInput.addEventListener("change", async () => {
-        const file = fileInput.files && fileInput.files[0];
+      fileInput.addEventListener("change", (e) => {
+        const file = e.target.files && e.target.files[0];
         if (!file) return;
 
-        // validasi sederhana
         if (!file.type.startsWith("image/")) {
-          alert("File harus berupa gambar (jpg, png, dll).");
-          fileInput.value = "";
+          alert("File harus berupa gambar.");
           return;
         }
 
-        const maxSize = 2 * 1024 * 1024; // 2MB
-        if (file.size > maxSize) {
-          alert("Ukuran foto maksimal 2MB.");
-          fileInput.value = "";
+        // batas ukuran 2MB (boleh ubah kalau mau)
+        const MAX_SIZE = 2 * 1024 * 1024;
+        if (file.size > MAX_SIZE) {
+          alert("Ukuran foto terlalu besar. Maksimal 2MB.");
           return;
         }
 
-        // PREVIEW CEPAT di avatar pakai data URL
         const reader = new FileReader();
         reader.onload = () => {
-          avatarEl.innerHTML = "";
-          const img = document.createElement("img");
-          img.src = reader.result;
-          img.alt = "Foto profil";
-          avatarEl.appendChild(img);
+          const dataUrl = reader.result;
+
+          // update tampilan avatar
+          avatarCircle.innerHTML = `<img src="${dataUrl}" alt="Avatar" style="width:100%;height:100%;border-radius:inherit;object-fit:cover;" />`;
+
+          // update data di localStorage
+          try {
+            const raw = localStorage.getItem("vpnUser");
+            if (raw) {
+              const stored = JSON.parse(raw);
+              stored.photoData = dataUrl;
+              localStorage.setItem("vpnUser", JSON.stringify(stored));
+            }
+          } catch (err) {
+            console.error("Gagal menyimpan foto profil:", err);
+          }
+
+          alert("Foto profil berhasil disimpan di perangkat ini.");
         };
         reader.readAsDataURL(file);
-
-        // KIRIM KE SERVER
-        try {
-          const photoUrl = await uploadProfilePhoto(file, user);
-
-          // simpan ke object user dan ke localStorage
-          user.photoUrl = photoUrl;
-          localStorage.setItem("vpnUser", JSON.stringify(user));
-        } catch (err) {
-          alert("Upload ke server gagal: " + err.message);
-        } finally {
-          fileInput.value = "";
-        }
       });
     }
   }
 
-  // Mengecek localStorage → kalau ada sesi, langsung render dashboard
+  // inisialisasi dari session di localStorage, kalau ada
   function initSessionFromStorage() {
     const raw = localStorage.getItem("vpnUser");
-
-    // Tidak ada sesi → tampilkan screen-default
-    if (!raw) {
-      showScreen(); // tanpa argumen → screen-default
-      return;
-    }
+    if (!raw) return;
 
     try {
       const user = JSON.parse(raw);
       if (user && user.name) {
-        // Kalau ada sesi valid → render dashboard & buka screen profile
         renderProfile(user);
-        showScreen("profile");
-        setActiveNav("profile");
       } else {
-        // Data sesi aneh → bersihkan
         localStorage.removeItem("vpnUser");
-        showScreen();
       }
     } catch {
-      // JSON rusak → bersihkan sesi
       localStorage.removeItem("vpnUser");
-      showScreen();
     }
   }
 
   /* =====================================================
-     HELPER KUOTA (FORMAT TEKS PAKET)
+     HELPER UNTUK CEK KUOTA
   ====================================================== */
-
-  // Normalisasi nilai kuota (misal "10GB" → "10 GB")
   function normalizeAmount(str) {
     if (!str) return "";
     return String(str)
@@ -290,13 +282,14 @@ document.addEventListener("DOMContentLoaded", () => {
       .trim();
   }
 
-  // Membuat satu baris teks paket
   function createLine(label, value) {
     if (!value) return "";
     const isSisa = label.toLowerCase() === "sisa";
 
     const valueHtml = isSisa
-      ? `<span style="font-weight:600;color:#16a34a;">${normalizeAmount(value)}</span>`
+      ? `<span style="font-weight:600;color:#16a34a;">${normalizeAmount(
+          value
+        )}</span>`
       : `<span style="font-weight:600;">${normalizeAmount(value)}</span>`;
 
     return `
@@ -306,7 +299,6 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>`;
   }
 
-  // Menentukan kelas tambahan dari tipe paket
   function typeToClass(tipe) {
     if (!tipe) return "";
     const t = tipe.toLowerCase();
@@ -317,7 +309,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     PARSE HEADER HASIL KUOTA
+     PARSE HASIL CEK KUOTA
   ====================================================== */
   function parseHeaderFromHasil(hasilHtml) {
     if (!hasilHtml) return {};
@@ -345,9 +337,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return header;
   }
 
-  /* =====================================================
-     PARSE PAKET KUOTA
-  ====================================================== */
   function parsePaketsFromQuotas(quotasValue) {
     const pakets = [];
     if (!Array.isArray(quotasValue)) return pakets;
@@ -485,7 +474,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     SWITCH LOGIN / REGISTER (TEKS BAWAH FORM)
+     SWITCH LOGIN / REGISTER (TEKS DI BAWAH FORM)
   ====================================================== */
   const tabLogin = document.getElementById("tab-login");
   const tabRegister = document.getElementById("tab-register");
@@ -595,10 +584,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const user = data.data || {};
         alert("Login berhasil sebagai " + (user.name || ""));
 
-        // Simpan sesi user di localStorage
+        // simpan session ke localStorage
         localStorage.setItem("vpnUser", JSON.stringify(user));
 
-        // Tampilkan dashboard profile
+        // tampilkan dashboard profile
         renderProfile(user);
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
@@ -667,7 +656,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     TERAPKAN SESSION JIKA ADA (SCREEN AWAL)
+     TERAPKAN SESSION JIKA ADA
   ====================================================== */
   initSessionFromStorage();
 });
