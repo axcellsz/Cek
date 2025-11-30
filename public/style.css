@@ -743,3 +743,26 @@ body {
 .profile-empty-card:last-child {
   margin-bottom: 4px;
 }
+/* ============================
+   HOME BANNER LIST
+============================ */
+.home-banner-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.home-banner-item {
+  width: 100%;
+}
+
+.home-banner-item img {
+  width: 100%;
+  display: block;
+  border-radius: 20px;
+  box-shadow:
+    0 4px 10px rgba(15, 23, 42, 0.12),
+    0 8px 20px rgba(15, 23, 42, 0.08);
+}
