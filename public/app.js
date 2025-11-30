@@ -101,28 +101,32 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Ambil foto dari backend KV
-  async function downloadProfilePhotoFromServer(whatsapp) {
-    try {
-      if (!whatsapp) return null;
+ async function downloadProfilePhotoFromServer(whatsapp) {
+  try {
+    if (!whatsapp) return null;
 
-      const res = await fetch(
-        "/api/profile-photo?whatsapp=" + encodeURIComponent(whatsapp)
-      );
+    const res = await fetch(
+      "/api/profile-photo?whatsapp=" + encodeURIComponent(whatsapp)
+    );
 
-      if (!res.ok) {
-        // 404 (belum ada foto) atau error lain
-        return null;
-      }
-
-      const data = await res.json();
-      if (!data.ok || !data.imageData) return null;
-
-      return data.imageData; // data URL lengkap
-    } catch (err) {
-      console.error("Gagal ambil foto dari server:", err);
+    if (!res.ok) {
       return null;
     }
+
+    const data = await res.json();
+
+    // Backend kamu mengirim: { ok: true, image: "data:image..." }
+    // Tetapi frontend awalnya baca imageData → kita buat kompatibel:
+    const imageData = data.imageData || data.image;
+
+    if (!data.ok || !imageData) return null;
+
+    return imageData;
+  } catch (err) {
+    console.error("Gagal ambil foto dari server:", err);
+    return null;
   }
+}
 
   /* =====================================================
      NAVBAR BAWAH & SCREEN SWITCHING
