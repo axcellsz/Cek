@@ -70,43 +70,117 @@ document.addEventListener("DOMContentLoaded", () => {
      DASHBOARD PROFIL (card biru) + SESSION
   ====================================================== */
 
-  function renderProfileDashboard(user) {
-    const container = document.querySelector("#screen-profile .profile-container");
-    if (!container) return;
+  // ===========================
+// RENDER DASHBOARD PROFIL
+// ===========================
+function renderProfile(user) {
+  const container = document.querySelector("#screen-profile .profile-container");
+  if (!container) return;
 
-    const name = user.name || "-";
-    const wa = user.whatsapp || user.msisdn || "";
-    const xl = user.xl || "";
-    const waMasked = wa ? maskLast4(wa) : "****";
-    const avatarLetter = name ? name.charAt(0).toUpperCase() : "U";
+  const name = user.name || "-";
+  const whatsapp = user.whatsapp || user.msisdn || "";
+  const xl = user.xl || user.no_xl || "";
 
-    container.innerHTML = `
-      <div class="profile-dashboard-outer">
-        <div class="profile-dashboard-hero">
-          <div class="profile-avatar">${avatarLetter}</div>
-          <div class="profile-hero-info">
-            <div class="profile-hero-name">${name}</div>
-            <div class="profile-hero-number">${waMasked}</div>
-          </div>
+  const avatarLetter = name.trim().charAt(0).toUpperCase() || "?";
+  const shortWa = whatsapp ? maskLast4(whatsapp) : "********";
+
+  // nilai saldo / kuota / bonus – sementara 0 kalau belum ada di KV
+  const saldo = user.saldo ?? 0;
+  const sisaKuota = user.sisaKuota ?? "-";
+  const bonus = user.bonus ?? 0;
+
+  container.innerHTML = `
+    <div class="profile-dashboard">
+      <!-- Baris 1: avatar + nama -->
+      <div class="profile-header-row">
+        <div class="profile-avatar-col">
+          <div class="profile-avatar-circle">${avatarLetter}</div>
+          <button type="button" class="profile-edit-photo">Edit photo</button>
         </div>
-
-        <div class="profile-detail-card">
-          <div class="profile-detail-row">
-            <span>No WhatsApp</span>
-            <span>${wa || "-"}</span>
-          </div>
-          <div class="profile-detail-row">
-            <span>No XL</span>
-            <span>${xl || "-"}</span>
-          </div>
-
-          <button id="logout-btn" class="profile-btn" style="margin-top:16px;">
-            Keluar
-          </button>
+        <div class="profile-header-info">
+          <div class="profile-header-name">${name}</div>
+          <div class="profile-header-phone">${shortWa}</div>
         </div>
       </div>
-    `;
+
+      <!-- Form 1: saldo / kuota / bonus -->
+      <div class="profile-card profile-balance-card">
+        <div class="profile-balance-item">
+          <div class="profile-balance-value" id="balance-saldo">${saldo}</div>
+          <div class="profile-balance-label">Saldo</div>
+        </div>
+        <div class="profile-balance-item">
+          <div class="profile-balance-value" id="balance-kuota">${sisaKuota}</div>
+          <div class="profile-balance-label">Sisa kuota</div>
+        </div>
+        <div class="profile-balance-item">
+          <div class="profile-balance-value" id="balance-bonus">${bonus}</div>
+          <div class="profile-balance-label">Koin bonus</div>
+        </div>
+      </div>
+
+      <!-- Form 2: tombol cepat -->
+      <div class="profile-card profile-actions-card">
+        <button type="button" class="profile-action">
+          <div class="profile-action-icon">💰</div>
+          <div class="profile-action-label">Tambah saldo</div>
+        </button>
+        <button type="button" class="profile-action">
+          <div class="profile-action-icon">📶</div>
+          <div class="profile-action-label">Tambah kuota</div>
+        </button>
+        <button type="button" class="profile-action">
+          <div class="profile-action-icon">🎁</div>
+          <div class="profile-action-label">Dapatkan bonus</div>
+        </button>
+      </div>
+
+      <!-- Form 3: info akun -->
+      <div class="profile-card profile-info-card">
+        <div class="profile-info-row">
+          <span class="profile-info-label">Nama</span>
+          <span class="profile-info-value">${name}</span>
+        </div>
+        <div class="profile-info-row">
+          <span class="profile-info-label">No WhatsApp</span>
+          <span class="profile-info-value">${whatsapp || "-"}</span>
+        </div>
+        <div class="profile-info-row">
+          <span class="profile-info-label">No XL</span>
+          <span class="profile-info-value">${xl || "-"}</span>
+        </div>
+      </div>
+
+      <!-- 4 form kosong -->
+      <div class="profile-card profile-empty-card"></div>
+      <div class="profile-card profile-empty-card"></div>
+      <div class="profile-card profile-empty-card"></div>
+      <div class="profile-card profile-empty-card"></div>
+
+      <!-- Tombol keluar -->
+      <button type="button" id="logout-btn" class="profile-btn profile-logout-btn">
+        Keluar
+      </button>
+    </div>
+  `;
+
+  // tombol keluar: hapus sesi & reload ke halaman login
+  const logoutBtn = container.querySelector("#logout-btn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("vpnUser");
+      location.reload();
+    });
   }
+
+  // tombol edit photo – nanti diganti upload betulan
+  const editPhotoBtn = container.querySelector(".profile-edit-photo");
+  if (editPhotoBtn) {
+    editPhotoBtn.addEventListener("click", () => {
+      alert("Fitur upload foto profil akan ditambahkan nanti.");
+    });
+  }
+}
 
   function initSessionFromStorage() {
     const raw = localStorage.getItem("vpnUser");
