@@ -71,114 +71,118 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // RENDER DASHBOARD PROFIL BARU
   function renderProfile(user) {
-    const container = document.querySelector(
-      "#screen-profile .profile-container"
-    );
-    if (!container) return;
+  function renderProfile(user) {
+  const container = document.querySelector(
+    "#screen-profile .profile-container"
+  );
+  if (!container) return;
 
-    const name = user.name || "-";
-    const whatsapp = user.whatsapp || user.msisdn || "";
-    const xl = user.xl || user.no_xl || "";
+  const name = user.name || "-";
+  const whatsapp = user.whatsapp || user.msisdn || "";
+  const xl = user.xl || user.no_xl || "";
 
-    const avatarLetter = name.trim().charAt(0).toUpperCase() || "?";
-    const shortWa = whatsapp ? maskLast4(whatsapp) : "********";
+  const avatarLetter = name.trim().charAt(0).toUpperCase() || "?";
+  const shortWa = whatsapp ? maskLast4(whatsapp) : "********";
 
-    // nilai saldo / kuota / bonus – sementara 0 kalau belum ada di KV
-    const saldo = user.saldo ?? 0;
-    const sisaKuota = user.sisaKuota ?? "-";
-    const bonus = user.bonus ?? 0;
+  // nilai saldo / kuota / bonus – sementara 0 kalau belum ada di KV
+  const saldo = user.saldo ?? 0;
+  const sisaKuota = user.sisaKuota ?? "-";
+  const bonus = user.bonus ?? 0;
 
-    container.innerHTML = `
-      <div class="profile-dashboard">
-        <!-- Baris 1: avatar + nama -->
-        <div class="profile-header-row">
-          <div class="profile-avatar-col">
-            <div class="profile-avatar-circle">${avatarLetter}</div>
-            <button type="button" class="profile-edit-photo">Edit photo</button>
-          </div>
-          <div class="profile-header-info">
-            <div class="profile-header-name">${name}</div>
-            <div class="profile-header-phone">${shortWa}</div>
-          </div>
+  container.innerHTML = `
+    <div class="profile-dashboard">
+      <!-- Baris 1: avatar + nama -->
+      <div class="profile-header-row">
+        <div class="profile-avatar-col">
+          <div class="profile-avatar-circle">${avatarLetter}</div>
+          <button type="button" class="profile-edit-photo">Edit photo</button>
         </div>
-
-        <!-- Form 1: saldo / kuota / bonus -->
-        <div class="profile-card profile-balance-card">
-          <div class="profile-balance-item">
-            <div class="profile-balance-value" id="balance-saldo">${saldo}</div>
-            <div class="profile-balance-label">Saldo</div>
-          </div>
-          <div class="profile-balance-item">
-            <div class="profile-balance-value" id="balance-kuota">${sisaKuota}</div>
-            <div class="profile-balance-label">Sisa kuota</div>
-          </div>
-          <div class="profile-balance-item">
-            <div class="profile-balance-value" id="balance-bonus">${bonus}</div>
-            <div class="profile-balance-label">Koin bonus</div>
-          </div>
+        <div class="profile-header-info">
+          <div class="profile-header-name">${name}</div>
+          <div class="profile-header-phone">${shortWa}</div>
         </div>
+      </div>
 
-        <!-- Form 2: tombol cepat -->
-        <div class="profile-card profile-actions-card">
-          <button type="button" class="profile-action">
-            <div class="profile-action-icon">💰</div>
-            <div class="profile-action-label">Tambah saldo</div>
-          </button>
-          <button type="button" class="profile-action">
-            <div class="profile-action-icon">📶</div>
-            <div class="profile-action-label">Tambah kuota</div>
-          </button>
-          <button type="button" class="profile-action">
-            <div class="profile-action-icon">🎁</div>
-            <div class="profile-action-label">Dapatkan bonus</div>
-          </button>
+      <!-- Form 1: saldo / kuota / bonus -->
+      <div class="profile-card profile-balance-card">
+        <div class="profile-balance-item">
+          <div class="profile-balance-value" id="balance-saldo">${saldo}</div>
+          <div class="profile-balance-label">Saldo</div>
         </div>
-
-        <!-- Form 3: info akun -->
-        <div class="profile-card profile-info-card">
-          <div class="profile-info-row">
-            <span class="profile-info-label">Nama</span>
-            <span class="profile-info-value">${name}</span>
-          </div>
-          <div class="profile-info-row">
-            <span class="profile-info-label">No WhatsApp</span>
-            <span class="profile-info-value">${whatsapp || "-"}</span>
-          </div>
-          <div class="profile-info-row">
-            <span class="profile-info-label">No XL</span>
-            <span class="profile-info-value">${xl || "-"}</span>
-          </div>
+        <div class="profile-balance-item">
+          <div class="profile-balance-value" id="balance-kuota">${sisaKuota}</div>
+          <div class="profile-balance-label">Sisa kuota</div>
         </div>
+        <div class="profile-balance-item">
+          <div class="profile-balance-value" id="balance-bonus">${bonus}</div>
+          <div class="profile-balance-label">Koin bonus</div>
+        </div>
+      </div>
 
-        <!-- 4 form kosong -->
+      <!-- Form 2: tombol cepat -->
+      <div class="profile-card profile-actions-card">
+        <button type="button" class="profile-action">
+          <div class="profile-action-icon">💰</div>
+          <div class="profile-action-label">Tambah saldo</div>
+        </button>
+        <button type="button" class="profile-action">
+          <div class="profile-action-icon">📶</div>
+          <div class="profile-action-label">Tambah kuota</div>
+        </button>
+        <button type="button" class="profile-action">
+          <div class="profile-action-icon">🎁</div>
+          <div class="profile-action-label">Dapatkan bonus</div>
+        </button>
+      </div>
+
+      <!-- Form 3: info akun -->
+      <div class="profile-card profile-info-card">
+        <div class="profile-info-row">
+          <span class="profile-info-label">Nama</span>
+          <span class="profile-info-value">${name}</span>
+        </div>
+        <div class="profile-info-row">
+          <span class="profile-info-label">No WhatsApp</span>
+          <span class="profile-info-value">${whatsapp || "-"}</span>
+        </div>
+        <div class="profile-info-row">
+          <span class="profile-info-label">No XL</span>
+          <span class="profile-info-value">${xl || "-"}</span>
+        </div>
+      </div>
+
+      <!-- AREA FORM KOSONG YANG BISA DI-SCROLL -->
+      <div class="profile-extra-scroll">
         <div class="profile-card profile-empty-card"></div>
         <div class="profile-card profile-empty-card"></div>
         <div class="profile-card profile-empty-card"></div>
         <div class="profile-card profile-empty-card"></div>
 
-        <!-- Tombol keluar -->
+        <!-- Tombol keluar ikut di dalam scroll, tapi tetap kelihatan di bawah -->
         <button type="button" id="logout-btn" class="profile-btn profile-logout-btn">
           Keluar
         </button>
       </div>
-    `;
+    </div>
+  `;
 
-    const logoutBtn = container.querySelector("#logout-btn");
-    if (logoutBtn) {
-      logoutBtn.addEventListener("click", () => {
-        localStorage.removeItem("vpnUser");
-        location.reload();
-      });
-    }
-
-    const editPhotoBtn = container.querySelector(".profile-edit-photo");
-    if (editPhotoBtn) {
-      editPhotoBtn.addEventListener("click", () => {
-        alert("Fitur upload foto profil akan ditambahkan nanti.");
-      });
-    }
+  const logoutBtn = container.querySelector("#logout-btn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("vpnUser");
+      location.reload();
+    });
   }
 
+  const editPhotoBtn = container.querySelector(".profile-edit-photo");
+  if (editPhotoBtn) {
+    editPhotoBtn.addEventListener("click", () => {
+      alert("Fitur upload foto profil akan ditambahkan nanti.");
+    });
+  }
+}
+
+    
   // Ambil session dari localStorage (kalau ada)
   function initSessionFromStorage() {
     const raw = localStorage.getItem("vpnUser");
