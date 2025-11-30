@@ -84,104 +84,105 @@ document.addEventListener("DOMContentLoaded", () => {
   ====================================================== */
 
   // Mengganti isi .profile-container menjadi dashboard baru
+  /* =====================================================
+     DASHBOARD PROFILE (setelah login)
+  ====================================================== */
+
+  // helper upload foto ke server
+  async function uploadProfilePhoto(file, user) {
+    const formData = new FormData();
+    formData.append("photo", file);
+    // kirim identitas user (silakan sesuaikan dengan backend-mu)
+    formData.append("userId", user.id || user.whatsapp || user.name || "");
+
+    const res = await fetch("/api/profile/photo", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text || "Gagal upload foto (status " + res.status + ")");
+    }
+
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      throw new Error("Respon server tidak valid.");
+    }
+
+    if (!data.photoUrl) {
+      throw new Error(data.message || "photoUrl tidak ditemukan di respon server.");
+    }
+
+    return data.photoUrl;
+  }
+
   function renderProfile(user) {
     const container = document.querySelector("#screen-profile .profile-container");
     if (!container) return;
 
     const name = user.name || "-";
-    const waRaw = user.whatsapp || user.msisdn || "";
-    const xlRaw = user.xl || user.no_xl || "";
-
-    const wa = formatMsisdn(waRaw);
-    const xl = formatMsisdn(xlRaw);
-
+    const wa = user.whatsapp || user.msisdn || "";
+    const xl = user.xl || user.no_xl || "";
     const avatarLetter = name.trim().charAt(0).toUpperCase() || "?";
     const maskedWa = wa ? maskLast4(wa) : "********";
 
-    // Nilai saldo / kuota / bonus (sementara default)
-    const saldo = user.saldo ?? 0;
-    const sisaKuota = user.sisaKuota ?? "-";
-    const bonus = user.bonus ?? 0;
+    // kalau user sudah punya photoUrl dari server / localStorage
+    const photoUrl = user.photoUrl || "";
 
     container.innerHTML = `
       <div class="profile-dashboard">
-        <!-- Baris 1: Avatar + Nama + Edit photo -->
-        <div class="profile-header-row">
-          <div class="profile-avatar-col">
-            <div class="profile-avatar-circle">${avatarLetter}</div>
-            <button type="button" class="profile-edit-photo">Edit photo</button>
-          </div>
-          <div class="profile-header-info">
-            <div class="profile-header-name">${name}</div>
-            <div class="profile-header-phone">${maskedWa}</div>
+        <!-- Bagian atas: avatar + nama -->
+        <div class="profile-hero">
+          <div class="profile-hero-main">
+            <div class="profile-avatar-wrapper">
+              <div class="profile-avatar">
+                ${
+                  photoUrl
+                    ? `<img src="${photoUrl}" alt="Foto profil" />`
+                    : avatarLetter
+                }
+              </div>
+              <button type="button" class="profile-edit-photo">
+                Edit photo
+              </button>
+              <!-- input file disembunyikan, dipanggil via JS -->
+              <input
+                type="file"
+                accept="image/*"
+                id="profile-photo-input"
+                style="display:none"
+              />
+            </div>
+
+            <div>
+              <div class="profile-hero-name">${name}</div>
+              <div class="profile-hero-phone">${maskedWa}</div>
+            </div>
           </div>
         </div>
 
-        <!-- Form 1: Saldo / Sisa Kuota / Koin bonus -->
-        <div class="profile-card profile-balance-card">
-          <div class="profile-balance-item">
-            <div class="profile-balance-value" id="balance-saldo">${saldo}</div>
-            <div class="profile-balance-label">Saldo</div>
+        <!-- Card info akun + tombol keluar -->
+        <div class="profile-info-card">
+          <div class="profile-info-row">
+            <span class="profile-info-label">No WhatsApp</span>
+            <span class="profile-info-value">${wa || "-"}</span>
           </div>
-          <div class="profile-balance-item">
-            <div class="profile-balance-value" id="balance-kuota">${sisaKuota}</div>
-            <div class="profile-balance-label">Sisa kuota</div>
-          </div>
-          <div class="profile-balance-item">
-            <div class="profile-balance-value" id="balance-bonus">${bonus}</div>
-            <div class="profile-balance-label">Koin bonus</div>
-          </div>
-        </div>
-
-        <!-- Form 2: Tombol aksi cepat -->
-        <div class="profile-card profile-actions-card">
-          <button type="button" class="profile-action">
-            <div class="profile-action-icon">💰</div>
-            <div class="profile-action-label">Tambah saldo</div>
-          </button>
-          <button type="button" class="profile-action">
-            <div class="profile-action-icon">📶</div>
-            <div class="profile-action-label">Tambah kuota</div>
-          </button>
-          <button type="button" class="profile-action">
-            <div class="profile-action-icon">🎁</div>
-            <div class="profile-action-label">Dapatkan bonus</div>
-          </button>
-        </div>
-
-        <!-- Bagian bawah yang bisa di-scroll -->
-        <div class="profile-extra-scroll">
-          <!-- Form 3: Info akun -->
-          <div class="profile-card profile-info-card">
-            <div class="profile-info-row">
-              <span class="profile-info-label">Nama</span>
-              <span class="profile-info-value">${name}</span>
-            </div>
-            <div class="profile-info-row">
-              <span class="profile-info-label">No WhatsApp</span>
-              <span class="profile-info-value">${wa || "-"}</span>
-            </div>
-            <div class="profile-info-row">
-              <span class="profile-info-label">No XL</span>
-              <span class="profile-info-value">${xl || "-"}</span>
-            </div>
+          <div class="profile-info-row">
+            <span class="profile-info-label">No XL</span>
+            <span class="profile-info-value">${xl || "-"}</span>
           </div>
 
-          <!-- 4 form kosong (buat fitur nanti) -->
-          <div class="profile-card profile-empty-card"></div>
-          <div class="profile-card profile-empty-card"></div>
-          <div class="profile-card profile-empty-card"></div>
-          <div class="profile-card profile-empty-card"></div>
-
-          <!-- Tombol keluar -->
-          <button type="button" id="logout-btn" class="profile-btn profile-logout-btn">
+          <button id="logout-btn" class="profile-btn profile-logout-btn">
             Keluar
           </button>
         </div>
       </div>
     `;
 
-    // Tombol keluar: hapus sesi & reload ke keadaan awal
+    // ===== tombol Keluar: hapus session & reload =====
     const logoutBtn = container.querySelector("#logout-btn");
     if (logoutBtn) {
       logoutBtn.addEventListener("click", () => {
@@ -190,11 +191,59 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // Tombol edit photo (nanti bisa dihubungkan dengan upload)
-    const editPhotoBtn = container.querySelector(".profile-edit-photo");
-    if (editPhotoBtn) {
-      editPhotoBtn.addEventListener("click", () => {
-        alert("Fitur upload foto profil akan ditambahkan nanti.");
+    // ===== tombol Edit photo + input file =====
+    const editBtn = container.querySelector(".profile-edit-photo");
+    const fileInput = container.querySelector("#profile-photo-input");
+    const avatarEl = container.querySelector(".profile-avatar");
+
+    if (editBtn && fileInput && avatarEl) {
+      // klik tulisan "Edit photo" → buka dialog file
+      editBtn.addEventListener("click", () => {
+        fileInput.click();
+      });
+
+      // ketika user memilih file
+      fileInput.addEventListener("change", async () => {
+        const file = fileInput.files && fileInput.files[0];
+        if (!file) return;
+
+        // validasi sederhana
+        if (!file.type.startsWith("image/")) {
+          alert("File harus berupa gambar (jpg, png, dll).");
+          fileInput.value = "";
+          return;
+        }
+
+        const maxSize = 2 * 1024 * 1024; // 2MB
+        if (file.size > maxSize) {
+          alert("Ukuran foto maksimal 2MB.");
+          fileInput.value = "";
+          return;
+        }
+
+        // PREVIEW CEPAT di avatar pakai data URL
+        const reader = new FileReader();
+        reader.onload = () => {
+          avatarEl.innerHTML = "";
+          const img = document.createElement("img");
+          img.src = reader.result;
+          img.alt = "Foto profil";
+          avatarEl.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+
+        // KIRIM KE SERVER
+        try {
+          const photoUrl = await uploadProfilePhoto(file, user);
+
+          // simpan ke object user dan ke localStorage
+          user.photoUrl = photoUrl;
+          localStorage.setItem("vpnUser", JSON.stringify(user));
+        } catch (err) {
+          alert("Upload ke server gagal: " + err.message);
+        } finally {
+          fileInput.value = "";
+        }
       });
     }
   }
