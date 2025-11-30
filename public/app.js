@@ -1,7 +1,6 @@
-// app.js
 document.addEventListener("DOMContentLoaded", () => {
   /* =====================================================
-     HELPER: FORMAT & MASK NOMOR
+     HELPER FORMAT NOMOR
   ====================================================== */
   function formatMsisdn(num) {
     if (!num) return "";
@@ -22,25 +21,79 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     NAVBAR BAWAH (GANTI SCREEN)
+     HELPER: KOMPRES GAMBAR DI BROWSER
+     - Resize proporsional (maxSize px)
+     - Kompres ke JPEG (quality 0..1)
+     - Return base64 TANPA prefix data:image
+  ====================================================== */
+  function compressImage(file, maxSize = 320, quality = 0.7) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+
+      reader.onload = (e) => {
+        const img = new Image();
+        img.src = e.target.result;
+
+        img.onload = () => {
+          let width = img.width;
+          let height = img.height;
+
+          // Resize proporsional
+          if (width > height) {
+            if (width > maxSize) {
+              height = Math.round((height * maxSize) / width);
+              width = maxSize;
+            }
+          } else {
+            if (height > maxSize) {
+              width = Math.round((width * maxSize) / height);
+              height = maxSize;
+            }
+          }
+
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Export JPEG
+          const base64 = canvas.toDataURL("image/jpeg", quality);
+          const cleanBase64 = base64.split(",")[1]; // buang prefix
+
+          resolve(cleanBase64);
+        };
+
+        img.onerror = () => reject(new Error("Gambar tidak bisa diproses"));
+      };
+
+      reader.onerror = () => reject(new Error("Gagal membaca file"));
+    });
+  }
+
+  const AVATAR_KEY = "vpnUserPhoto";
+
+  /* =====================================================
+     NAVBAR BAWAH & SCREEN SWITCHING
   ====================================================== */
   const navButtons = document.querySelectorAll(".nav-btn");
   const screens = document.querySelectorAll(".screen");
 
   function showScreen(name) {
-    // sembunyikan semua screen dulu
+    // sembunyikan semua screen
     screens.forEach((s) => (s.style.display = "none"));
 
-    // kalau tidak ada nama → pakai screen-default
+    // kalau tidak ada nama → tampilkan screen-default
     if (!name) {
       const def = document.getElementById("screen-default");
       if (def) def.style.display = "flex";
       return;
     }
 
+    // tampilkan screen sesuai id
     const target = document.getElementById("screen-" + name);
     if (target) {
-      // khusus screen-cek pakai block (supaya layout cek-kuota jalan)
       target.style.display = name === "cek" ? "block" : "flex";
     }
   }
@@ -52,35 +105,31 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
-  // klik nav-bottom
+  // Klik nav-bottom
   navButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       const name = btn.dataset.screen;
       showScreen(name);
       setActiveNav(name);
 
-      // kalau buka list user → muat data
       if (name === "users") {
         loadUsers();
       }
     });
   });
 
-  // SCREEN AWAL: kosong (screen-default), tidak ada nav yang aktif
-  showScreen(null);
-
   /* =====================================================
      DASHBOARD PROFILE (SETELAH LOGIN)
+     - Mengganti isi .profile-container
+     - Menampilkan avatar, nama, no WA, no XL
+     - Menangani upload foto profil (dengan compressImage)
   ====================================================== */
-
-  // fungsi utama untuk merender dashboard profile
   function renderProfile(user) {
     const container = document.querySelector(
       "#screen-profile .profile-container"
     );
     if (!container) return;
 
-    // ambil data user
     const name = user.name || "-";
     const waRaw = user.whatsapp || user.msisdn || "";
     const xlRaw = user.xl || user.no_xl || "";
@@ -91,29 +140,19 @@ document.addEventListener("DOMContentLoaded", () => {
     const avatarLetter = name.trim().charAt(0).toUpperCase() || "?";
     const maskedWa = wa ? maskLast4(wa) : "********";
 
-    // nilai saldo / kuota / bonus – sementara default kalau belum ada di server
-    const saldo = user.saldo ?? 0;
-    const sisaKuota = user.sisaKuota ?? "-";
-    const bonus = user.bonus ?? 0;
+    // baca foto dari localStorage (sudah terkompres)
+    const savedPhoto = localStorage.getItem(AVATAR_KEY);
 
-    // foto profil yang disimpan di localStorage (base64 data URL)
-    const photoData = user.photoData || "";
-
-    // bangun HTML dashboard
     container.innerHTML = `
       <div class="profile-dashboard">
         <!-- Baris 1: Avatar + Nama + Edit photo -->
         <div class="profile-header-row">
           <div class="profile-avatar-col">
-            <div class="profile-avatar-circle">
-              ${
-                photoData
-                  ? `<img src="${photoData}" alt="Avatar" style="width:100%;height:100%;border-radius:inherit;object-fit:cover;" />`
-                  : avatarLetter
-              }
+            <div class="profile-avatar-circle" id="profile-avatar-circle">
+              ${savedPhoto ? "" : avatarLetter}
             </div>
             <button type="button" class="profile-edit-photo">Edit photo</button>
-            <input type="file" accept="image/*" class="profile-photo-input" style="display:none" />
+            <input type="file" id="profile-photo-input" accept="image/*" style="display:none" />
           </div>
           <div class="profile-header-info">
             <div class="profile-header-name">${name}</div>
@@ -121,23 +160,23 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         </div>
 
-        <!-- Form 1: saldo / kuota / bonus -->
+        <!-- Form 1: saldo / kuota / bonus (dummy dulu) -->
         <div class="profile-card profile-balance-card">
           <div class="profile-balance-item">
-            <div class="profile-balance-value" id="balance-saldo">${saldo}</div>
+            <div class="profile-balance-value" id="balance-saldo">0</div>
             <div class="profile-balance-label">Saldo</div>
           </div>
           <div class="profile-balance-item">
-            <div class="profile-balance-value" id="balance-kuota">${sisaKuota}</div>
+            <div class="profile-balance-value" id="balance-kuota">-</div>
             <div class="profile-balance-label">Sisa kuota</div>
           </div>
           <div class="profile-balance-item">
-            <div class="profile-balance-value" id="balance-bonus">${bonus}</div>
+            <div class="profile-balance-value" id="balance-bonus">0</div>
             <div class="profile-balance-label">Koin bonus</div>
           </div>
         </div>
 
-        <!-- Form 2: tombol aksi cepat -->
+        <!-- Form 2: tombol cepat -->
         <div class="profile-card profile-actions-card">
           <button type="button" class="profile-action">
             <div class="profile-action-icon">💰</div>
@@ -153,31 +192,29 @@ document.addEventListener("DOMContentLoaded", () => {
           </button>
         </div>
 
-        <!-- Area bawah yang bisa discroll (info akun + slot kosong + logout) -->
-        <div class="profile-extra-scroll">
-          <!-- Form 3: info akun -->
-          <div class="profile-card profile-info-card">
-            <div class="profile-info-row">
-              <span class="profile-info-label">Nama</span>
-              <span class="profile-info-value">${name}</span>
-            </div>
-            <div class="profile-info-row">
-              <span class="profile-info-label">No WhatsApp</span>
-              <span class="profile-info-value">${wa || "-"}</span>
-            </div>
-            <div class="profile-info-row">
-              <span class="profile-info-label">No XL</span>
-              <span class="profile-info-value">${xl || "-"}</span>
-            </div>
+        <!-- Form 3: info akun -->
+        <div class="profile-card profile-info-card">
+          <div class="profile-info-row">
+            <span class="profile-info-label">Nama</span>
+            <span class="profile-info-value">${name}</span>
           </div>
+          <div class="profile-info-row">
+            <span class="profile-info-label">No WhatsApp</span>
+            <span class="profile-info-value">${wa || "-"}</span>
+          </div>
+          <div class="profile-info-row">
+            <span class="profile-info-label">No XL</span>
+            <span class="profile-info-value">${xl || "-"}</span>
+          </div>
+        </div>
 
-          <!-- 4 slot kosong untuk fitur ke depan -->
+        <!-- Slot kosong + tombol keluar di bagian scroll -->
+        <div class="profile-extra-scroll">
           <div class="profile-card profile-empty-card"></div>
           <div class="profile-card profile-empty-card"></div>
           <div class="profile-card profile-empty-card"></div>
           <div class="profile-card profile-empty-card"></div>
 
-          <!-- Tombol keluar -->
           <button type="button" id="logout-btn" class="profile-btn profile-logout-btn">
             Keluar
           </button>
@@ -185,94 +222,93 @@ document.addEventListener("DOMContentLoaded", () => {
       </div>
     `;
 
-    /* ---------------------------
-       HANDLER LOGOUT
-    ---------------------------- */
+    const avatarEl = container.querySelector("#profile-avatar-circle");
+    const editBtn = container.querySelector(".profile-edit-photo");
+    const photoInput = container.querySelector("#profile-photo-input");
+
+    // kalau ada foto tersimpan → pakai sebagai background avatar
+    if (savedPhoto && avatarEl) {
+      avatarEl.style.backgroundImage = `url(data:image/jpeg;base64,${savedPhoto})`;
+      avatarEl.style.backgroundSize = "cover";
+      avatarEl.style.backgroundPosition = "center";
+      avatarEl.textContent = ""; // sembunyikan huruf
+    }
+
+    if (editBtn && photoInput && avatarEl) {
+      editBtn.addEventListener("click", () => {
+        photoInput.click();
+      });
+
+      photoInput.addEventListener("change", async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        if (!file.type.startsWith("image/")) {
+          alert("Harap pilih file gambar.");
+          photoInput.value = "";
+          return;
+        }
+
+        try {
+          // kompres gambar
+          const base64 = await compressImage(file, 320, 0.7);
+
+          // simpan di localStorage
+          localStorage.setItem(AVATAR_KEY, base64);
+
+          // tampilkan di avatar
+          avatarEl.style.backgroundImage = `url(data:image/jpeg;base64,${base64})`;
+          avatarEl.style.backgroundSize = "cover";
+          avatarEl.style.backgroundPosition = "center";
+          avatarEl.textContent = "";
+
+          alert("Foto profil disimpan di perangkat ini.");
+        } catch (err) {
+          console.error(err);
+          alert("Gagal memproses gambar: " + err.message);
+        } finally {
+          photoInput.value = "";
+        }
+      });
+    }
+
+    // tombol logout
     const logoutBtn = container.querySelector("#logout-btn");
     if (logoutBtn) {
       logoutBtn.addEventListener("click", () => {
         localStorage.removeItem("vpnUser");
-        // reload supaya HTML kembali (login/register muncul lagi)
+        // kalau mau hapus foto juga:
+        // localStorage.removeItem(AVATAR_KEY);
         location.reload();
-      });
-    }
-
-    /* ---------------------------
-       HANDLER EDIT / UPLOAD FOTO
-       - Simpan ke localStorage (field: photoData)
-       - Update avatar circle langsung
-    ---------------------------- */
-    const editPhotoBtn = container.querySelector(".profile-edit-photo");
-    const fileInput = container.querySelector(".profile-photo-input");
-    const avatarCircle = container.querySelector(".profile-avatar-circle");
-
-    if (editPhotoBtn && fileInput && avatarCircle) {
-      // klik "Edit photo" → buka file picker
-      editPhotoBtn.addEventListener("click", () => {
-        fileInput.click();
-      });
-
-      fileInput.addEventListener("change", (e) => {
-        const file = e.target.files && e.target.files[0];
-        if (!file) return;
-
-        if (!file.type.startsWith("image/")) {
-          alert("File harus berupa gambar.");
-          return;
-        }
-
-        // batas ukuran 2MB (boleh ubah kalau mau)
-        const MAX_SIZE = 2 * 1024 * 1024;
-        if (file.size > MAX_SIZE) {
-          alert("Ukuran foto terlalu besar. Maksimal 2MB.");
-          return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = () => {
-          const dataUrl = reader.result;
-
-          // update tampilan avatar
-          avatarCircle.innerHTML = `<img src="${dataUrl}" alt="Avatar" style="width:100%;height:100%;border-radius:inherit;object-fit:cover;" />`;
-
-          // update data di localStorage
-          try {
-            const raw = localStorage.getItem("vpnUser");
-            if (raw) {
-              const stored = JSON.parse(raw);
-              stored.photoData = dataUrl;
-              localStorage.setItem("vpnUser", JSON.stringify(stored));
-            }
-          } catch (err) {
-            console.error("Gagal menyimpan foto profil:", err);
-          }
-
-          alert("Foto profil berhasil disimpan di perangkat ini.");
-        };
-        reader.readAsDataURL(file);
       });
     }
   }
 
-  // inisialisasi dari session di localStorage, kalau ada
+  /* =====================================================
+     SESSION: RESTORE DARI localStorage
+     - return true kalau ada user valid
+  ====================================================== */
   function initSessionFromStorage() {
     const raw = localStorage.getItem("vpnUser");
-    if (!raw) return;
+    if (!raw) return false;
 
     try {
       const user = JSON.parse(raw);
       if (user && user.name) {
         renderProfile(user);
+        return true;
       } else {
         localStorage.removeItem("vpnUser");
+        return false;
       }
     } catch {
       localStorage.removeItem("vpnUser");
+      return false;
     }
   }
 
   /* =====================================================
-     HELPER UNTUK CEK KUOTA
+     HELPER KUOTA (PARSE & RENDER)
   ====================================================== */
   function normalizeAmount(str) {
     if (!str) return "";
@@ -308,9 +344,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return "";
   }
 
-  /* =====================================================
-     PARSE HASIL CEK KUOTA
-  ====================================================== */
   function parseHeaderFromHasil(hasilHtml) {
     if (!hasilHtml) return {};
 
@@ -370,9 +403,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
   }
 
-  /* =====================================================
-     RENDER CEK KUOTA
-  ====================================================== */
   const cekResultBody = document.getElementById("cek-result-body");
 
   function renderParsedResult(parsed, fallbackText) {
@@ -474,7 +504,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     SWITCH LOGIN / REGISTER (TEKS DI BAWAH FORM)
+     SWITCH LOGIN / REGISTER
   ====================================================== */
   const tabLogin = document.getElementById("tab-login");
   const tabRegister = document.getElementById("tab-register");
@@ -584,11 +614,11 @@ document.addEventListener("DOMContentLoaded", () => {
         const user = data.data || {};
         alert("Login berhasil sebagai " + (user.name || ""));
 
-        // simpan session ke localStorage
         localStorage.setItem("vpnUser", JSON.stringify(user));
 
-        // tampilkan dashboard profile
         renderProfile(user);
+        showScreen("profile");
+        setActiveNav("profile");
       } catch (err) {
         alert("Gagal menghubungi server: " + err.message);
       }
@@ -656,7 +686,17 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-     TERAPKAN SESSION JIKA ADA
+     INIT: RESTORE SESSION & TENTUKAN SCREEN PERTAMA
   ====================================================== */
-  initSessionFromStorage();
+  const hasSession = initSessionFromStorage();
+
+  if (hasSession) {
+    // kalau sudah login → langsung ke profile
+    showScreen("profile");
+    setActiveNav("profile");
+  } else {
+    // kalau belum login → tampilkan screen kosong / default
+    showScreen(); // sama dengan showScreen(null)
+    // tidak set active nav, biar semuanya netral
+  }
 });
