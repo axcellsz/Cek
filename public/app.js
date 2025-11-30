@@ -699,6 +699,9 @@ document.addEventListener("DOMContentLoaded", () => {
   /* =====================================================
      LIST USER (dengan foto kecil)
   ====================================================== */
+  /* =====================================================
+     LIST USER
+  ====================================================== */
   const userListEl = document.getElementById("user-list");
   const reloadUsersBtn = document.getElementById("reload-users");
 
@@ -724,7 +727,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // Render list + avatar placeholder (huruf awal)
+      // --- render list dengan avatar lingkaran kecil di kiri ---
       userListEl.innerHTML = users
         .map((u, idx) => {
           const name = u.name || "-";
@@ -734,17 +737,19 @@ document.addEventListener("DOMContentLoaded", () => {
           const waMasked = wa ? maskLast4(wa) : "****";
           const xlMasked = xl ? maskLast4(xl) : "****";
 
-          const avatarLetter =
-            (name || "?").trim().charAt(0).toUpperCase() || "?";
-
-          const whatsappKey = wa; // dipakai untuk key KV foto
+          const firstLetter = name.trim().charAt(0).toUpperCase() || "?";
+          const whatsappKey = wa; // dipakai untuk ambil foto dari KV
 
           return `
             <div class="user-item">
               <div class="user-item-header">
                 <div class="user-header-main">
-                  <div class="user-avatar-small" data-wa="${whatsappKey}">
-                    ${avatarLetter}
+                  <div
+                    class="user-avatar-small"
+                    data-whatsapp="${whatsappKey}"
+                    data-first-letter="${firstLetter}"
+                  >
+                    ${firstLetter}
                   </div>
                   <span>${idx + 1}. ${name}</span>
                 </div>
@@ -758,14 +763,17 @@ document.addEventListener("DOMContentLoaded", () => {
         })
         .join("");
 
-      // Setelah HTML jadi, load foto dari KV untuk tiap user
-      const avatarEls = userListEl.querySelectorAll(
-        ".user-avatar-small[data-wa]"
-      );
+      // --- setelah HTML jadi, load foto dari server per user ---
+      const avatarEls = userListEl.querySelectorAll(".user-avatar-small");
 
       avatarEls.forEach(async (el) => {
-        const waKey = el.dataset.wa;
-        if (!waKey) return;
+        const waKey = el.dataset.whatsapp;
+        const letter = el.dataset.firstLetter || "?";
+
+        if (!waKey) {
+          el.textContent = letter;
+          return;
+        }
 
         try {
           const photo = await downloadProfilePhotoFromServer(waKey);
@@ -774,9 +782,13 @@ document.addEventListener("DOMContentLoaded", () => {
             el.style.backgroundSize = "cover";
             el.style.backgroundPosition = "center";
             el.textContent = "";
+          } else {
+            // tidak ada foto di KV → pakai huruf
+            el.textContent = letter;
           }
         } catch (err) {
-          console.error("Gagal load avatar user list:", err);
+          console.error("Gagal load foto list user:", err);
+          el.textContent = letter;
         }
       });
     } catch (err) {
