@@ -30,6 +30,7 @@
     </div>
 
     <!-- Profile -->
+<!-- Profile -->
     <div id="screen-profile" class="screen">
       <div class="screen-card">
         <div class="profile-container">
@@ -57,10 +58,10 @@
 
               <button type="submit" class="profile-btn">Masuk</button>
 
-              <!-- tombol kecil pindah ke daftar -->
-            <div class="form-switch-text">
-            Belum punya akun? <span id="go-register">Daftar</span>
-            </div>
+              <!-- text kecil pindah ke daftar -->
+              <div class="form-switch-text">
+                Belum punya akun? <span id="go-register">Daftar</span>
+              </div>
             </form>
           </div>
 
@@ -103,12 +104,37 @@
 
               <button type="submit" class="profile-btn">Daftar</button>
 
-              <!-- tombol kecil pindah ke login -->
-          <div class="form-switch-text">
-          Sudah punya akun? <span id="go-login">Masuk</span>
-            </div>
+              <!-- text kecil pindah ke login -->
+              <div class="form-switch-text">
+                Sudah punya akun? <span id="go-login">Masuk</span>
+              </div>
             </form>
           </div>
+
+          <!-- ====== DASHBOARD PROFILE (setelah login) ====== -->
+          <div id="profile-dashboard" class="tab-content">
+            <div class="screen-title" style="margin-bottom:12px;">Profil saya</div>
+
+            <div class="profile-info">
+              <div class="profile-info-row">
+                <span class="profile-info-label">Nama</span>
+                <span class="profile-info-value" id="prof-name">-</span>
+              </div>
+              <div class="profile-info-row">
+                <span class="profile-info-label">No WhatsApp</span>
+                <span class="profile-info-value" id="prof-wa">-</span>
+              </div>
+              <div class="profile-info-row">
+                <span class="profile-info-label">No XL</span>
+                <span class="profile-info-value" id="prof-xl">-</span>
+              </div>
+            </div>
+
+            <button type="button" id="logout-btn" class="profile-btn">
+              Keluar
+            </button>
+          </div>
+
         </div>
       </div>
     </div>
