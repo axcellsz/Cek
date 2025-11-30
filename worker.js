@@ -109,35 +109,47 @@ export default {
         // kalau belum ada, tetap ok, tapi image = null
         return json({ ok: true, image: value || null });
       } catch (e) {
-        return json({ ok: false, message: "Error get photo: " + e.message }, 500);
+        return json(
+          { ok: false, message: "Error get photo: " + e.message },
+          500
+        );
       }
     }
 
-    // POST /api/profile-photo  body: { whatsapp, image }
-    // image boleh "data:image/jpeg;base64,...." atau base64 murni
+    // POST /api/profile-photo
+    // body: { whatsapp, image } ATAU { whatsapp, imageData }
     if (pathname === "/api/profile-photo" && request.method === "POST") {
       try {
         const body = await request.json();
-        let { whatsapp, image } = body;
 
-        if (!whatsapp || !image) {
+        // front-end kirim imageData, tapi kita juga dukung image
+        let { whatsapp, image, imageData } = body;
+        whatsapp = whatsapp && String(whatsapp).trim();
+
+        let finalImage = imageData || image;
+
+        if (!whatsapp || !finalImage) {
           return json(
             { ok: false, message: "whatsapp dan image wajib diisi" },
             400
           );
         }
 
-        // kalau image belum ada prefix, tambahkan
-        if (!image.startsWith("data:")) {
-          image = "data:image/jpeg;base64," + image;
+        // kalau belum ada prefix data: tambahkan
+        if (!finalImage.startsWith("data:")) {
+          finalImage = "data:image/jpeg;base64," + finalImage;
         }
 
         const key = "pfp:" + whatsapp;
-        await env.PROFILE_PIC.put(key, image);
+        // PUT selalu overwrite, jadi foto lama diganti foto baru
+        await env.PROFILE_PIC.put(key, finalImage);
 
         return json({ ok: true, message: "Foto tersimpan" });
       } catch (e) {
-        return json({ ok: false, message: "Error save photo: " + e.message }, 500);
+        return json(
+          { ok: false, message: "Error save photo: " + e.message },
+          500
+        );
       }
     }
 
@@ -146,7 +158,10 @@ export default {
       const msisdn = url.searchParams.get("msisdn");
 
       if (!msisdn) {
-        return json({ ok: false, message: "Parameter msisdn wajib diisi" }, 400);
+        return json(
+          { ok: false, message: "Parameter msisdn wajib diisi" },
+          400
+        );
       }
 
       const upstreamUrl =
