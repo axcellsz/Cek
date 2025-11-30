@@ -447,21 +447,35 @@ body {
    LIST USER
 ============================ */
 
-.user-list-container {
+/* ============================
+   LIST USER
+============================ */
+
+/* Bungkus utama list user di dalam kartu */
+#screen-users .screen-card {
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow: hidden;            /* biar yang kepanjangan discroll di dalam */
+}
+
+#screen-users .profile-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   box-sizing: border-box;
-  padding: 4px 4px 8px;
+  padding: 10px 4px 8px;
   gap: 12px;
 }
 
-.user-reload-btn {
+/* Tombol reload di atas list */
+#reload-users {
   margin-top: 4px;
   margin-bottom: 4px;
 }
 
-.user-list {
+/* AREA LIST YANG BISA DISCROLL */
+#user-list {
   flex: 1;
   overflow-y: auto;
   padding-right: 2px;
@@ -470,6 +484,7 @@ body {
   gap: 8px;
 }
 
+/* Item user-nya tetap seperti dulu */
 .user-item {
   padding: 10px 12px;
   border-radius: 12px;
