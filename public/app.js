@@ -1,41 +1,63 @@
-document.addEventListener("DOMContentLoaded", () => {  
-  
-  // ========================================  
-  // BANNER HOME (PAKAI home-banner-list)  
-  // ========================================  
-  function loadHomeBanners() {  
-    const container = document.getElementById("home-banner-list");  
-    if (!container) return;  
-  
-    const MAX_BANNER = 10;  
-  
-    for (let i = 1; i <= MAX_BANNER; i++) {  
-      const wrapper = document.createElement("div");  
-      wrapper.className = "home-banner-item";  
-  
-      const img = document.createElement("img");  
-      img.src = `/img/banner${i}.jpg`;  
-      img.alt = `Banner ${i}`;  
-  
-      // ❌ HAPUS saja baris lazy-load ini
-      // img.loading = "lazy";  
-  
-      // saat gambar sudah ke-load → kasih class "loaded" biar fade-in
-      img.onload = () => {
-        img.classList.add("loaded");
-      };
-  
-      // kalau file ngga ada → hapus item-nya
-      img.onerror = () => {  
-        wrapper.remove();  
-      };  
-  
-      wrapper.appendChild(img);  
-      container.appendChild(wrapper);  
-    }  
-  }  
-  
-  // ==== PANGGIL FUNGSINYA ====  
+document.addEventListener("DOMContentLoaded", () => {
+
+  // ========================================
+  // BANNER HOME (PAKAI PRELOAD, MUNCUL BARENG)
+  // ========================================
+  function loadHomeBanners() {
+    const container = document.getElementById("home-banner-list");
+    if (!container) return;
+
+    const MAX_BANNER = 10;
+    const loaders = [];
+
+    // 1. PRELOAD SEMUA GAMBAR DULU
+    for (let i = 1; i <= MAX_BANNER; i++) {
+      const src = `/img/banner${i}.jpg`;   // sesuaikan kalau pakai .png
+
+      const p = new Promise((resolve) => {
+        const img = new Image();
+
+        img.onload = () => {
+          resolve({ ok: true, src });
+        };
+
+        img.onerror = () => {
+          // kalau gambar tidak ada, anggap gagal (jangan ditampilkan)
+          resolve({ ok: false });
+        };
+
+        img.src = src;
+      });
+
+      loaders.push(p);
+    }
+
+    // 2. SETELAH SEMUA SELESAI LOAD (atau error), BARU RENDER SEKALIGUS
+    Promise.all(loaders).then((results) => {
+      results.forEach((res) => {
+        if (!res.ok) return; // skip banner yg gak ada
+
+        const wrapper = document.createElement("div");
+        wrapper.className = "home-banner-item";
+
+        const imgEl = document.createElement("img");
+        imgEl.src = res.src;
+        imgEl.alt = "Banner promo";
+        imgEl.loading = "lazy";
+
+        wrapper.appendChild(imgEl);
+        container.appendChild(wrapper);
+      });
+
+      // 3. Setelah semua banner dimasukkan, tampakkan screen-default
+      const homeScreen = document.getElementById("screen-default");
+      if (homeScreen) {
+        homeScreen.classList.add("ready");
+      }
+    });
+  }
+
+  // PANGGIL SEKALI SAAT HALAMAN SELESAI DI-PARSE
   loadHomeBanners();
     
   /* =====================================================
