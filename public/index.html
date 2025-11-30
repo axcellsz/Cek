@@ -2,18 +2,12 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
   />
-
   <title>Aplikasi</title>
-
-  <!-- CSS terpisah -->
   <link rel="stylesheet" href="style.css" />
-
-  <!-- JS terpisah -->
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -29,8 +23,7 @@
       </div>
     </div>
 
-    <!-- Profile -->
-<!-- Profile -->
+    <!-- ================= PROFILE (LOGIN / DAFTAR / DASHBOARD) ================= -->
     <div id="screen-profile" class="screen">
       <div class="screen-card">
         <div class="profile-container">
@@ -58,7 +51,6 @@
 
               <button type="submit" class="profile-btn">Masuk</button>
 
-              <!-- text kecil pindah ke daftar -->
               <div class="form-switch-text">
                 Belum punya akun? <span id="go-register">Daftar</span>
               </div>
@@ -104,35 +96,40 @@
 
               <button type="submit" class="profile-btn">Daftar</button>
 
-              <!-- text kecil pindah ke login -->
               <div class="form-switch-text">
                 Sudah punya akun? <span id="go-login">Masuk</span>
               </div>
             </form>
           </div>
 
-          <!-- ====== DASHBOARD PROFILE (setelah login) ====== -->
-          <div id="profile-dashboard" class="tab-content">
-            <div class="screen-title" style="margin-bottom:12px;">Profil saya</div>
-
-            <div class="profile-info">
-              <div class="profile-info-row">
-                <span class="profile-info-label">Nama</span>
-                <span class="profile-info-value" id="prof-name">-</span>
-              </div>
-              <div class="profile-info-row">
-                <span class="profile-info-label">No WhatsApp</span>
-                <span class="profile-info-value" id="prof-wa">-</span>
-              </div>
-              <div class="profile-info-row">
-                <span class="profile-info-label">No XL</span>
-                <span class="profile-info-value" id="prof-xl">-</span>
+          <!-- ====== DASHBOARD PROFILE (SETELAH LOGIN) ====== -->
+          <div id="profile-dashboard" class="profile-dashboard">
+            <!-- Header biru + avatar -->
+            <div class="profile-hero">
+              <div class="profile-hero-main">
+                <div id="dash-avatar" class="profile-avatar">A</div>
+                <div>
+                  <div id="dash-name" class="profile-hero-name">Nama User</div>
+                  <div id="dash-phone-masked" class="profile-hero-phone">08••••••70</div>
+                </div>
               </div>
             </div>
 
-            <button type="button" id="logout-btn" class="profile-btn">
-              Keluar
-            </button>
+            <!-- Card putih detail -->
+            <div class="profile-info-card">
+              <div class="profile-info-row">
+                <span class="profile-info-label">No WhatsApp</span>
+                <span id="dash-wa-full" class="profile-info-value">08xxxx</span>
+              </div>
+              <div class="profile-info-row">
+                <span class="profile-info-label">No XL</span>
+                <span id="dash-xl-full" class="profile-info-value">08xxxx</span>
+              </div>
+
+              <button id="logout-btn" class="profile-btn profile-logout-btn">
+                Keluar
+              </button>
+            </div>
           </div>
 
         </div>
