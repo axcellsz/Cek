@@ -475,6 +475,7 @@ body {
   box-sizing: border-box;
   padding: 10px 4px 8px;
   gap: 12px;
+  min-height: 0;
 }
 
 /* Tombol reload di atas list */
