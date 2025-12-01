@@ -46,16 +46,6 @@ body {
     0 24px 48px rgba(0, 0, 0, 0.04);
 }
 
-/* =========================================
-   OVERRIDE: CARD TRANSPARAN KHUSUS HOME
-========================================= */
-#screen-default .screen-card {
-  background: transparent !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-  padding: 0 !important;
-  height: auto;  /* supaya tidak memaksa full tinggi */
-}
 
 /* ============================
    SCREEN DEFAULT (HOME)
@@ -68,15 +58,6 @@ body {
   padding-top: 10px;
 }
 
-#screen-default .screen-card-inner {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;    
-  justify-content: flex-start;
-  gap: 6px;
-}
 
 .screen-title {
   font-size: 22px;
