@@ -64,7 +64,6 @@ body {
   flex-direction: column;
   align-items: stretch;    
   justify-content: flex-start;
-  padding: 18px 16px 12px;
   gap: 6px;
 }
 
