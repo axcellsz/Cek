@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const img = document.createElement("img");
       img.src = `/img/banner${i}.jpg`;
       img.alt = `Banner ${i}`;
-    //  img.loading = "lazy";
+      //  img.loading = "lazy";
 
       img.onerror = () => {
         wrapper.remove();
@@ -103,12 +103,6 @@ document.addEventListener("DOMContentLoaded", () => {
       reader.onerror = () => reject(new Error("Gagal membaca file"));
     });
   }
-
-  // =====================================================
-  // KEY LOCALSTORAGE UNTUK FOTO PROFIL
-  // (disimpan sebagai data URL lengkap: "data:image/jpeg;base64,...")
-  // =====================================================
-  const AVATAR_KEY = "vpnUserPhoto";
 
   // =====================================================
   // HELPER BACKEND FOTO PROFIL (KV PROFILE_PIC)
@@ -245,16 +239,13 @@ document.addEventListener("DOMContentLoaded", () => {
     // whatsappKey untuk KV: pakai field whatsapp yang disimpan user
     const whatsappKey = user.whatsapp || wa || waRaw;
 
-    // baca foto dari localStorage (data URL lengkap)
-    const savedPhoto = localStorage.getItem(AVATAR_KEY);
-
     container.innerHTML = `
       <div class="profile-dashboard">
         <!-- Baris 1: Avatar + Nama + Edit photo -->
         <div class="profile-header-row">
           <div class="profile-avatar-col">
             <div class="profile-avatar-circle" id="profile-avatar-circle">
-              ${savedPhoto ? "" : avatarLetter}
+              ${avatarLetter}
             </div>
             <button type="button" class="profile-edit-photo">Edit photo</button>
             <input type="file" id="profile-photo-input" accept="image/*" style="display:none" />
@@ -331,15 +322,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const editBtn = container.querySelector(".profile-edit-photo");
     const photoInput = container.querySelector("#profile-photo-input");
 
-    // 1) Kalau ada foto di localStorage → langsung pakai
-    if (savedPhoto && avatarEl) {
-      avatarEl.style.backgroundImage = `url(${savedPhoto})`;
-      avatarEl.style.backgroundSize = "cover";
-      avatarEl.style.backgroundPosition = "center";
-      avatarEl.textContent = "";
-    }
-
-    // 2) Coba ambil foto dari server (KV PROFILE_PIC)
+    // 1) Coba ambil foto dari server (KV PROFILE_PIC)
     if (whatsappKey && avatarEl) {
       (async () => {
         try {
@@ -351,7 +334,6 @@ document.addEventListener("DOMContentLoaded", () => {
             avatarEl.style.backgroundSize = "cover";
             avatarEl.style.backgroundPosition = "center";
             avatarEl.textContent = "";
-            localStorage.setItem(AVATAR_KEY, remotePhoto);
           }
         } catch (err) {
           console.error("Gagal sync foto dari server:", err);
@@ -359,7 +341,7 @@ document.addEventListener("DOMContentLoaded", () => {
       })();
     }
 
-    // 3) Handler upload foto (kompres + simpan local + kirim ke server)
+    // 2) Handler upload foto (kompres + kirim ke server)
     if (editBtn && photoInput && avatarEl) {
       editBtn.addEventListener("click", () => {
         photoInput.click();
@@ -378,8 +360,6 @@ document.addEventListener("DOMContentLoaded", () => {
         try {
           const base64 = await compressImage(file, 320, 0.7);
           const dataUrl = `data:image/jpeg;base64,${base64}`;
-
-          localStorage.setItem(AVATAR_KEY, dataUrl);
 
           avatarEl.style.backgroundImage = `url(${dataUrl})`;
           avatarEl.style.backgroundSize = "cover";
@@ -403,8 +383,6 @@ document.addEventListener("DOMContentLoaded", () => {
     if (logoutBtn) {
       logoutBtn.addEventListener("click", () => {
         localStorage.removeItem("vpnUser");
-        // kalau mau sekalian hapus foto di device:
-        // localStorage.removeItem(AVATAR_KEY);
         location.reload();
       });
     }
