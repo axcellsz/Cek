@@ -61,9 +61,12 @@ body {
   width: 100%;
   height: 100%;
   display: flex;
-  align-items: center;
-  justify-content: center;
   flex-direction: column;
+
+  /* ⬇️ perbedaan penting di sini */
+  align-items: stretch;         /* atau flex-start, keduanya oke */
+  justify-content: flex-start;  /* konten mulai dari ATAS, bukan tengah */
+
   gap: 6px;
 }
 
