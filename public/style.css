@@ -1,6 +1,71 @@
+/* =========================================
+   GLOBAL RESET & BASE
+========================================= */
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, #dbeafe 0%, #f1f5f9 40%, #f8fafc 100%);
+  overflow: hidden; /* biar hanya konten dalam card yang scroll */
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: #0f172a;
+}
+
+/* Area konten utama (di atas footer) */
+#app {
+  width: 100%;
+  height: calc(100% - 80px); /* sisakan ruang untuk footer */
+  box-sizing: border-box;
+  padding: 12px 12px 0;
+}
+
+/* Semua screen disembunyikan default, nanti diatur via JS */
+.screen {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  display: none;
+}
+
+/* =====================================================
+   CARD STYLE UMUM (dipakai oleh semua screen)
+===================================================== */
+.screen-card {
+  width: 100%;
+  height: 100%;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 18px 16px 12px;
+  box-sizing: border-box;
+
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    0 12px 24px rgba(0, 0, 0, 0.06),
+    0 24px 48px rgba(0, 0, 0, 0.04);
+}
+
 /* ============================
    SCREEN DEFAULT (HOME)
 ============================ */
+#screen-default {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;   /* ⬅️ UBAH: dari center → flex-start */
+  text-align: center;
+  padding-top: 12px;         /* ⬅️ opsional, biar ada jarak dari atas */
+}
+
+#screen-default .screen-card-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 6px;
+}
 
 .screen-title {
   font-size: 22px;
@@ -13,7 +78,6 @@
   font-size: 14px;
   color: #6b7280;
 }
-
 
 /* =====================================================
    CEK KUOTA SCREEN
@@ -220,10 +284,71 @@
   font-weight: 600;
 }
 
+/* =====================================================
+   FOOTER (Navbar bawah)
+===================================================== */
+.footer {
+  position: fixed;
+  bottom: 0;
+  height: 70px;
+  width: 100%;
+  background: #ffffff;
+  box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.nav-btn {
+  flex: 1;
+  text-align: center;
+  font-size: 12px;
+  color: #475569;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.nav-btn-icon {
+  display: block;
+  margin-bottom: 2px;
+}
+
+.nav-btn-icon svg {
+  width: 24px;
+  height: 24px;
+  stroke: #475569;
+}
+
+.nav-btn.active {
+  color: #0f172a;
+}
+
+.nav-btn.active svg {
+  stroke: #0f172a;
+}
+
+.nav-btn.active::after {
+  content: "";
+  display: block;
+  height: 2px;
+  width: 30px;
+  background: #0f172a;
+  margin: 3px auto 0;
+  border-radius: 999px;
+}
+
+.nav-btn:active {
+  transform: scale(0.92);
+  opacity: 0.7;
+}
+
 /* ============================
    PROFILE (LOGIN & REGISTER)
 ============================ */
 
+/* Card profile dibuat flex column & overflow hidden
+   supaya footer tidak ketutup dan konten di dalam bisa diatur scrollnya */
 #screen-profile .screen-card {
   display: flex;
   flex-direction: column;
@@ -231,6 +356,9 @@
   overflow: hidden;
 }
 
+/* Container utama profile:
+   - Saat awal → berisi form login/register
+   - Setelah login → diisi ulang jadi dashboard profile */
 .profile-container {
   flex: 1;
   padding: 10px 4px;
@@ -242,7 +370,7 @@
 /* TAB LOGIN / REGISTER (saat belum login) */
 .tab-content {
   display: none;
-  margin-top: auto;
+  margin-top: auto; /* dorong form ke bawah card, biar gampang dicapai jempol */
 }
 
 .tab-content.active {
@@ -332,6 +460,7 @@
    LIST USER (SCROLL DI DALAM CARD)
 ============================ */
 
+/* Kartu list user memenuhi tinggi layar, tapi konten di dalamnya bisa scroll */
 #screen-users .screen-card {
   display: flex;
   flex-direction: column;
@@ -339,6 +468,7 @@
   overflow: hidden;
 }
 
+/* Container di dalam list user */
 .user-list-container {
   flex: 1;
   display: flex;
@@ -349,11 +479,13 @@
   min-height: 0;
 }
 
+/* Tombol reload di atas list */
 .user-reload-btn {
   margin-top: 4px;
   margin-bottom: 4px;
 }
 
+/* Area list yang bisa scroll */
 .user-list {
   flex: 1;
   overflow-y: auto;
@@ -363,6 +495,7 @@
   gap: 8px;
 }
 
+/* Item user */
 .user-item {
   padding: 10px 12px;
   border-radius: 12px;
@@ -390,6 +523,7 @@
   margin-top: 2px;
 }
 
+/* Avatar kecil di list user (dipakai di app.js) */
 .user-header-main {
   display: flex;
   align-items: center;
@@ -417,6 +551,7 @@
    DASHBOARD PROFILE BARU (SETELAH LOGIN)
 ============================ */
 
+/* Wrapper dashboard: full height, kolom, sebagian fixed, sebagian scroll */
 .profile-dashboard {
   display: flex;
   flex-direction: column;
@@ -424,6 +559,7 @@
   height: 100%;
 }
 
+/* Baris paling atas: avatar + nama + edit photo */
 .profile-header-row {
   display: flex;
   align-items: center;
@@ -443,6 +579,7 @@
   gap: 6px;
 }
 
+/* Lingkaran avatar besar di halaman profile */
 .profile-avatar-circle {
   width: 60px;
   height: 60px;
@@ -454,11 +591,12 @@
   font-size: 26px;
   font-weight: 700;
   color: #e5f0ff;
-  overflow: hidden;
-  background-size: cover;
+  overflow: hidden;           /* supaya foto tidak keluar lingkaran */
+  background-size: cover;     /* untuk background-image dari JS */
   background-position: center;
 }
 
+/* Tombol kecil “Edit photo” di bawah avatar */
 .profile-edit-photo {
   border: none;
   background: transparent;
@@ -487,6 +625,7 @@
   color: #64748b;
 }
 
+/* Kartu umum putih */
 .profile-card {
   border-radius: 18px;
   background: #ffffff;
@@ -496,6 +635,7 @@
     0 8px 16px rgba(15, 23, 42, 0.04);
 }
 
+/* Form 1: Saldo / Kuota / Bonus */
 .profile-balance-card {
   display: flex;
   justify-content: space-between;
@@ -518,6 +658,7 @@
   color: #6b7280;
 }
 
+/* Form 2: Aksi cepat */
 .profile-actions-card {
   display: flex;
   justify-content: space-between;
@@ -553,6 +694,7 @@
   font-size: 12px;
 }
 
+/* Form 3: Info akun */
 .profile-info-card {
   display: flex;
   flex-direction: column;
@@ -574,6 +716,7 @@
   color: #0f172a;
 }
 
+/* 4 slot kosong untuk fitur ke depan */
 .profile-empty-card {
   height: 46px;
   border-radius: 16px;
@@ -581,10 +724,13 @@
   border: 1px dashed #d1d5db;
 }
 
+/* Tombol keluar di dalam dashboard */
 .profile-logout-btn {
   margin-top: 8px;
 }
 
+/* Bagian bawah dashboard yang bisa di-scroll:
+   - berisi info akun, 4 slot kosong, tombol keluar */
 .profile-extra-scroll {
   flex: 1;
   overflow-y: auto;
@@ -597,4 +743,33 @@
 
 .profile-empty-card:last-child {
   margin-bottom: 4px;
+}
+/* ============================
+   HOME BANNER LIST
+============================ */
+.home-banner-list {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.home-banner-item {
+  width: 100%;
+  /* reserve space dengan aspect ratio, misal 16:9 */
+  aspect-ratio: 16 / 9;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.home-banner-item img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: 20px;
+  box-shadow:
+    0 4px 10px rgba(15, 23, 42, 0.12),
+    0 8px 20px rgba(15, 23, 42, 0.08);
 }
