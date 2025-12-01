@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const img = document.createElement("img");
       img.src = `/img/banner${i}.jpg`;
       img.alt = `Banner ${i}`;
+      // img.loading = "lazy";
 
       img.onerror = () => {
         wrapper.remove();
@@ -29,27 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // ==== PANGGIL FUNGSINYA ====
   loadHomeBanners();
-
-  // =====================================================
-  // ANTI-LONCAT: aktifkan loader untuk banner pertama
-  // =====================================================
-  const heroBanner = document.querySelector(".banner-with-loader");
-  const heroImg = heroBanner ? heroBanner.querySelector(".banner-img") : null;
-
-  if (heroBanner && heroImg) {
-    const markLoaded = () => {
-      heroBanner.classList.add("loaded");
-    };
-
-    if (heroImg.complete && heroImg.naturalWidth !== 0) {
-      // gambar sudah ter-cache / sudah siap
-      markLoaded();
-    } else {
-      heroImg.addEventListener("load", markLoaded);
-      heroImg.addEventListener("error", markLoaded);
-    }
-  }
-
+  
+  
   /* =====================================================
      HELPER FORMAT NOMOR
   ====================================================== */
