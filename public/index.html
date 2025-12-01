@@ -9,170 +9,171 @@
   />
   <title>Aplikasi</title>
 
+  <!-- CRITICAL CSS UNTUK SCREEN AWAL (anti-loncat) -->
   <style>
-  /* =========================================
-     GLOBAL RESET & BASE (CRITICAL)
-  ========================================= */
-  html,
-  body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(180deg, #dbeafe 0%, #f1f5f9 40%, #f8fafc 100%);
-    overflow: hidden; /* biar hanya konten dalam card yang scroll */
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    color: #0f172a;
-  }
+    /* =========================================
+       GLOBAL RESET & BASE (CRITICAL)
+    ========================================= */
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, #dbeafe 0%, #f1f5f9 40%, #f8fafc 100%);
+      overflow: hidden; /* biar hanya konten dalam card yang scroll */
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #0f172a;
+    }
 
-  /* Area konten utama (di atas footer) */
-  #app {
-    width: 100%;
-    height: calc(100% - 80px); /* sisakan ruang untuk footer */
-    box-sizing: border-box;
-    padding: 12px 12px 0;
-  }
+    /* Area konten utama (di atas footer) */
+    #app {
+      width: 100%;
+      height: calc(100% - 80px); /* sisakan ruang untuk footer */
+      box-sizing: border-box;
+      padding: 12px 12px 0;
+    }
 
-  /* Semua screen disembunyikan default, nanti diatur via JS */
-  .screen {
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-    display: none;
-  }
+    /* Semua screen disembunyikan default, nanti diatur via JS */
+    .screen {
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      display: none;
+    }
 
-  /* =====================================================
-     CARD STYLE UMUM (dipakai oleh semua screen)
-  ===================================================== */
-  .screen-card {
-    width: 100%;
-    height: 100%;
-    background: #ffffff;
-    border-radius: 20px;
-    padding: 18px 16px 12px;
-    box-sizing: border-box;
+    /* =====================================================
+       CARD STYLE UMUM (dipakai oleh semua screen)
+    ===================================================== */
+    .screen-card {
+      width: 100%;
+      height: 100%;
+      background: #ffffff;
+      border-radius: 20px;
+      padding: 18px 16px 12px;
+      box-sizing: border-box;
 
-    box-shadow:
-      0 4px 8px rgba(0, 0, 0, 0.08),
-      0 12px 24px rgba(0, 0, 0, 0.06),
-      0 24px 48px rgba(0, 0, 0, 0.04);
-  }
+      box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.08),
+        0 12px 24px rgba(0, 0, 0, 0.06),
+        0 24px 48px rgba(0, 0, 0, 0.04);
+    }
 
-  /* ============================
-     SCREEN DEFAULT (HOME)
-  ============================ */
-  #screen-default {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    text-align: center;
-    padding-top: 12px;
-  }
+    /* ============================
+       SCREEN DEFAULT (HOME)
+    ============================ */
+    #screen-default {
+      display: flex;               /* default tampilan awal */
+      justify-content: center;
+      align-items: flex-start;
+      text-align: center;
+      padding-top: 12px;
+    }
 
-  #screen-default .screen-card-inner {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 6px;
-  }
+    #screen-default .screen-card-inner {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 6px;
+    }
 
-  /* ============================
-     HOME BANNER LIST
-  ============================ */
-  .home-banner-list {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 20px;
-  }
+    /* ============================
+       HOME BANNER LIST
+    ============================ */
+    .home-banner-list {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
 
-  .home-banner-item {
-    width: 100%;
-    /* reserve space dengan aspect ratio, misal 16:9 */
-    aspect-ratio: 16 / 9;
-    border-radius: 20px;
-    overflow: hidden;
-  }
+    .home-banner-item {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border-radius: 20px;
+      overflow: hidden;
+      background: #e5edff; /* placeholder lembut */
+    }
 
-  .home-banner-item img {
-    width: 100%;
-    height: 100%;
-    display: block;
-    object-fit: cover;
-    border-radius: 20px;
-    box-shadow:
-      0 4px 10px rgba(15, 23, 42, 0.12),
-      0 8px 20px rgba(15, 23, 42, 0.08);
-  }
+    .home-banner-item img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      border-radius: 20px;
+      box-shadow:
+        0 4px 10px rgba(15, 23, 42, 0.12),
+        0 8px 20px rgba(15, 23, 42, 0.08);
+    }
 
-  /* =====================================================
-     FOOTER (Navbar bawah)
-  ===================================================== */
-  .footer {
-    position: fixed;
-    bottom: 0;
-    height: 70px;
-    width: 100%;
-    background: #ffffff;
-    box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.08);
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-  }
+    /* =====================================================
+       FOOTER (Navbar bawah)
+    ===================================================== */
+    .footer {
+      position: fixed;
+      bottom: 0;
+      height: 70px;
+      width: 100%;
+      background: #ffffff;
+      box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.08);
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
 
-  .nav-btn {
-    flex: 1;
-    text-align: center;
-    font-size: 12px;
-    color: #475569;
-    text-decoration: none;
-    -webkit-tap-highlight-color: transparent;
-    transition: opacity 0.15s, transform 0.1s;
-  }
+    .nav-btn {
+      flex: 1;
+      text-align: center;
+      font-size: 12px;
+      color: #475569;
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+      transition: opacity 0.15s, transform 0.1s;
+    }
 
-  .nav-btn-icon {
-    display: block;
-    margin-bottom: 2px;
-  }
+    .nav-btn-icon {
+      display: block;
+      margin-bottom: 2px;
+    }
 
-  .nav-btn-icon svg {
-    width: 24px;
-    height: 24px;
-    stroke: #475569;
-  }
+    .nav-btn-icon svg {
+      width: 24px;
+      height: 24px;
+      stroke: #475569;
+    }
 
-  .nav-btn.active {
-    color: #0f172a;
-  }
+    .nav-btn.active {
+      color: #0f172a;
+    }
 
-  .nav-btn.active svg {
-    stroke: #0f172a;
-  }
+    .nav-btn.active svg {
+      stroke: #0f172a;
+    }
 
-  .nav-btn.active::after {
-    content: "";
-    display: block;
-    height: 2px;
-    width: 30px;
-    background: #0f172a;
-    margin: 3px auto 0;
-    border-radius: 999px;
-  }
+    .nav-btn.active::after {
+      content: "";
+      display: block;
+      height: 2px;
+      width: 30px;
+      background: #0f172a;
+      margin: 3px auto 0;
+      border-radius: 999px;
+    }
 
-  .nav-btn:active {
-    transform: scale(0.92);
-    opacity: 0.7;
-  }
-</style>
+    .nav-btn:active {
+      transform: scale(0.92);
+      opacity: 0.7;
+    }
+  </style>
 
-  <!-- File CSS -->
+  <!-- CSS tambahan (seluruh style lain) -->
   <link rel="stylesheet" href="style.css" />
 
-  <!-- File JS -->
+  <!-- JS -->
   <script src="app.js" defer></script>
 </head>
 <body>
@@ -180,16 +181,21 @@
        KONTEN UTAMA APLIKASI
   ========================================== -->
   <div id="app">
-    <!-- ============ SCREEN DEFAULT (HOME KOSONG) ============ -->
-    <!-- Ini yang ditampilkan pertama kali kalau belum login -->
+    <!-- ============ SCREEN DEFAULT (HOME) ============ -->
     <div id="screen-default" class="screen">
       <div class="screen-card">
         <div class="screen-card-inner">
           <!-- LIST BANNER -->
           <div id="home-banner-list" class="home-banner-list">
-            <!-- Banner pertama dari HTML -->
-            <div class="home-banner-item">
-              <img src="/img/banner1.jpg" alt="Banner 1" />
+            <!-- Banner pertama dengan skeleton (anti-loncat) -->
+            <div class="home-banner-item banner-with-loader">
+              <div class="banner-skeleton"></div>
+              <img
+                src="/img/banner1.jpg"
+                alt="Banner 1"
+                class="banner-img"
+                loading="eager"
+              />
             </div>
           </div>
         </div>
@@ -199,9 +205,6 @@
     <!-- ============ SCREEN PROFILE (LOGIN / DAFTAR / DASHBOARD) ============ -->
     <div id="screen-profile" class="screen">
       <div class="screen-card">
-        <!-- Container ini isinya:
-             - saat belum login  -> form login / daftar
-             - saat sudah login  -> dashboard profile (diisi via JS) -->
         <div class="profile-container">
           <!-- ====== TAB LOGIN (default) ====== -->
           <div id="tab-login" class="tab-content active">
@@ -226,7 +229,6 @@
 
               <button type="submit" class="profile-btn">Masuk</button>
 
-              <!-- Teks kecil untuk pindah ke daftar -->
               <div class="form-switch-text">
                 Belum punya akun? <span id="go-register">Daftar</span>
               </div>
@@ -272,7 +274,6 @@
 
               <button type="submit" class="profile-btn">Daftar</button>
 
-              <!-- Teks kecil untuk pindah ke login -->
               <div class="form-switch-text">
                 Sudah punya akun? <span id="go-login">Masuk</span>
               </div>
@@ -285,7 +286,6 @@
     <!-- ============ SCREEN LIST USER ============ -->
     <div id="screen-users" class="screen">
       <div class="screen-card">
-        <!-- Container khusus list user (bisa scroll di dalam card) -->
         <div class="user-list-container">
           <div class="screen-title">List user</div>
           <div class="screen-desc" style="margin-bottom:14px;">
@@ -296,7 +296,6 @@
             Muat ulang list user
           </button>
 
-          <!-- Area list yang akan diisi via JS dan bisa scroll -->
           <div id="user-list" class="user-list"></div>
         </div>
       </div>
@@ -334,11 +333,9 @@
           <div class="cek-result">
             <div class="cek-result-title">Info kuota</div>
             <div class="cek-result-body" id="cek-result-body">
-              <!-- hasil cek kuota akan diisi via JS -->
             </div>
           </div>
 
-          <!-- Form input nomor untuk cek kuota -->
           <form class="cek-form" id="cek-form">
             <input
               type="tel"
@@ -358,16 +355,9 @@
        FOOTER NAVBAR (TETAP DI BAWAH)
   ========================================== -->
   <div class="footer">
-    <!-- PROFILE -->
     <a class="nav-btn" href="javascript:void(0)" data-screen="profile">
       <span class="nav-btn-icon">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="7" r="4" />
           <path d="M5.5 21c1-4 4-6 6.5-6s5.5 2 6.5 6" />
         </svg>
@@ -375,16 +365,9 @@
       Profile
     </a>
 
-    <!-- LIST USER -->
     <a class="nav-btn" href="javascript:void(0)" data-screen="users">
       <span class="nav-btn-icon">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M4 6h12" />
           <path d="M4 12h12" />
           <path d="M4 18h12" />
@@ -396,16 +379,9 @@
       List user
     </a>
 
-    <!-- BELI KUOTA -->
     <a class="nav-btn" href="javascript:void(0)" data-screen="beli">
       <span class="nav-btn-icon">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="9" cy="21" r="1" />
           <circle cx="20" cy="21" r="1" />
           <path d="M1 1h4l2.7 13c.2 1 1 2 2 2h9" />
@@ -415,16 +391,9 @@
       Beli kuota
     </a>
 
-    <!-- CEK KUOTA -->
     <a class="nav-btn" href="javascript:void(0)" data-screen="cek">
       <span class="nav-btn-icon">
-        <svg
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-        >
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M3 17l6-6 4 4 8-10" />
           <path d="M3 21h18" />
         </svg>
