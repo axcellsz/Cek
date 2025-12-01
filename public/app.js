@@ -843,10 +843,4 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   // kalau belum login, biarkan CSS menampilkan screen-default
 
-  // Fade-in untuk banner yang punya class .banner-hidden
-  window.addEventListener("load", () => {
-    document.querySelectorAll(".banner-hidden").forEach((img) => {
-      img.classList.add("loaded");
-    });
-  });
 });
