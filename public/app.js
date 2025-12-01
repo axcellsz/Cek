@@ -833,15 +833,12 @@ document.addEventListener("DOMContentLoaded", () => {
   /* =====================================================
      INIT: RESTORE SESSION & TENTUKAN SCREEN PERTAMA
   ====================================================== */
-  const hasSession = initSessionFromStorage();
+const hasSession = initSessionFromStorage();
 
   if (hasSession) {
-    // kalau sudah login → langsung ke profile
     showScreen("profile");
     setActiveNav("profile");
-  } else {
-    // kalau belum login → tampilkan screen kosong / default
-    showScreen(); // sama dengan showScreen(null)
-    // tidak set active nav, biar semuanya netral
   }
+  // kalau belum login, tidak ngapa-ngapain:
+  // CSS sudah menampilkan #screen-default secara default
 });
