@@ -50,10 +50,11 @@ body {
    SCREEN DEFAULT (HOME)
 ============================ */
 #screen-default {
-  display: flex;              /* akan diubah lagi via JS */
+  display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;   /* ⬅️ UBAH: dari center → flex-start */
   text-align: center;
+  padding-top: 12px;         /* ⬅️ opsional, biar ada jarak dari atas */
 }
 
 #screen-default .screen-card-inner {
