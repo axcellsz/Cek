@@ -772,3 +772,12 @@ body {
     0 4px 10px rgba(15, 23, 42, 0.12),
     0 8px 20px rgba(15, 23, 42, 0.08);
 }
+/* ==== Posisi banner di bagian atas card ==== */
+#screen-default .screen-card {
+  height: auto;          /* agar card mengikuti tinggi konten */
+}
+
+#screen-default .screen-card-inner {
+  display: block;        /* tidak perlu flex */
+  padding-top: 0;
+}
