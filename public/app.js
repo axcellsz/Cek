@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById("home-banner-list");
     if (!container) return;
 
-    const MAX_BANNER = 1;
+    const MAX_BANNER = 10;
 
     // Mulai dari 2 karena banner1 sudah ada di HTML
     for (let i = 1; i <= MAX_BANNER; i++) {
