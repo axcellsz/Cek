@@ -223,8 +223,6 @@
    PROFILE (LOGIN & REGISTER)
 ============================ */
 
-/* Card profile dibuat flex column & overflow hidden
-   supaya footer tidak ketutup dan konten di dalam bisa diatur scrollnya */
 #screen-profile .screen-card {
   display: flex;
   flex-direction: column;
@@ -232,9 +230,6 @@
   overflow: hidden;
 }
 
-/* Container utama profile:
-   - Saat awal → berisi form login/register
-   - Setelah login → diisi ulang jadi dashboard profile */
 .profile-container {
   flex: 1;
   padding: 10px 4px;
@@ -246,7 +241,7 @@
 /* TAB LOGIN / REGISTER (saat belum login) */
 .tab-content {
   display: none;
-  margin-top: auto; /* dorong form ke bawah card, biar gampang dicapai jempol */
+  margin-top: auto;
 }
 
 .tab-content.active {
@@ -336,7 +331,6 @@
    LIST USER (SCROLL DI DALAM CARD)
 ============================ */
 
-/* Kartu list user memenuhi tinggi layar, tapi konten di dalamnya bisa scroll */
 #screen-users .screen-card {
   display: flex;
   flex-direction: column;
@@ -344,7 +338,6 @@
   overflow: hidden;
 }
 
-/* Container di dalam list user */
 .user-list-container {
   flex: 1;
   display: flex;
@@ -355,13 +348,11 @@
   min-height: 0;
 }
 
-/* Tombol reload di atas list */
 .user-reload-btn {
   margin-top: 4px;
   margin-bottom: 4px;
 }
 
-/* Area list yang bisa scroll */
 .user-list {
   flex: 1;
   overflow-y: auto;
@@ -371,7 +362,6 @@
   gap: 8px;
 }
 
-/* Item user */
 .user-item {
   padding: 10px 12px;
   border-radius: 12px;
@@ -399,7 +389,6 @@
   margin-top: 2px;
 }
 
-/* Avatar kecil di list user (dipakai di app.js) */
 .user-header-main {
   display: flex;
   align-items: center;
@@ -427,7 +416,6 @@
    DASHBOARD PROFILE BARU (SETELAH LOGIN)
 ============================ */
 
-/* Wrapper dashboard: full height, kolom, sebagian fixed, sebagian scroll */
 .profile-dashboard {
   display: flex;
   flex-direction: column;
@@ -435,7 +423,6 @@
   height: 100%;
 }
 
-/* Baris paling atas: avatar + nama + edit photo */
 .profile-header-row {
   display: flex;
   align-items: center;
@@ -455,7 +442,6 @@
   gap: 6px;
 }
 
-/* Lingkaran avatar besar di halaman profile */
 .profile-avatar-circle {
   width: 60px;
   height: 60px;
@@ -467,12 +453,11 @@
   font-size: 26px;
   font-weight: 700;
   color: #e5f0ff;
-  overflow: hidden;           /* supaya foto tidak keluar lingkaran */
-  background-size: cover;     /* untuk background-image dari JS */
+  overflow: hidden;
+  background-size: cover;
   background-position: center;
 }
 
-/* Tombol kecil “Edit photo” di bawah avatar */
 .profile-edit-photo {
   border: none;
   background: transparent;
@@ -501,7 +486,6 @@
   color: #64748b;
 }
 
-/* Kartu umum putih */
 .profile-card {
   border-radius: 18px;
   background: #ffffff;
@@ -511,7 +495,6 @@
     0 8px 16px rgba(15, 23, 42, 0.04);
 }
 
-/* Form 1: Saldo / Kuota / Bonus */
 .profile-balance-card {
   display: flex;
   justify-content: space-between;
@@ -534,7 +517,6 @@
   color: #6b7280;
 }
 
-/* Form 2: Aksi cepat */
 .profile-actions-card {
   display: flex;
   justify-content: space-between;
@@ -570,7 +552,6 @@
   font-size: 12px;
 }
 
-/* Form 3: Info akun */
 .profile-info-card {
   display: flex;
   flex-direction: column;
@@ -592,7 +573,6 @@
   color: #0f172a;
 }
 
-/* 4 slot kosong untuk fitur ke depan */
 .profile-empty-card {
   height: 46px;
   border-radius: 16px;
@@ -600,13 +580,10 @@
   border: 1px dashed #d1d5db;
 }
 
-/* Tombol keluar di dalam dashboard */
 .profile-logout-btn {
   margin-top: 8px;
 }
 
-/* Bagian bawah dashboard yang bisa di-scroll:
-   - berisi info akun, 4 slot kosong, tombol keluar */
 .profile-extra-scroll {
   flex: 1;
   overflow-y: auto;
@@ -620,9 +597,3 @@
 .profile-empty-card:last-child {
   margin-bottom: 4px;
 }
-
-/* ============================
-   HOME BANNER LIST
-============================ */
-/* (aturan layout utama banner sudah di-inline di HTML;
-   di sini bisa tambahkan style tambahan jika perlu) */
