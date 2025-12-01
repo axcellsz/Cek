@@ -9,6 +9,166 @@
   />
   <title>Aplikasi</title>
 
+  <style>
+  /* =========================================
+     GLOBAL RESET & BASE (CRITICAL)
+  ========================================= */
+  html,
+  body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(180deg, #dbeafe 0%, #f1f5f9 40%, #f8fafc 100%);
+    overflow: hidden; /* biar hanya konten dalam card yang scroll */
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #0f172a;
+  }
+
+  /* Area konten utama (di atas footer) */
+  #app {
+    width: 100%;
+    height: calc(100% - 80px); /* sisakan ruang untuk footer */
+    box-sizing: border-box;
+    padding: 12px 12px 0;
+  }
+
+  /* Semua screen disembunyikan default, nanti diatur via JS */
+  .screen {
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
+    display: none;
+  }
+
+  /* =====================================================
+     CARD STYLE UMUM (dipakai oleh semua screen)
+  ===================================================== */
+  .screen-card {
+    width: 100%;
+    height: 100%;
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 18px 16px 12px;
+    box-sizing: border-box;
+
+    box-shadow:
+      0 4px 8px rgba(0, 0, 0, 0.08),
+      0 12px 24px rgba(0, 0, 0, 0.06),
+      0 24px 48px rgba(0, 0, 0, 0.04);
+  }
+
+  /* ============================
+     SCREEN DEFAULT (HOME)
+  ============================ */
+  #screen-default {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: center;
+    padding-top: 12px;
+  }
+
+  #screen-default .screen-card-inner {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  /* ============================
+     HOME BANNER LIST
+  ============================ */
+  .home-banner-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .home-banner-item {
+    width: 100%;
+    /* reserve space dengan aspect ratio, misal 16:9 */
+    aspect-ratio: 16 / 9;
+    border-radius: 20px;
+    overflow: hidden;
+  }
+
+  .home-banner-item img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+    border-radius: 20px;
+    box-shadow:
+      0 4px 10px rgba(15, 23, 42, 0.12),
+      0 8px 20px rgba(15, 23, 42, 0.08);
+  }
+
+  /* =====================================================
+     FOOTER (Navbar bawah)
+  ===================================================== */
+  .footer {
+    position: fixed;
+    bottom: 0;
+    height: 70px;
+    width: 100%;
+    background: #ffffff;
+    box-shadow: 0 -3px 10px rgba(0, 0, 0, 0.08);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .nav-btn {
+    flex: 1;
+    text-align: center;
+    font-size: 12px;
+    color: #475569;
+    text-decoration: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.15s, transform 0.1s;
+  }
+
+  .nav-btn-icon {
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .nav-btn-icon svg {
+    width: 24px;
+    height: 24px;
+    stroke: #475569;
+  }
+
+  .nav-btn.active {
+    color: #0f172a;
+  }
+
+  .nav-btn.active svg {
+    stroke: #0f172a;
+  }
+
+  .nav-btn.active::after {
+    content: "";
+    display: block;
+    height: 2px;
+    width: 30px;
+    background: #0f172a;
+    margin: 3px auto 0;
+    border-radius: 999px;
+  }
+
+  .nav-btn:active {
+    transform: scale(0.92);
+    opacity: 0.7;
+  }
+</style>
+
   <!-- File CSS -->
   <link rel="stylesheet" href="style.css" />
 
