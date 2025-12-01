@@ -4,29 +4,30 @@ document.addEventListener("DOMContentLoaded", () => {
   // BANNER HOME (PAKAI home-banner-list)
   // ========================================
   function loadHomeBanners() {
-  const container = document.getElementById("home-banner-list");
-  if (!container) return;
+    const container = document.getElementById("home-banner-list");
+    if (!container) return;
 
-  const MAX_BANNER = 10;
+    const MAX_BANNER = 10;
 
-  // Mulai dari 2 karena banner1 sudah ada di HTML
-  for (let i = 2; i <= MAX_BANNER; i++) {
-    const wrapper = document.createElement("div");
-    wrapper.className = "home-banner-item";
+    // Mulai dari 2 karena banner1 sudah ada di HTML
+    for (let i = 2; i <= MAX_BANNER; i++) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "home-banner-item";
 
-    const img = document.createElement("img");
-    img.src = `/img/banner${i}.jpg`;
-    img.alt = `Banner ${i}`;
-    // img.loading = "lazy";
+      const img = document.createElement("img");
+      img.src = `/img/banner${i}.jpg`;
+      img.alt = `Banner ${i}`;
+      // img.loading = "lazy";
 
-    img.onerror = () => {
-      wrapper.remove();
-    };
+      img.onerror = () => {
+        wrapper.remove();
+      };
 
-    wrapper.appendChild(img);
-    container.appendChild(wrapper);
+      wrapper.appendChild(img);
+      container.appendChild(wrapper);
+    }
   }
-}
+
   // ==== PANGGIL FUNGSINYA ====
   loadHomeBanners();
   
@@ -833,18 +834,18 @@ document.addEventListener("DOMContentLoaded", () => {
   /* =====================================================
      INIT: RESTORE SESSION & TENTUKAN SCREEN PERTAMA
   ====================================================== */
-const hasSession = initSessionFromStorage();
+  const hasSession = initSessionFromStorage();
 
   if (hasSession) {
+    // kalau sudah login → langsung ke profile
     showScreen("profile");
     setActiveNav("profile");
-  } else {
-    showScreen();
   }
+  // kalau belum login, biarkan CSS menampilkan screen-default
 
-  // === Tambahkan ini ===
+  // Fade-in untuk banner yang punya class .banner-hidden
   window.addEventListener("load", () => {
-    document.querySelectorAll(".banner-hidden").forEach(img => {
+    document.querySelectorAll(".banner-hidden").forEach((img) => {
       img.classList.add("loaded");
     });
   });
