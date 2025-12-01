@@ -838,7 +838,14 @@ const hasSession = initSessionFromStorage();
   if (hasSession) {
     showScreen("profile");
     setActiveNav("profile");
+  } else {
+    showScreen();
   }
-  // kalau belum login, tidak ngapa-ngapain:
-  // CSS sudah menampilkan #screen-default secara default
+
+  // === Tambahkan ini ===
+  window.addEventListener("load", () => {
+    document.querySelectorAll(".banner-hidden").forEach(img => {
+      img.classList.add("loaded");
+    });
+  });
 });
