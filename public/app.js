@@ -7,10 +7,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const container = document.getElementById("home-banner-list");
     if (!container) return;
 
-    const MAX_BANNER = 0;
+    const MAX_BANNER = 10;
 
     // Mulai dari 2 karena banner1 sudah ada di HTML
-    for (let i = 0; i <= MAX_BANNER; i++) {
+    for (let i = 2; i <= MAX_BANNER; i++) {
       const wrapper = document.createElement("div");
       wrapper.className = "home-banner-item";
 
