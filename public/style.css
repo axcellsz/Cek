@@ -52,10 +52,18 @@ body {
 ============================ */
 #screen-default {
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  flex-direction: column;          /* susun vertikal */
+  justify-content: flex-start;
+  align-items: stretch;
   text-align: center;
-  padding-top: 8px;
+
+  /* ruang dalam, termasuk bawah buat footer */
+  padding: 10px 12px 80px;
+  box-sizing: border-box;
+
+  /* >>> INI YANG PENTING UNTUK SCROLL <<< */
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;  /* biar scroll halus di HP */
 }
 
 .screen-title {
